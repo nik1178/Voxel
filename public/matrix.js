@@ -184,3 +184,35 @@ export function viewport(x, y, w, h) {
 
     return result;
 }
+
+export function getViewProjectionMatrix(camera, canvas) {
+  let viewMatrix = inverseTransform(camera.transform);
+  let perspectiveMatrix = perspective(
+    camera.fov,
+    canvas.width / canvas.height,
+    camera.near,
+    camera.far
+  );
+  return multiply(perspectiveMatrix, viewMatrix);
+}
+
+function inverseTransform({
+    translationVec = [0, 0, 0],
+    rotation = [0, 0, 0],
+    scaleVec = [1, 1, 1],
+} = {}) {
+  var scaleMatrix = scale(1 / scaleVec[0], 1 / scaleVec[1], 1 / scaleVec[2]);
+  var rotationMatrixX = rotationX(-rotation[0]);
+  var rotationMatrixY = rotationY(-rotation[1]);
+  var rotationMatrixZ = rotationZ(-rotation[2]);
+  var translationMatrix = translation(-translationVec[0], -translationVec[1], -translationVec[2]);
+
+  var result = identity();
+  result = multiply(result, scaleMatrix);
+  result = multiply(result, rotationMatrixX);
+  result = multiply(result, rotationMatrixY);
+  result = multiply(result, rotationMatrixZ);
+  result = multiply(result, translationMatrix);
+
+  return result;
+}
