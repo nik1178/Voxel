@@ -1,0 +1,6 @@
+public/map/*
+python/__pycache__/
+python/util/__pycache__/
+venv/
+*.txt
+node_modules/
