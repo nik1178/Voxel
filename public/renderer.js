@@ -1,7 +1,8 @@
 import * as Matrix from "./matrix.js";
+import ChunkManager from "./chunk-manager.js";
+import { vprint } from "./vprint.js";
 
 export default class Renderer {
-
   initialized = false;
 
   constructor(device, context, format, canvas) {
@@ -11,11 +12,14 @@ export default class Renderer {
     this.canvas = canvas;
   }
 
-  async init(camera, canvas) {
+  async init(player, canvas) {
+    this.player = player;
+    vprint("Initializing renderer...");
     await this.getShaders();
     this.createBufferLayouts();
+    this.createBuffers();
 
-    this.updateVPMatrix(camera, canvas);
+    this.updateVPMatrix(player.camera, canvas);
     this.cellShaderModule = this.device.createShaderModule({
       label: "Cell shader",
       code: this.wgslShader,
@@ -24,7 +28,15 @@ export default class Renderer {
     this.createDepthTexture();
     this.createPipelines();
     this.createBindGroups();
+
+    this.chunkManager = new ChunkManager(
+      this.device,
+      this.voxelSize,
+      this.chunkSize
+    );
+    this.chunkManager.startLoop(player);
     this.initialized = true;
+    vprint("Renderer initialized");
   }
 
   toColumnMajor(m) {
@@ -38,15 +50,14 @@ export default class Renderer {
   }
 
   updateVPMatrix(camera, canvas) {
+    if (!this.initialized) return;
     let vpMatrix = Matrix.getViewProjectionMatrix(camera, canvas);
 
-    // Uniform buffer for vpMatrix
-    const uniformBufferSize = 4 * 16; // 4x4 matrix
-    this.uniformBuffer = this.device.createBuffer({
-      size: uniformBufferSize,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    this.device.queue.writeBuffer(this.uniformBuffer, 0, this.toColumnMajor(vpMatrix));
+    this.device.queue.writeBuffer(
+      this.uniformBuffer,
+      0,
+      this.toColumnMajor(vpMatrix)
+    );
   }
 
   async getShaders() {
@@ -73,6 +84,15 @@ export default class Renderer {
         },
       ],
     };
+  }
+
+  createBuffers() {
+    // Uniform buffer for vpMatrix
+    const uniformBufferSize = 4 * 16; // 4x4 matrix
+    this.uniformBuffer = this.device.createBuffer({
+      size: uniformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
   }
 
   createDepthTexture() {
@@ -127,8 +147,15 @@ export default class Renderer {
     });
   }
 
+  frameIndex = 0;
   render() {
     if (!this.initialized) return;
+    if (this.frameIndex % 60 === 0) {
+      // vprint("Rendering frame:", this.frameIndex);
+      // vprint("Player rotation:", this.player.camera.transform.rotation);
+      vprint("Player translation:", this.player.camera.transform.translation);
+    }
+    this.frameIndex++;
 
     const commandEncoder = this.device.createCommandEncoder();
     const pass = commandEncoder.beginRenderPass({
@@ -155,6 +182,17 @@ export default class Renderer {
     // pass.setVertexBuffer(0, vertexBuffer);
     // pass.setIndexBuffer(indexBuffer, "uint32"); // or "uint16"
     // pass.drawIndexed(indices.length);
+
+    const chunkData = this.chunkManager.getChunkData();
+    for (const chunk of chunkData.values()) {
+      if (!chunk.vertexBuffer || !chunk.indexBuffer) {
+        continue; // Skip chunks that are not ready
+      }
+
+      pass.setVertexBuffer(0, chunk.vertexBuffer);
+      pass.setIndexBuffer(chunk.indexBuffer, "uint32");
+      pass.drawIndexed(chunk.indexCount);
+    }
 
     pass.end();
     this.device.queue.submit([commandEncoder.finish()]);

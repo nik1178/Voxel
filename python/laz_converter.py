@@ -2,6 +2,7 @@ import laspy
 import numpy as np
 from tqdm import tqdm
 from python.util.vprint import vprint
+import datetime
 
 class LazConverter:
     
@@ -36,6 +37,21 @@ class LazConverter:
                     'green': g,
                     'blue': b
                 })
+        
+        return accumulator
+
+    def create_max_heightmap_no_accumulator(self, X, Y, Z, red, green, blue, verbose=False):
+        vprint(verbose, "Generating accumulator...")
+        accumulator = {}
+        for x, y, z, r, g, b in tqdm(zip(X, Y, Z, red, green, blue)):
+            key = (x, y)
+            if key not in accumulator or z > accumulator[key]['height']:
+                accumulator[key] = {
+                    'height': z,
+                    'red': r,
+                    'green': g,
+                    'blue': b
+                }
         
         return accumulator
     
@@ -85,8 +101,8 @@ class LazConverter:
 
         buffer = bytearray()
 
-        for x in range(0, self.CHUNK_SIZE):
-            for y in range(0, self.CHUNK_SIZE):
+        for y in range(0, self.CHUNK_SIZE):
+            for x in range(0, self.CHUNK_SIZE):
                 data = heightmap[x, y]
 
                 buffer.extend(np.uint8(data[0]).tobytes())
@@ -123,8 +139,8 @@ class LazConverter:
         min_x = X.min()
         min_y = Y.min()
         with open(OUT_FILE+".txt", "w") as f:
-            for x in range(min_x, min_x + CHUNK_SIZE):
-                for y in range(min_y, min_y + CHUNK_SIZE):
+            for y in range(min_y, min_y + CHUNK_SIZE):
+                for x in range(min_x, min_x + CHUNK_SIZE):
                     key = (x, y)
                     if key in heightmap:
                         data = heightmap[key]
@@ -141,8 +157,8 @@ class LazConverter:
         
         array = np.zeros((self.CHUNK_SIZE, self.CHUNK_SIZE, 4), dtype=np.uint16)
         
-        for x in range(min_x, min_x + self.CHUNK_SIZE):
-            for y in range(min_y, min_y + self.CHUNK_SIZE):
+        for y in range(min_y, min_y + self.CHUNK_SIZE):
+            for x in range(min_x, min_x + self.CHUNK_SIZE):
                 key = (x, y)
                 if key in heightmap:
                     data = heightmap[key]
@@ -163,6 +179,8 @@ class LazConverter:
                     voxel_size=100, # in centimeters
                     verbose=False
                     ):
+        
+        start_time = datetime.datetime.now()
         
         vprint(verbose, "Reading LAZ file...")
         laz = laspy.read(laz_file)
@@ -201,18 +219,21 @@ class LazConverter:
         green = self.scale_colors(green)
         blue = self.scale_colors(blue)
 
-        heightmap = self.create_accumulator(X, Y, Z, red, green, blue, verbose=verbose)
-        heightmap = self.accumulator_to_heightmap(heightmap, verbose=verbose)
+        # heightmap = self.create_max_accumulator(X, Y, Z, red, green, blue, verbose=verbose)
+        # heightmap = self.accumulator_to_heightmap(heightmap, verbose=verbose)
+        heightmap = self.create_max_heightmap_no_accumulator(X, Y, Z, red, green, blue, verbose=verbose)
         heightmap = self.heightmap_dic_to_array(heightmap, X, Y, verbose=verbose)
         
         # print heightmap to file for debugging
-        with open("heightmap_debug.txt", "w") as f:
-            for x in range(heightmap.shape[0]):
-                for y in range(heightmap.shape[1]):
-                    data = heightmap[x, y]
-                    f.write(f"{data[0]} {data[1]} {data[2]} {data[3]} | ")
-                print(file=f)
-        
+        # with open("heightmap_debug.txt", "w") as f:
+        #     for x in range(heightmap.shape[0]):
+        #         for y in range(heightmap.shape[1]):
+        #             data = heightmap[x, y]
+        #             f.write(f"{data[0]} {data[1]} {data[2]} {data[3]} | ")
+        #         print(file=f)
+                
+        time_taken = datetime.datetime.now() - start_time
+        vprint(verbose, f"Time taken for file {laz_file}: {time_taken}")
         return heightmap
 
         # binary_data = self.build_heightmap_binary(heightmap, X, Y, EMPTY_VALUE, verbose=verbose)

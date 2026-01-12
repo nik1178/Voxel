@@ -1,5 +1,6 @@
 import Renderer from "./renderer.js";
 import Player from "./player.js";
+import { vprint } from "./vprint.js";
 
 export default class GameManager {
   constructor(device, context, format, canvas) {
@@ -13,15 +14,18 @@ export default class GameManager {
     this.player = new Player(canvas);
   }
   async startGame() {
-    await this.renderer.init(this.player.camera, this.canvas);
+    vprint("Starting game...");
+    await this.renderer.init(this.player, this.canvas);
     this.running = true;
     this.canvas.addEventListener("click", () => {
       this.canvas.requestPointerLock();
     });
+    vprint("Game started");
     requestAnimationFrame(this.frame.bind(this));
   }
 
   pauseGame() {
+    vprint("Game paused");
     this.running = false;
   }
 

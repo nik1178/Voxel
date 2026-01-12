@@ -3,12 +3,12 @@ import MovementController from "./movement-controller.js";
 export default class Player {
     camera = {
         transform: {
-            translation: [0, 1, 3],
+            translation: [461050, 300, 101050],
             rotation: [0, 0, 0],
         },
         fov: 1,
-        near: 0.01,
-        far: 10000,
+        near: 5,
+        far: 1000000,
     };
     constructor(canvas) {
         this.position = { x: 0, y: 0, z: 0 };

@@ -12,6 +12,8 @@ ChunkManager = ChunkManager(chunk_size=1000, voxel_size=100, data_dir=chunk_dir,
 @app.route("/get_chunk/<int:x>/<int:z>", methods=["GET"])
 def get_chunk(x, z):
     data = ChunkManager.get_chunk(x, z)
+    if data == 404:
+        return Response("Chunk not found", status=404)
     return Response(data, mimetype='application/octet-stream')
 
 @app.route("/")

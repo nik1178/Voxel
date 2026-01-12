@@ -40,7 +40,9 @@ class ChunkManager:
         vprint(self.verbose, f"Requesting chunk at ({x}, {z})")
         
         if not self.chunk_exists(x, z):
-            self.generate_chunk(x, z)
+            result = self.generate_chunk(x, z)
+            if result == 404:
+                return 404
         
         # Open and return the chunk file
         vprint(self.verbose, f"Loading chunk at ({x}, {z}) from disk")
@@ -50,6 +52,10 @@ class ChunkManager:
     def generate_chunk(self, x, z):
         vprint(self.verbose, f"Generating chunk at ({x}, {z})")
         # Placeholder for chunk generation logic
+        if not os.path.isfile(self.laz_path(x, z)):
+            vprint(self.verbose, f"LAZ file not found for chunk at ({x}, {z})")
+            return 404
+        
         heightmap = self.LazConverter.laz_to_hmap(
             laz_file=self.laz_path(x, z),
             voxel_size=self.voxel_size,

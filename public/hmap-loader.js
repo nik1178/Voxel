@@ -1,4 +1,6 @@
+import { alertError } from "./errors.js";
 export default class HmapLoader {
+
   bufferToArray(buffer, size) {
     const data = new Uint8Array(buffer);
     const expectedLength = size * size * 5;
@@ -33,12 +35,19 @@ export default class HmapLoader {
     return grid;
   }
 
-  loadHeightMap(chunkX, chunkZ, size = 1000) {
+  loadHeightMap(chunkX, chunkZ, size = 1000, levelOfDetail = 0) {
     const url = `/get_chunk/${chunkX}/${chunkZ}`;
 
     return fetch(url)
       .then((response) => {
+        // Check for 404
+        if (response.status === 404) {
+            return 404; // Return 404 to indicate chunk not found
+        }
+
+
         if (!response.ok) {
+          alertError(`Failed to load chunk (${chunkX}, ${chunkZ}): ${response.statusText}`);
           throw new Error(
             `Failed to load chunk (${chunkX}, ${chunkZ}): ${response.statusText}`
           );
@@ -46,7 +55,10 @@ export default class HmapLoader {
         return response.arrayBuffer();
       })
       .then((buffer) => {
-        return bufferToArray(buffer, size);
+        if (buffer == 404) {
+          return 404; // Propagate 404
+        }
+        return this.bufferToArray(buffer, size);
       });
   }
 }
