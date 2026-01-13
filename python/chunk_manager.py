@@ -2,6 +2,8 @@ import os
 from python.laz_converter import LazConverter
 from python.util.vprint import vprint
 from os import path
+from python.chunk_binary_manager import ChunkBinaryManager
+from python.chunk_builder import ChunkBuilder
 
 class ChunkManager:
     
@@ -13,6 +15,8 @@ class ChunkManager:
         self.data_dir = data_dir
         self.laz_dir = laz_dir
         self.LazConverter = LazConverter()
+        self.chunk_binary_manager = ChunkBinaryManager(verbose)
+        self.chunk_builder = ChunkBuilder(voxel_size, data_dir, verbose)
         self.verbose = verbose
         self.voxel_dir = os.path.join(self.data_dir, str(self.voxel_size))
         
@@ -36,7 +40,7 @@ class ChunkManager:
         # Check if path data_dir/<voxel_size>/<x>_<z>.png exists
         return os.path.isfile(self.chunk_string(x, z))
 
-    def get_chunk(self, x, z):
+    def get_chunk(self, x, z, chunk_size=1000, lod=0):
         vprint(self.verbose, f"Requesting chunk at ({x}, {z})")
         
         if not self.chunk_exists(x, z):
@@ -46,8 +50,8 @@ class ChunkManager:
         
         # Open and return the chunk file
         vprint(self.verbose, f"Loading chunk at ({x}, {z}) from disk")
-        with open(self.chunk_string(x, z), "rb") as f:
-            return f.read()
+        chunk_lod = self.chunk_builder.get_chunk(x, z, chunk_size=self.chunk_size, lod=lod, verbose=self.verbose)
+        return self.chunk_binary_manager.heightmap_to_binary(chunk_lod, verbose=self.verbose)
 
     def generate_chunk(self, x, z):
         vprint(self.verbose, f"Generating chunk at ({x}, {z})")
@@ -62,7 +66,7 @@ class ChunkManager:
             verbose=self.verbose
         )
         
-        binary_data = self.LazConverter.build_heightmap_binary(heightmap, verbose=self.verbose)
+        binary_data = self.chunk_binary_manager.heightmap_to_binary(heightmap, verbose=self.verbose)
         
         with open(self.chunk_string(x, z), "wb") as f:
             f.write(binary_data)

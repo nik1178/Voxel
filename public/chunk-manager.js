@@ -26,8 +26,8 @@ export default class ChunkManager {
     return `${chunkX},${chunkZ}`;
   }
 
-  async handleNewChunk(chunkX, chunkZ, heightMapData) {
-    if (heightMapData === 404 || true) {
+  async handleNewChunk(chunkX, chunkZ, levelOfDetail, heightMapData) {
+    if (heightMapData === 404) {
       vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404).`);
       this.chunkData.set(
         this.getChunkKey(chunkX, chunkZ),
@@ -38,7 +38,7 @@ export default class ChunkManager {
     }
 
     const chunkBuilder = new ChunkBuilder();
-    const { localVertices, localIndices } = await chunkBuilder.buildMap(heightMapData);
+    const { localVertices, localIndices } = await chunkBuilder.buildMap(heightMapData, levelOfDetail);
     const vertices = chunkBuilder.offsetVertices(
       localVertices,
       chunkX * this.chunkSize,
@@ -85,7 +85,7 @@ export default class ChunkManager {
     // const currentChunkZ = 101;
 
     // Check which chunk is needed next based on player position and stored chunks
-    for (let layer = 0; layer < 500; layer++) {
+    for (let layer = 0; layer < 20; layer++) {
       for (let dx = -layer; dx <= layer; dx++) {
         for (let dz = -layer; dz <= layer; dz++) {
           if (Math.abs(dx) !== layer && Math.abs(dz) !== layer) {
@@ -97,7 +97,7 @@ export default class ChunkManager {
           if (!this.chunkData.has(this.getChunkKey(chunkX, chunkZ))) {
             this.waitingForChunk = true;
             await this.getChunk(chunkX, chunkZ, layer).then(
-              this.handleNewChunk.bind(this, chunkX, chunkZ)
+              this.handleNewChunk.bind(this, chunkX, chunkZ, layer)
             );
             return; // Load one chunk at a time
           }
@@ -110,21 +110,22 @@ export default class ChunkManager {
   startLoop(player) {
     vprint("Starting chunk manager loop...");
     this.running = true;
-    let waitTime = 100;
     setInterval(() => {
       if (this.running) {
-        if (this.waitingForChunk) waitTime = 1000;
-        else waitTime = 10;
         this.updateChunks({
           x: player.camera.transform.translation[0],
           z: player.camera.transform.translation[2],
         });
       }
-    }, waitTime); // Update every second
+    }, 100); // Update every second
   }
 
   stopLoop() {
     this.running = false;
+  }
+
+  resetChunkData() {
+    this.chunkData = new Map();
   }
 
   getChunkData() {

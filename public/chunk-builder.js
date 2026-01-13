@@ -1,7 +1,7 @@
 import { vprint } from "./vprint.js";
 
 export default class ChunkBuilder {
-  async buildMap(heightMapData) {
+  async buildMap(heightMapData, levelOfDetail = 0) {
     let localVertices;
     let localIndices;
 
@@ -42,9 +42,9 @@ export default class ChunkBuilder {
       for (let z = 0; z < depth; z++) {
         const [r, g, b, height] = heightMapData[x][z];
 
-        const fx = x; /* + chunkX * width */
+        const fx = x;
         const fy = height;
-        const fz = z; /* + chunkZ * depth */
+        const fz = z;
 
         const cr = r / 255;
         const cg = g / 255;
@@ -53,10 +53,11 @@ export default class ChunkBuilder {
 
         const topY = fy;
 
-        const x0 = fx;
-        const x1 = fx + 1;
-        const z0 = fz;
-        const z1 = fz + 1;
+        const levelScale = 2 ** levelOfDetail;
+        const x0 = fx*levelScale
+        const x1 = x0 + levelScale;
+        const z0 = fz*levelScale;
+        const z1 = z0 + levelScale;
 
         // 4 unique corners of the plane
         const corners = [
@@ -65,6 +66,10 @@ export default class ChunkBuilder {
           [x0, topY, z1],
           [x1, topY, z1],
         ];
+
+        if (x === width-1 && z === depth-1) {
+          console.log("First cube corners:", corners);
+        }
 
         for (const corner of corners) {
           vertexArray.push(...corner, 1.0, cr, cg, cb, ca);

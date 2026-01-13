@@ -96,21 +96,21 @@ class LazConverter:
 
     #     return buffer
 
-    def build_heightmap_binary(self, heightmap, verbose=False):
-        vprint(verbose, "Building heightmap binary...")
+    # def build_heightmap_binary(self, heightmap, verbose=False):
+    #     vprint(verbose, "Building heightmap binary...")
 
-        buffer = bytearray()
+    #     buffer = bytearray()
 
-        for y in range(0, self.CHUNK_SIZE):
-            for x in range(0, self.CHUNK_SIZE):
-                data = heightmap[x, y]
+    #     for y in range(0, self.CHUNK_SIZE):
+    #         for x in range(0, self.CHUNK_SIZE):
+    #             data = heightmap[x, y]
 
-                buffer.extend(np.uint8(data[0]).tobytes())
-                buffer.extend(np.uint8(data[1]).tobytes())
-                buffer.extend(np.uint8(data[2]).tobytes())
-                buffer.extend(np.uint16(data[3]).tobytes())
+    #             buffer.extend(np.uint8(data[0]).tobytes())
+    #             buffer.extend(np.uint8(data[1]).tobytes())
+    #             buffer.extend(np.uint8(data[2]).tobytes())
+    #             buffer.extend(np.uint16(data[3]).tobytes())
 
-        return buffer
+    #     return buffer
     
     def build_csv(self, heightmap, X, Y, empty_value, verbose=False):
         vprint(verbose, "Building CSV string...")
@@ -133,21 +133,21 @@ class LazConverter:
         return "\n".join(lines)
 
     
-    def write_heightmap(self, heightmap, X, Y, OUT_FILE="heightmap.udo", verbose=False):
-        global CHUNK_SIZE
+    # def write_heightmap(self, heightmap, X, Y, OUT_FILE="heightmap.udo", verbose=False):
+    #     global CHUNK_SIZE
         
-        min_x = X.min()
-        min_y = Y.min()
-        with open(OUT_FILE+".txt", "w") as f:
-            for y in range(min_y, min_y + CHUNK_SIZE):
-                for x in range(min_x, min_x + CHUNK_SIZE):
-                    key = (x, y)
-                    if key in heightmap:
-                        data = heightmap[key]
-                        f.write(f"{data['red']} {data['green']} {data['blue']} {data['height']} | ")
-                    else:
-                        f.write(f"{EMPTY_VALUE['red']} {EMPTY_VALUE['green']} {EMPTY_VALUE['blue']} {EMPTY_VALUE['height']} | ")
-                print(file=f)
+    #     min_x = X.min()
+    #     min_y = Y.min()
+    #     with open(OUT_FILE+".txt", "w") as f:
+    #         for y in range(min_y, min_y + CHUNK_SIZE):
+    #             for x in range(min_x, min_x + CHUNK_SIZE):
+    #                 key = (x, y)
+    #                 if key in heightmap:
+    #                     data = heightmap[key]
+    #                     f.write(f"{data['red']} {data['green']} {data['blue']} {data['height']} | ")
+    #                 else:
+    #                     f.write(f"{EMPTY_VALUE['red']} {EMPTY_VALUE['green']} {EMPTY_VALUE['blue']} {EMPTY_VALUE['height']} | ")
+    #             print(file=f)
     
     def heightmap_dic_to_array(self, heightmap, X, Y, verbose=False):
         
