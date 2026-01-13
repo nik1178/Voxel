@@ -3,14 +3,14 @@ import Player from "./player.js";
 import { vprint } from "./vprint.js";
 
 export default class GameManager {
-  constructor(device, context, format, canvas) {
+  constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 256) {
     this.device = device;
     this.context = context;
     this.format = format;
     this.canvas = canvas;
 
     this.running = false;
-    this.renderer = new Renderer(device, context, format, canvas);
+    this.renderer = new Renderer(device, context, format, canvas, voxelSize, chunkSize);
     this.player = new Player(canvas);
   }
   async startGame() {

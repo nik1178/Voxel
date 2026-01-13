@@ -35,8 +35,9 @@ export default class HmapLoader {
     return grid;
   }
 
-  loadHeightMap(chunkX, chunkZ, size = 1000, levelOfDetail = 0) {
-    const url = `/get_chunk/${chunkX}/${chunkZ}/${size}/${levelOfDetail}`;
+  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0) {
+
+    const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}`;
 
     return fetch(url)
       .then((response) => {
@@ -58,7 +59,7 @@ export default class HmapLoader {
         if (buffer == 404) {
           return 404; // Propagate 404
         }
-        return this.bufferToArray(buffer, Math.floor(size/(2 ** levelOfDetail)));
+        return this.bufferToArray(buffer, Math.floor(chunkSize/(2 ** levelOfDetail)));
       });
   }
 }

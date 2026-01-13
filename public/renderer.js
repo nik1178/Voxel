@@ -5,11 +5,13 @@ import { vprint } from "./vprint.js";
 export default class Renderer {
   initialized = false;
 
-  constructor(device, context, format, canvas) {
+  constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 1000) {
     this.device = device;
     this.context = context;
     this.format = format;
     this.canvas = canvas;
+    this.voxelSize = voxelSize;
+    this.chunkSize = chunkSize;
   }
 
   async init(player, canvas) {

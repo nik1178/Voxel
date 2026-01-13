@@ -38,7 +38,10 @@ export default class ChunkManager {
     }
 
     const chunkBuilder = new ChunkBuilder();
-    const { localVertices, localIndices } = await chunkBuilder.buildMap(heightMapData, levelOfDetail);
+    const { localVertices, localIndices } = await chunkBuilder.buildMap(
+      heightMapData,
+      levelOfDetail
+    );
     const vertices = chunkBuilder.offsetVertices(
       localVertices,
       chunkX * this.chunkSize,
@@ -85,7 +88,7 @@ export default class ChunkManager {
     // const currentChunkZ = 101;
 
     // Check which chunk is needed next based on player position and stored chunks
-    for (let layer = 0; layer < 20; layer++) {
+    for (let layer = 0; layer < 300; layer++) {
       for (let dx = -layer; dx <= layer; dx++) {
         for (let dz = -layer; dz <= layer; dz++) {
           if (Math.abs(dx) !== layer && Math.abs(dz) !== layer) {
@@ -96,8 +99,12 @@ export default class ChunkManager {
           const chunkZ = currentChunkZ + dz;
           if (!this.chunkData.has(this.getChunkKey(chunkX, chunkZ))) {
             this.waitingForChunk = true;
-            await this.getChunk(chunkX, chunkZ, layer).then(
-              this.handleNewChunk.bind(this, chunkX, chunkZ, layer)
+            let levelOfDetail = layer;
+            if (Math.floor(this.chunkSize / 2 ** levelOfDetail) <= 0) {
+              levelOfDetail = Math.floor(Math.log2(this.chunkSize));
+            }
+            await this.getChunk(chunkX, chunkZ, levelOfDetail).then(
+              this.handleNewChunk.bind(this, chunkX, chunkZ, levelOfDetail)
             );
             return; // Load one chunk at a time
           }
@@ -117,7 +124,7 @@ export default class ChunkManager {
           z: player.camera.transform.translation[2],
         });
       }
-    }, 100); // Update every second
+    }, 10); // Update every second
   }
 
   stopLoop() {

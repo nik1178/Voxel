@@ -14,8 +14,6 @@ class ChunkManager:
         self.voxel_size = voxel_size
         self.data_dir = data_dir
         self.laz_dir = laz_dir
-        self.LazConverter = LazConverter()
-        self.chunk_binary_manager = ChunkBinaryManager(verbose)
         self.chunk_builder = ChunkBuilder(voxel_size, data_dir, verbose)
         self.verbose = verbose
         self.voxel_dir = os.path.join(self.data_dir, str(self.voxel_size))
@@ -35,45 +33,10 @@ class ChunkManager:
     
     def laz_path(self, x, z):
         return os.path.join(self.laz_dir, f"GKOT_{x}_{z}.laz")
-    
-    def chunk_exists(self, x, z):
-        # Check if path data_dir/<voxel_size>/<x>_<z>.png exists
-        return os.path.isfile(self.chunk_string(x, z))
 
     def get_chunk(self, x, z, chunk_size=1000, lod=0):
         vprint(self.verbose, f"Requesting chunk at ({x}, {z})")
         
-        if not self.chunk_exists(x, z):
-            result = self.generate_chunk(x, z)
-            if result == 404:
-                return 404
-        
-        # Open and return the chunk file
-        vprint(self.verbose, f"Loading chunk at ({x}, {z}) from disk")
-        chunk_lod = self.chunk_builder.get_chunk(x, z, chunk_size=self.chunk_size, lod=lod, verbose=self.verbose)
-        return self.chunk_binary_manager.heightmap_to_binary(chunk_lod, verbose=self.verbose)
+        heightmap_binary = self.chunk_builder.get_chunk(x, z, chunk_size=chunk_size, lod=lod, verbose=self.verbose)
+        return heightmap_binary
 
-    def generate_chunk(self, x, z):
-        vprint(self.verbose, f"Generating chunk at ({x}, {z})")
-        # Placeholder for chunk generation logic
-        if not os.path.isfile(self.laz_path(x, z)):
-            vprint(self.verbose, f"LAZ file not found for chunk at ({x}, {z})")
-            return 404
-        
-        heightmap = self.LazConverter.laz_to_hmap(
-            laz_file=self.laz_path(x, z),
-            voxel_size=self.voxel_size,
-            verbose=self.verbose
-        )
-        
-        binary_data = self.chunk_binary_manager.heightmap_to_binary(heightmap, verbose=self.verbose)
-        
-        with open(self.chunk_string(x, z), "wb") as f:
-            f.write(binary_data)
-
-if __name__ == "__main__":
-    BASE_DIR = path.dirname(path.abspath(__file__))
-    chunk_dir = path.join(BASE_DIR, "..", "public", "map")
-    laz_dir = path.join("E:", "gkot")
-    ChunkManager = ChunkManager(chunk_size=1000, voxel_size=100, data_dir=chunk_dir, laz_dir=laz_dir, verbose=True)
-    ChunkManager.generate_chunk(461, 101)
