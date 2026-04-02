@@ -3,13 +3,16 @@ from python.util.vprint import vprint
 from python.chunk_binary_manager import ChunkBinaryManager
 import numpy as np
 from python.laz_converter import LazConverter
+from multiprocessing import Process, Queue
+import time
 
 class ChunkBuilder:
     extension = ".hmap"
     
-    def __init__(self, voxel_size, data_dir, verbose=False):
+    def __init__(self, voxel_size, data_dir, laz_dir, verbose=False):
         self.voxel_size = voxel_size
         self.data_dir = data_dir
+        self.laz_dir = laz_dir
         self.verbose = verbose
         
         self.chunk_binary_manager = ChunkBinaryManager(verbose)
@@ -50,6 +53,12 @@ class ChunkBuilder:
         heightmap = self.chunk_binary_manager.binary_to_heightmap(heightmap_data, verbose=self.verbose)
         return heightmap
     
+    def laz_path(self, x, z):
+        return os.path.join(self.laz_dir, f"GKOT_{x}_{z}.laz")
+    
+    def laz_exists(self, x, z):
+        return os.path.isfile(self.laz_path(x, z))
+    
     def generate_chunk(self, x, z):
         vprint(self.verbose, f"Generating chunk at ({x}, {z})")
         # Placeholder for chunk generation logic
@@ -74,7 +83,7 @@ class ChunkBuilder:
     
     def create_heightmap_from_list(self, chunk_list, x, z, chunk_size=1000, laz_size=1000, verbose=False):
         # Create a heightmap for the requested chunk from the list of available chunks
-        print("Chunk list:", chunk_list)
+        vprint(verbose, "Chunk list:", chunk_list)
         
         min_laz_x = min([coord[0] for (coord, status) in chunk_list])
         min_laz_z = min([coord[1] for (coord, status) in chunk_list])
@@ -100,10 +109,16 @@ class ChunkBuilder:
         x_end = x_start + chunk_size
         z_end = z_start + chunk_size
         
+        # Check if every value is 0
+        if np.all(temp_heightmap == 0):
+            return 404
+        
         heightmap = temp_heightmap[x_start:x_end, z_start:z_end, :]
         
         return heightmap
     
+    currently_processing = set()
+    thread_queue = Queue()
     def get_chunk_list(self, x, z, chunk_size=1000, laz_size=1000, verbose=False):
         
         x_start = x * chunk_size
@@ -119,16 +134,48 @@ class ChunkBuilder:
         last_chunk_x = (x_end - 1) // laz_size
         last_chunk_z = (z_end - 1) // laz_size
         
+        processes = []
+        added_chunks = set()
+        
+        exiting = False
+        for chunk_x in range(first_chunk_x, last_chunk_x + 1):
+            for chunk_z in range(first_chunk_z, last_chunk_z + 1):
+                vprint(verbose, f"Processing sub-chunk at ({chunk_x}, {chunk_z})")
+                if not self.chunk_exists(chunk_x, chunk_z) and self.laz_exists(chunk_x, chunk_z):
+                    vprint(verbose, f"Sub-chunk at ({chunk_x}, {chunk_z}) not found on disk.")
+                    currently_key = (chunk_x, chunk_z)
+                    
+                    skips = 0
+                    while currently_key in ChunkBuilder.currently_processing:
+                        exiting = True
+                        vprint(verbose, f"Sub-chunk at ({chunk_x}, {chunk_z}) is already being processed. Skipping generation.")
+                        time.sleep(1)
+                        skips += 1
+                        if skips >= 20:
+                            vprint(verbose, f"Timeout waiting for sub-chunk at ({chunk_x}, {chunk_z}) to be processed. Moving on.")
+                            break
+                    if exiting:
+                        continue
+                        
+                    ChunkBuilder.currently_processing.add(currently_key)
+                    added_chunks.add(currently_key)
+                    process = Process(target=self.generate_chunk, args=(chunk_x, chunk_z))
+                    process.start()
+                    processes.append(process)
+        
+        for p in processes:
+            p.join()
+        
+        for added_chunk in added_chunks:
+            ChunkBuilder.currently_processing.remove(added_chunk)
+                        
         for chunk_x in range(first_chunk_x, last_chunk_x + 1):
             for chunk_z in range(first_chunk_z, last_chunk_z + 1):
                 vprint(verbose, f"Processing sub-chunk at ({chunk_x}, {chunk_z})")
                 if not self.chunk_exists(chunk_x, chunk_z):
-                    vprint(verbose, f"Sub-chunk at ({chunk_x}, {chunk_z}) not found on disk.")
-                    self.generate_chunk(chunk_x, chunk_z)
-                    if not self.chunk_exists(chunk_x, chunk_z):
-                        vprint(verbose, f"Chunk outside LAZ bounds at ({chunk_x}, {chunk_z})")
-                        chunk_list.append(((chunk_x, chunk_z), 404))
-                        continue
+                    vprint(verbose, f"Chunk outside LAZ bounds at ({chunk_x}, {chunk_z})")
+                    chunk_list.append(((chunk_x, chunk_z), 404))
+                    continue
                 chunk_list.append(((chunk_x, chunk_z), 200))
                         
         return chunk_list
@@ -138,5 +185,7 @@ class ChunkBuilder:
         # Implementation to build chunk from heightmap data
         chunk_list = self.get_chunk_list(x, z, chunk_size=chunk_size, verbose=verbose)
         heightmap = self.create_heightmap_from_list(chunk_list, x, z, chunk_size=chunk_size, verbose=verbose)
+        if isinstance(heightmap, int) and heightmap == 404:
+            return 404
         heightmap_lod = self.build_lod(heightmap, lod, CHUNK_SIZE=chunk_size, verbose=self.verbose)
         return self.chunk_binary_manager.heightmap_to_binary(heightmap_lod, verbose=verbose)

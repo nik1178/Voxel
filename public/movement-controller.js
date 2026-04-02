@@ -43,7 +43,7 @@ export default class MovementController {
       this.moving.down = true;
     }
     if (eventKey === "q") {
-      this.speed = 5.0;
+      this.speed += 1.0;
     }
   }
 

@@ -4,12 +4,13 @@ export default class Chunk {
     indexBuffer = null;
     indexCount = null;
     levelOfDetail = null;
-    constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null) {
+    constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
         this.vertexBuffer = vertexBuffer;
         this.indexBuffer = indexBuffer;
         this.indexCount = indexCount;
         this.heightMap = heightMap;
+        this.levelOfDetail = levelOfDetail;
     }
 
     setHeightMap(heightMap) {

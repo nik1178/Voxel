@@ -152,11 +152,6 @@ export default class Renderer {
   frameIndex = 0;
   render() {
     if (!this.initialized) return;
-    if (this.frameIndex % 60 === 0) {
-      // vprint("Rendering frame:", this.frameIndex);
-      // vprint("Player rotation:", this.player.camera.transform.rotation);
-      vprint("Player translation:", this.player.camera.transform.translation);
-    }
     this.frameIndex++;
 
     const commandEncoder = this.device.createCommandEncoder();

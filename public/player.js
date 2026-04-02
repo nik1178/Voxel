@@ -3,7 +3,7 @@ import MovementController from "./movement-controller.js";
 export default class Player {
     camera = {
         transform: {
-            translation: [461050, 300, 101050],
+            translation: [598050, 300, 138050],
             rotation: [0, 0, 0],
         },
         fov: 1,

@@ -27,13 +27,13 @@ export default class ChunkManager {
   }
 
   async handleNewChunk(chunkX, chunkZ, levelOfDetail, heightMapData) {
+    this.chunksLoading--;
     if (heightMapData === 404) {
       vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404).`);
-      this.chunkData.set(
-        this.getChunkKey(chunkX, chunkZ),
-        new Chunk({ x: chunkX, z: chunkZ })
-      );
-      this.waitingForChunk = false;
+      // this.chunkData.set(
+      //   this.getChunkKey(chunkX, chunkZ),
+      //   new Chunk({ x: chunkX, z: chunkZ })
+      // );
       return;
     }
 
@@ -68,24 +68,23 @@ export default class ChunkManager {
       vertexBuffer,
       indexBuffer,
       localIndices.length,
-      heightMapData
+      heightMapData,
+      levelOfDetail
     );
     chunk.setVertices(vertices);
     this.chunkData.set(this.getChunkKey(chunkX, chunkZ), chunk);
-    this.waitingForChunk = false;
     vprint(`Loaded chunk at (${chunkX}, ${chunkZ})`);
   }
 
   chunkData = new Map();
-  waitingForChunk = false;
+  chunksLoading = 0;
   async updateChunks(playerPosition) {
-    vprint("Waiting for chunk:", this.waitingForChunk);
-    if (this.waitingForChunk) return;
     // Pseudo-code for chunk updating logic
     const currentChunkX = Math.floor(playerPosition.x / this.chunkSize);
     const currentChunkZ = Math.floor(playerPosition.z / this.chunkSize);
     // const currentChunkX = 461;
     // const currentChunkZ = 101;
+
 
     // Check which chunk is needed next based on player position and stored chunks
     for (let layer = 0; layer < 300; layer++) {
@@ -97,16 +96,27 @@ export default class ChunkManager {
 
           const chunkX = currentChunkX + dx;
           const chunkZ = currentChunkZ + dz;
-          if (!this.chunkData.has(this.getChunkKey(chunkX, chunkZ))) {
-            this.waitingForChunk = true;
-            let levelOfDetail = layer;
-            if (Math.floor(this.chunkSize / 2 ** levelOfDetail) <= 0) {
-              levelOfDetail = Math.floor(Math.log2(this.chunkSize));
+          let levelOfDetail = Math.floor(Math.log2(layer));
+          if (levelOfDetail < 0) levelOfDetail = 0;
+          levelOfDetail = 4; // For testing, force LOD 4
+          if (Math.floor(this.chunkSize / 2 ** levelOfDetail) <= 0) {
+            levelOfDetail = Math.floor(Math.log2(this.chunkSize));
+          }
+          if (!this.chunkData.has(this.getChunkKey(chunkX, chunkZ)) || (this.chunkData.get(this.getChunkKey(chunkX, chunkZ)).levelOfDetail != levelOfDetail && this.chunkData.get(this.getChunkKey(chunkX, chunkZ)).levelOfDetail != null)) {
+            if (this.chunksLoading >= 200) {
+              return; // Load one chunk at a time
             }
-            await this.getChunk(chunkX, chunkZ, levelOfDetail).then(
+            if (!this.chunkData.has(this.getChunkKey(chunkX, chunkZ))) {
+              this.chunkData.set(
+                this.getChunkKey(chunkX, chunkZ),
+                new Chunk({ x: chunkX, z: chunkZ })
+              );
+            }
+
+            this.getChunk(chunkX, chunkZ, levelOfDetail).then(
               this.handleNewChunk.bind(this, chunkX, chunkZ, levelOfDetail)
             );
-            return; // Load one chunk at a time
+            this.chunksLoading++;
           }
         }
       }
@@ -124,7 +134,7 @@ export default class ChunkManager {
           z: player.camera.transform.translation[2],
         });
       }
-    }, 10); // Update every second
+    }, 1000); // Update every second
   }
 
   stopLoop() {
