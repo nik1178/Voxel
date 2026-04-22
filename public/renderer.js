@@ -171,7 +171,6 @@ export default class Renderer {
         depthClearValue: 1.0,
       },
     });
-
     pass.setPipeline(this.cellPipeline);
     pass.setBindGroup(0, this.bindGroup); // New line!
 

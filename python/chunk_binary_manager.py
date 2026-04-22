@@ -5,7 +5,31 @@ import numpy as np
 class ChunkBinaryManager:
     def __init__(self, verbose=False):
         self.verbose = verbose
-    
+
+    def format_row(self, heightmap, y_index=0, x_start=0, x_count=4):
+        hm = np.asarray(heightmap)
+        x_end = min(x_start + x_count, hm.shape[0])
+
+        cells = []
+        for x in range(x_start, x_end):
+            r, g, b, h = hm[x, y_index]
+            cells.append(f"{int(r)} {int(g)} {int(b)} {int(h)}")
+
+        return " | ".join(cells)
+
+    def write_heightmap_text_file(self, heightmap, filename):
+        hm = np.asarray(heightmap)
+        width, height = hm.shape[0], hm.shape[1]
+
+        with open(filename, "w", encoding="ascii") as f:
+            for y in range(height):
+                row = " | ".join(
+                    f"{int(hm[x, y, 0])} {int(hm[x, y, 1])} {int(hm[x, y, 2])} {int(hm[x, y, 3])}"
+                    for x in range(width)
+                )
+                f.write(row)
+                f.write("\n")
+        
     def heightmap_to_binary(self, heightmap, verbose=False):
         vprint(verbose, "Building heightmap binary...")
 
@@ -49,3 +73,12 @@ class ChunkBinaryManager:
 
         # Match your original layout: array[x, y]
         return np.swapaxes(out, 0, 1)
+    
+if __name__ == "__main__":
+    with open("./public/map/lod_output/1/0_0.hmap", "rb") as f:
+        binary_data = f.read()
+    manager = ChunkBinaryManager(verbose=True)
+    heightmap = manager.binary_to_heightmap(binary_data, CHUNK_SIZE=1000, verbose=True)
+    output_file = "./public/map/lod_output/1/0_0_full.txt"
+    manager.write_heightmap_text_file(heightmap, output_file)
+    print(f"Wrote full heightmap text to {output_file}")

@@ -1,4 +1,6 @@
 import { alertError } from "./errors.js";
+import HeightmapGrid from "./heightmap-grid.js";
+
 export default class HmapLoader {
 
   bufferToArray(buffer, size) {
@@ -35,9 +37,34 @@ export default class HmapLoader {
     return grid;
   }
 
-  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0) {
+  bufferTo1DArray(buffer) {
+    const data = new Uint8Array(buffer);
 
-    const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}`;
+    // Create 1D array: array[i] = [r, g, b, height]
+    const array = new Array(data.length / 5 * 4); // 4 floats per pixel
+
+    const stride = 5; // 5 bytes per pixel
+
+    for (let i = 0; i < data.length / stride; i++) {
+      const base = i * stride; // starting byte of this pixel
+
+      const r = data[base];
+      const g = data[base + 1];
+      const b = data[base + 2];
+
+      // Assuming big-endian uint16: first high byte, then low byte
+      const height = (data[base + 3] << 0) | (data[base + 4] << 8);
+
+      array[i] = [r, g, b, height];
+    }
+
+    return array;
+  }
+
+
+  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad") {
+
+    const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}/${version}`;
 
     return fetch(url)
       .then((response) => {
@@ -59,7 +86,8 @@ export default class HmapLoader {
         if (buffer == 404) {
           return 404; // Propagate 404
         }
-        return this.bufferToArray(buffer, Math.floor(chunkSize/(2 ** levelOfDetail)));
+        return this.bufferTo1DArray(buffer);
+        // return this.bufferToArray(buffer, Math.floor(chunkSize/(2 ** levelOfDetail)));
       });
   }
 }

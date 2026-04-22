@@ -3,7 +3,7 @@ import Player from "./player.js";
 import { vprint } from "./vprint.js";
 
 export default class GameManager {
-  constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 256) {
+  constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 1000) {
     this.device = device;
     this.context = context;
     this.format = format;

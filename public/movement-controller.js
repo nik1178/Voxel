@@ -1,5 +1,5 @@
 export default class MovementController {
-  defaultSpeed = 0.1;
+  defaultSpeed = 1000;
   speed = this.defaultSpeed;
   moving = {
     forward: false,
@@ -43,7 +43,7 @@ export default class MovementController {
       this.moving.down = true;
     }
     if (eventKey === "q") {
-      this.speed += 1.0;
+      this.speed *= 1.1;
     }
   }
 

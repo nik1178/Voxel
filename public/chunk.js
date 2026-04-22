@@ -2,8 +2,10 @@ export default class Chunk {
     heightMap = null;
     vertexBuffer = null;
     indexBuffer = null;
+    vertices = null;
     indexCount = null;
     levelOfDetail = null;
+    scale = 1;
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
         this.vertexBuffer = vertexBuffer;
@@ -17,11 +19,10 @@ export default class Chunk {
         this.heightMap = heightMap;
     }
 
-    setMeshData(vertexBuffer, indexBuffer, indexCount, levelOfDetail) {
+    setMeshData(vertexBuffer, indexBuffer, indexCount) {
         this.vertexBuffer = vertexBuffer;
         this.indexBuffer = indexBuffer;
         this.indexCount = indexCount;
-        this.levelOfDetail = levelOfDetail;
     }
 
     setVertices(vertices) {
