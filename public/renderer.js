@@ -162,7 +162,7 @@ export default class Renderer {
       // Right face (+x)
       1, 0, 1,  1, 0, 0,  1, 1, 1,  1, 1, 0,
     ]);
-
+    
     const cubeIndices = new Uint32Array([
       0, 1, 2,  1, 3, 2, // Top
       4, 5, 6,  5, 7, 6, // Front
@@ -172,18 +172,43 @@ export default class Renderer {
     ]);
     
     this.gridIndexCount = cubeIndices.length;
-
+    
     this.gridVertexBuffer = this.device.createBuffer({
       size: cubeVerts.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
     this.device.queue.writeBuffer(this.gridVertexBuffer, 0, cubeVerts);
-
+    
     this.gridIndexBuffer = this.device.createBuffer({
       size: cubeIndices.byteLength,
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
     });
     this.device.queue.writeBuffer(this.gridIndexBuffer, 0, cubeIndices);
+    
+
+
+    // Single face for better instancing not requiring to draw full cube geometry
+    const faceVerts = new Float32Array([
+      0, 0, 0,  1, 0, 0,  0, 0, 1,  1, 0, 1,
+    ]);
+
+    const faceIndices = new Uint32Array([
+      0, 1, 2,  1, 3, 2,
+    ]);
+
+    this.faceIndexCount = faceIndices.length;
+
+    this.faceVertexBuffer = this.device.createBuffer({
+      size: faceVerts.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    });
+    this.device.queue.writeBuffer(this.faceVertexBuffer, 0, faceVerts);
+
+    this.faceIndexBuffer = this.device.createBuffer({
+      size: faceIndices.byteLength,
+      usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+    });
+    this.device.queue.writeBuffer(this.faceIndexBuffer, 0, faceIndices);
   }
 
   /**
@@ -242,6 +267,10 @@ export default class Renderer {
         module: this.cellShaderModule,
         entryPoint: "fragmentMain",
         targets: [{ format: this.format }],
+      },
+        primitive: {
+        topology: 'triangle-list',
+        cullMode: 'back', // <--- Add this! Let the hardware do the heavy lifting
       },
       depthStencil: {
         format: this.depthFormat,
@@ -348,8 +377,16 @@ export default class Renderer {
     // Bind global pipeline state
     pass.setPipeline(this.cellPipeline);
     pass.setBindGroup(0, this.bindGroup);
-    pass.setVertexBuffer(0, this.gridVertexBuffer);
-    pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
+
+    // TODO: Change to actual variable later
+    let renderMode = "face";
+    if (renderMode == "cube") {
+      pass.setVertexBuffer(0, this.gridVertexBuffer);
+      pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
+    } else {
+      pass.setVertexBuffer(0, this.faceVertexBuffer);
+      pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
+    }
 
     // Iterate through all chunks managed by the ChunkManager
     const chunkData = this.chunkManager.getChunkData();
@@ -392,7 +429,11 @@ export default class Renderer {
 
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
-      pass.drawIndexed(this.gridIndexCount, chunkSize * chunkSize);
+      if (renderMode == "cube") {
+        pass.drawIndexed(this.gridIndexCount, chunkSize * chunkSize);
+      } else {
+        pass.drawIndexed(this.faceIndexCount, chunkSize * chunkSize * 5);
+      }
     }
 
     // Finalize and submit the command buffer to the GPU queue
