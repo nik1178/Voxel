@@ -61,8 +61,30 @@ export default class HmapLoader {
     return array;
   }
 
+  bufferToWebGPUArrays(buffer) {
+    const data = new Uint8Array(buffer);
+    const numPixels = data.length / 5;
+    
+    const colorData = new Uint8Array(numPixels * 4);
+    const heightData = new Uint16Array(numPixels);
+    
+    for (let i = 0; i < numPixels; i++) {
+      const base = i * 5;
+      const cBase = i * 4;
+      
+      colorData[cBase] = data[base];
+      colorData[cBase + 1] = data[base + 1];
+      colorData[cBase + 2] = data[base + 2];
+      colorData[cBase + 3] = 255;
+      
+      heightData[i] = data[base + 3] | (data[base + 4] << 8);
+    }
+    
+    return { colorData, heightData };
+  }
 
-  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad") {
+
+  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false) {
 
     const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}/${version}`;
 
@@ -86,8 +108,12 @@ export default class HmapLoader {
         if (buffer == 404) {
           return 404; // Propagate 404
         }
-        return this.bufferTo1DArray(buffer);
-        // return this.bufferToArray(buffer, Math.floor(chunkSize/(2 ** levelOfDetail)));
+        
+        if (parseToFloats) {
+          return this.bufferTo1DArray(buffer);
+        } else {
+          return this.bufferToWebGPUArrays(buffer);
+        }
       });
   }
 }

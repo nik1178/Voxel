@@ -6,6 +6,10 @@ export default class Chunk {
     indexCount = null;
     levelOfDetail = null;
     scale = 1;
+    colorTexture = null;
+    heightTexture = null;
+    vtfBindGroup = null;
+    
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
         this.vertexBuffer = vertexBuffer;
@@ -17,6 +21,12 @@ export default class Chunk {
 
     setHeightMap(heightMap) {
         this.heightMap = heightMap;
+    }
+
+    setTextures(colorTexture, heightTexture, bindGroup = null) {
+        this.colorTexture = colorTexture;
+        this.heightTexture = heightTexture;
+        this.vtfBindGroup = bindGroup;
     }
 
     setMeshData(vertexBuffer, indexBuffer, indexCount) {

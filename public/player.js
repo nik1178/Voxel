@@ -3,7 +3,7 @@ import MovementController from "./movement-controller.js";
 export default class Player {
     camera = {
         transform: {
-            translation: [-500005, 300, 500005],
+            translation: [-75000, 300, 75000],
             rotation: [0, 0, 0],
         },
         fov: 1,
@@ -16,7 +16,7 @@ export default class Player {
         this.movementController = new MovementController(canvas, this.camera);
     }
 
-    update() {
-        this.movementController.updateMovement();
+    update(dt) {
+        this.movementController.updateMovement(dt);
     }
 }

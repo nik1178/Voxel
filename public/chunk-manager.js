@@ -10,7 +10,7 @@ export default class ChunkManager {
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
 
-    this.quadStrategy = new ChunkQuadStrategy(this.device, this.voxelSize);
+    this.quadStrategy = new ChunkQuadStrategy(this.voxelSize);
 
     this.hmapLoader = new HmapLoader();
   }
@@ -133,7 +133,7 @@ export default class ChunkManager {
           z: player.camera.transform.translation[2],
         });
       }
-    }, 10000); // Update every second
+    }, 100); // Update every second
   }
 
   stopLoop() {

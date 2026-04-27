@@ -1,5 +1,5 @@
 export default class MovementController {
-  defaultSpeed = 1000;
+  defaultSpeed = 1;
   speed = this.defaultSpeed;
   moving = {
     forward: false,
@@ -23,7 +23,6 @@ export default class MovementController {
 
   onKeyDown(event) {
     const eventKey = event.key.toLowerCase();
-    console.log("Key down:", eventKey);
     if (eventKey === "w") {
       this.moving.forward = true;
     }
@@ -72,7 +71,7 @@ export default class MovementController {
     }
   }
 
-  updateMovement() {
+  updateMovement(dt) {
     const forward = [
       Math.sin(this.camera.transform.rotation[1]),
       0,
@@ -85,26 +84,26 @@ export default class MovementController {
     ];
 
     if (this.moving.forward) {
-      this.camera.transform.translation[0] -= forward[0] * this.speed;
-      this.camera.transform.translation[2] -= forward[2] * this.speed;
+      this.camera.transform.translation[0] -= forward[0] * this.speed * dt;
+      this.camera.transform.translation[2] -= forward[2] * this.speed * dt;
     }
     if (this.moving.backward) {
-      this.camera.transform.translation[0] += forward[0] * this.speed;
-      this.camera.transform.translation[2] += forward[2] * this.speed;
+      this.camera.transform.translation[0] += forward[0] * this.speed * dt;
+      this.camera.transform.translation[2] += forward[2] * this.speed * dt;
     }
     if (this.moving.left) {
-      this.camera.transform.translation[0] -= right[0] * this.speed;
-      this.camera.transform.translation[2] -= right[2] * this.speed;
+      this.camera.transform.translation[0] -= right[0] * this.speed * dt;
+      this.camera.transform.translation[2] -= right[2] * this.speed * dt;
     }
     if (this.moving.right) {
-      this.camera.transform.translation[0] += right[0] * this.speed;
-      this.camera.transform.translation[2] += right[2] * this.speed;
+      this.camera.transform.translation[0] += right[0] * this.speed * dt;
+      this.camera.transform.translation[2] += right[2] * this.speed * dt;
     }
     if (this.moving.up) {
-      this.camera.transform.translation[1] += this.speed;
+      this.camera.transform.translation[1] += this.speed * dt;
     }
     if (this.moving.down) {
-      this.camera.transform.translation[1] -= this.speed;
+      this.camera.transform.translation[1] -= this.speed * dt;
     }
   }
 }

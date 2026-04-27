@@ -29,10 +29,14 @@ export default class GameManager {
     this.running = false;
   }
 
-  frame() {
+  lastTime = 0;
+  frame(time) {
     if (!this.running) return;
 
-    this.player.update();
+    let dt = (time - this.lastTime)/1000;
+    this.lastTime = time;
+
+    this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
     this.renderer.render();
     // --------------------------------------------

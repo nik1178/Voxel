@@ -7,40 +7,37 @@ import HeightmapGrid from "./heightmap-grid.js";
 
 export default class ChunkQuadStrategy {
   chunkSize = 1000;
-  constructor(device, voxelSize = 100) {
+  constructor(voxelSize = 100) {
     this.voxelSize = voxelSize;
     this.hmapLoader = new HmapLoader();
-    this.chunkMesher = new ChunkMesher(device);
   }
 
+  timesRun = 0;
   async updateChunks(playerPosition) {
     if (!this.quadTree) {
       this.quadTree = new QuadTree();
       let heightMapData = await this.getChunk(0, 0, 1);
-      heightMapData = this.handleNewHeightmap(heightMapData, 1, null, 0, 0);
-      let chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, heightMapData, 1);
-      chunk.scale = 1024 * (2);
-      chunk = this.chunkMesher.addChunkMesh(chunk);
+      let chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, null, 1);
+      chunk.scale = 2**8;
+      chunk.rawData = heightMapData;
       this.quadTree.addChunk(chunk);
       return;
     }
-    const currentTime = performance.now();
     
     const playerChunkNode = this.quadTree.getPlayerChunkNode(playerPosition);
 
-    console.log(`Time to find player chunk node: ${performance.now() - currentTime} ms`);
     vprint("Player chunk node:", playerChunkNode);
     if (!playerChunkNode) {
       vprint("Player is outside of loaded chunks, can't determine which chunk to load next.");
       return;
     }
+    if (playerChunkNode.isLoading) {
+      vprint("Already loading children for this chunk, skipping fetch.");
+      return;
+    }
     const childCoordinates = playerChunkNode.getChildCoordinates();
     if (!childCoordinates) {
       vprint("Max LOD reached for this chunk, no further children to load.");
-      return;
-    }
-    if (playerChunkNode.isLoading) {
-      vprint("Already loading children for this chunk, skipping fetch.");
       return;
     }
     vprint("Child coordinates to load:", childCoordinates);
@@ -56,10 +53,10 @@ export default class ChunkQuadStrategy {
           vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
           return;
         }
-        heightMapData = this.handleNewHeightmap(heightMapData, levelOfDetail, playerChunkNode, chunkX, chunkZ);
-        let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, heightMapData, levelOfDetail);
+        heightMapData = this.handleNewHeightmapVTF(heightMapData, levelOfDetail, playerChunkNode, chunkX, chunkZ);
+        let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, null, levelOfDetail);
         chunk.scale = playerChunkNode.chunk.scale / 2; // Each child chunk is half the scale of its parent
-        chunk = this.chunkMesher.addChunkMesh(chunk);
+        chunk.rawData = heightMapData;
         let chunkNode = new ChunkNode();
         chunkNode.chunk = chunk;
         playerChunkNode.children.push(chunkNode);
@@ -77,59 +74,83 @@ export default class ChunkQuadStrategy {
       chunkZ,
       this.chunkSize,
       levelOfDetail,
+      "quad",
+      false // use VTF repacked typed arrays
     );
   }
 
-  handleNewHeightmap(heightMapData, levelOfDetail, parentNode, chunkX, chunkZ) {
+  handleNewHeightmapVTF(childDataObj, levelOfDetail, parentNode, chunkX, chunkZ) {
     if (levelOfDetail == 1) {
-      // let grid = Array.from({ length: this.chunkSize }, () => Array(this.chunkSize));
-      let grid = new HeightmapGrid(this.chunkSize);
-      for (let y = 0; y < this.chunkSize; y++) {
-        for (let x = 0; x < this.chunkSize; x++) {
-          const index = x + y * this.chunkSize; // pixel index
-          
-          // grid[x][y] = heightMapData[index];
-          grid.setPixel(x, y, heightMapData[index][0], heightMapData[index][1], heightMapData[index][2], heightMapData[index][3]);
-        }
-      }
-      return grid;
+      return childDataObj;
     }
 
-    let grid = new HeightmapGrid(this.chunkSize);
+    const size = this.chunkSize;
+    const fullColorData = new Uint8Array(size * size * 4);
+    const fullHeightData = new Uint16Array(size * size);
+    
+    const parentData = parentNode.chunk.rawData;
     let index = 0;
+    
+    // X, Z are coordinates within the parent's local space.
+    // By multiplying by size/2, we map the child's quadrant to the parent's actual offset.
+    const xOffset = chunkX % 2 * (size / 2);
+    const pyOffset = chunkZ % 2 * (size / 2);
 
-    const xOffset = chunkX % 2 * 500; // 0 for even chunks, 500 for odd chunks
-    const zOffset = chunkZ % 2 * 500; // 0 for even chunks, 500 for odd chunks
-
-    for (let py = 0; py < this.chunkSize / 2; py++) {
-      for (let px = 0; px < this.chunkSize / 2; px++) {
+    for (let py = 0; py < size / 2; py++) {
+      for (let px = 0; px < size / 2; px++) {
         const x = px * 2;
         const y = py * 2;
         
         // TR (Top-Right -> x + 1, y)
-        // grid[x + 1][y] = heightMapData[index++];
-        grid.setPixel(x + 1, y, heightMapData[index][0], heightMapData[index][1], heightMapData[index][2], heightMapData[index][3]);
-        index++;
-        // BL (Bottom-Left -> x, y + 1)
-        // grid[x][y + 1] = heightMapData[index++];
-        grid.setPixel(x, y + 1, heightMapData[index][0], heightMapData[index][1], heightMapData[index][2], heightMapData[index][3]);
-        index++;
-        // BR (Bottom-Right -> x + 1, y + 1)
-        // grid[x + 1][y + 1] = heightMapData[index++];
-        grid.setPixel(x + 1, y + 1, heightMapData[index][0], heightMapData[index][1], heightMapData[index][2], heightMapData[index][3]);
+        let idxTR = (y * size + (x + 1));
+        let srcIdx = index * 4;
+        let dstIdx = idxTR * 4;
+        fullColorData[dstIdx]     = childDataObj.colorData[srcIdx];
+        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
+        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
+        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
+        fullHeightData[idxTR] = childDataObj.heightData[index];
         index++;
         
-        // TL (Top-Left -> matches parent directly)
-        // grid[x][y] = parentNode.chunk.heightMap[px + xOffset][py + zOffset];
-        const parentHeight = parentNode.chunk.heightMap.getHeight(px + xOffset, py + zOffset);
-        const parentR = parentNode.chunk.heightMap.getR(px + xOffset, py + zOffset);
-        const parentG = parentNode.chunk.heightMap.getG(px + xOffset, py + zOffset);
-        const parentB = parentNode.chunk.heightMap.getB(px + xOffset, py + zOffset);
-        grid.setPixel(x, y, parentR, parentG, parentB, parentHeight);
+        // BL (Bottom-Left -> x, y + 1)
+        let idxBL = ((y + 1) * size + x);
+        srcIdx = index * 4;
+        dstIdx = idxBL * 4;
+        fullColorData[dstIdx]     = childDataObj.colorData[srcIdx];
+        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
+        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
+        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
+        fullHeightData[idxBL] = childDataObj.heightData[index];
+        index++;
+        
+        // BR (Bottom-Right -> x + 1, y + 1)
+        let idxBR = ((y + 1) * size + (x + 1));
+        srcIdx = index * 4;
+        dstIdx = idxBR * 4;
+        fullColorData[dstIdx]     = childDataObj.colorData[srcIdx];
+        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
+        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
+        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
+        fullHeightData[idxBR] = childDataObj.heightData[index];
+        index++;
+        
+        // TL (Top-Left -> from parent)
+        let parentX = px + xOffset;
+        let parentY = py + pyOffset;
+        let pIdx = parentY * size + parentX;
+        let idxTL = y * size + x;
+        
+        let pSrcIdx = pIdx * 4;
+        let tDstIdx = idxTL * 4;
+        fullColorData[tDstIdx]     = parentData.colorData[pSrcIdx];
+        fullColorData[tDstIdx + 1] = parentData.colorData[pSrcIdx + 1];
+        fullColorData[tDstIdx + 2] = parentData.colorData[pSrcIdx + 2];
+        fullColorData[tDstIdx + 3] = parentData.colorData[pSrcIdx + 3];
+        fullHeightData[idxTL] = parentData.heightData[pIdx];
       }
     }
 
-    return grid;
+    return { colorData: fullColorData, heightData: fullHeightData };
   }
 
   getChunkData() {
@@ -173,7 +194,7 @@ class QuadTree {
       }
       chunkData.set(key, chunk);
     }
-    console.log("Current chunk data size:", chunkData.size);
+    //console.log("Current chunk data size:", chunkData.size);
     return chunkData;
   }
 
@@ -185,31 +206,42 @@ class QuadTree {
   }
 
   getPlayerChunkNode(playerPosition) {
-    // This function would traverse the quad tree to find the node containing the player
-    let currentNode = this.baseNode.children[0]; // Start with the first chunk (assuming it's the base chunk)
+    // Traverse the quad tree using world-space midpoints to find the container node
+    let currentNode = this.baseNode.children[0]; 
+    if (!currentNode) return null;
+
     while (currentNode.children.length > 0) {
       const currentChunk = currentNode.chunk;
-      if (!currentChunk) {
-        return null; // No chunk at this node, can't determine which child to go to
+      if (!currentChunk) break;
+
+      // Calculate the world-space center of the current chunk
+      // Mirroring shader: fx = -(chunkX * 1000) * scale, fz = (chunkZ * 1000) * scale
+      const scale = currentChunk.scale;
+      const worldCenterX = -(currentChunk.position.x + 0.5) * 1000 * scale;
+      const worldCenterZ = (currentChunk.position.z + 0.5) * 1000 * scale;
+
+      // Determine which quadrant the player is in.
+      // Because X is negative-increasing, "further" (x+1) means playerX < centerX.
+      let nextX = currentChunk.position.x * 2;
+      let nextZ = currentChunk.position.z * 2;
+
+      if (playerPosition.x < worldCenterX) {
+        nextX += 1;
       }
-      const { x: chunkX, z: chunkZ } = currentChunk.position;
-      const halfSize = currentChunk.scale / 2 * 1000; // Assuming each chunk is 1000 units at LOD 0, scaled by the chunk's scale
-      const inLeft = playerPosition.x < chunkX + halfSize;
-      const inBottom = playerPosition.z < chunkZ + halfSize;
-      const newCoordinates = {x: currentChunk.position.x*2, z: currentChunk.position.z*2};
-      if (!inLeft) {
-        newCoordinates.x += 1;
+      if (playerPosition.z > worldCenterZ) {
+        nextZ += 1;
       }
-      if (!inBottom) {
-        newCoordinates.z += 1;
-      }
+
       const children = currentNode.children;
+      let foundChild = false;
       for (const child of children) {
-        if (child.chunk && child.chunk.position.x === newCoordinates.x && child.chunk.position.z === newCoordinates.z) {
+        if (child.chunk && child.chunk.position.x === nextX && child.chunk.position.z === nextZ) {
           currentNode = child;
+          foundChild = true;
           break;
         }
       }
+      if (!foundChild) break; 
     }
     return currentNode;
   }
