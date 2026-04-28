@@ -30,5 +30,8 @@ async function initWebGPU() {
 const { device, context, format } = await initWebGPU();
 console.log("WebGPU initialized:", { device, context, format });
 
+const fpsCounter = document.getElementById("fpscounter");
+
 const gameManager = new GameManager(device, context, format, canvas);
+gameManager.fpsCounter = fpsCounter;
 gameManager.startGame();

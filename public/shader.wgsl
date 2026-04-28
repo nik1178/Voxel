@@ -40,10 +40,10 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   let texCoord = vec2<i32>(i32(u_idx), i32(v_idx));
   let height_val = f32(textureLoad(heightMap, texCoord, 0).r);
 
-  /* if (height_val == 0) {
+  if (height_val == 0) {
     output.position = vec4<f32>(0.0);
     return output;
-  } */
+  }
 
   let ix = input.position.x;
   let iz = input.position.z;
