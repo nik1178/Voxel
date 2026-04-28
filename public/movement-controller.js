@@ -1,5 +1,5 @@
 export default class MovementController {
-  defaultSpeed = 1;
+  defaultSpeed = 500;
   speed = this.defaultSpeed;
   moving = {
     forward: false,

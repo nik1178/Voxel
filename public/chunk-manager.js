@@ -10,9 +10,9 @@ export default class ChunkManager {
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
 
-    this.quadStrategy = new ChunkQuadStrategy(this.voxelSize);
+    this.quadStrategy = new ChunkQuadStrategy(this.voxelSize, this.chunkSize);
 
-    this.hmapLoader = new HmapLoader();
+    // this.hmapLoader = new HmapLoader();
   }
 
   // getChunk(chunkX, chunkZ, levelOfDetail = 0) {
@@ -123,17 +123,25 @@ export default class ChunkManager {
   }
 
   running = false;
-  startLoop(player) {
+  async startLoop(player) {
     vprint("Starting chunk manager loop...");
     this.running = true;
-    setInterval(() => {
+    /* setInterval(() => {
       if (this.running) {
         this.updateChunks({
           x: player.camera.transform.translation[0],
           z: player.camera.transform.translation[2],
         });
       }
-    }, 100); // Update every second
+    }, 100); // Update every second */
+    while (this.running) {
+      await this.updateChunks({
+        x: player.camera.transform.translation[0],
+        z: player.camera.transform.translation[2],
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 1)); 
+    }
   }
 
   stopLoop() {

@@ -40,6 +40,11 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   let texCoord = vec2<i32>(i32(u_idx), i32(v_idx));
   let height_val = f32(textureLoad(heightMap, texCoord, 0).r);
 
+  /* if (height_val == 0) {
+    output.position = vec4<f32>(0.0);
+    return output;
+  } */
+
   let ix = input.position.x;
   let iz = input.position.z;
 
@@ -105,8 +110,8 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     localY = height_val;
   }
 
-  let fx = -(x + chunkInfo.x * 1000.0) * chunkInfo.scale;
-  let fz = (z + chunkInfo.z * 1000.0) * chunkInfo.scale;
+  let fx = -(x + chunkInfo.x * f32(chunkSize)) * chunkInfo.scale;
+  let fz = (z + chunkInfo.z * f32(chunkSize)) * chunkInfo.scale;
   
   let final_x = fx - (localX * chunkInfo.scale);
   let final_y = localY;

@@ -30,7 +30,7 @@ class ChunkBinaryManager:
                 f.write(row)
                 f.write("\n")
         
-    def heightmap_to_binary(self, heightmap, verbose=False):
+    def heightmap_to_binary(self, heightmap, lod=1, verbose=False):
         vprint(verbose, "Building heightmap binary...")
 
         hm = np.asarray(heightmap)
@@ -46,33 +46,64 @@ class ChunkBinaryManager:
         out = np.empty((hm.shape[0], hm.shape[1], 5), dtype=np.uint8)
         out[..., :3] = rgb
         out[..., 3:5] = h16[..., None].view(np.uint8)       # little-endian on typical machines
-
-        return out.ravel().tobytes()
+        
+        is_delta = (lod > 1)
+        if not is_delta:
+            return out.ravel().tobytes()
+        else:
+            TR = out[0::2, 1::2]
+            BL = out[1::2, 0::2]
+            BR = out[1::2, 1::2]
+            new_pixels = np.stack([TR, BL, BR], axis=-2)
+            return new_pixels.ravel().tobytes()
     
-    def binary_to_heightmap(self, binary_data, CHUNK_SIZE=1000, verbose=False):
+    def binary_to_heightmap(self, binary_data, CHUNK_SIZE=1000, lod=1, verbose=False):
         vprint(verbose, "Converting binary to heightmap...")
 
         N = CHUNK_SIZE
-        expected = N * N * 5
-        if len(binary_data) != expected:
-            raise ValueError(f"Expected {expected} bytes, got {len(binary_data)}")
+        is_delta = (lod > 1)
+        
+        if not is_delta:
+            expected = N * N * 5
+            if len(binary_data) != expected:
+                raise ValueError(f"Expected {expected} bytes, got {len(binary_data)}")
 
-        # Interpret raw bytes as uint8
-        b = np.frombuffer(binary_data, dtype=np.uint8).reshape(N, N, 5)  # [y, x, r,g,b,h0,h1]
+            # Interpret raw bytes as uint8
+            b = np.frombuffer(binary_data, dtype=np.uint8).reshape(N, N, 5)  # [y, x, r,g,b,h0,h1]
 
-        # RGB stays uint8
-        rgb = b[..., :3]
+            # RGB stays uint8
+            rgb = b[..., :3]
 
-        # Height is little-endian uint16
-        height = b[..., 3].astype(np.uint16) | (b[..., 4].astype(np.uint16) << 8)
+            # Height is little-endian uint16
+            height = b[..., 3].astype(np.uint16) | (b[..., 4].astype(np.uint16) << 8)
 
-        # Build output: RGB uint8 + height uint16
-        out = np.empty((N, N, 4), dtype=np.uint16)
-        out[..., :3] = rgb
-        out[..., 3] = height
+            # Build output: RGB uint8 + height uint16
+            out = np.empty((N, N, 4), dtype=np.uint16)
+            out[..., :3] = rgb
+            out[..., 3] = height
 
-        # Match your original layout: array[x, y]
-        return np.swapaxes(out, 0, 1)
+            # Match your original layout: array[x, y]
+            return np.swapaxes(out, 0, 1)
+        else:
+            expected = (N // 2) * (N // 2) * 3 * 5
+            if len(binary_data) != expected:
+                raise ValueError(f"Expected {expected} bytes for Delta Chunk, got {len(binary_data)}")
+                
+            b = np.frombuffer(binary_data, dtype=np.uint8).reshape(N // 2, N // 2, 3, 5)
+            
+            out = np.zeros((N, N, 5), dtype=np.uint8)
+            out[0::2, 1::2] = b[:, :, 0] # TR
+            out[1::2, 0::2] = b[:, :, 1] # BL
+            out[1::2, 1::2] = b[:, :, 2] # BR
+            
+            rgb = out[..., :3]
+            height = out[..., 3].astype(np.uint16) | (out[..., 4].astype(np.uint16) << 8)
+            
+            out_hm = np.empty((N, N, 4), dtype=np.uint16)
+            out_hm[..., :3] = rgb
+            out_hm[..., 3] = height
+            
+            return np.swapaxes(out_hm, 0, 1)
     
 if __name__ == "__main__":
     with open("./public/map/lod_output/1/0_0.hmap", "rb") as f:

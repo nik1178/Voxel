@@ -43,8 +43,8 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   let localX = (input.position.x - 0.5) * inset + 0.5;
   let localZ = (input.position.z - 0.5) * inset + 0.5;
 
-  let fx = -(x + chunkInfo.x * 1000.0) * chunkInfo.scale;
-  let fz = (z + chunkInfo.z * 1000.0) * chunkInfo.scale;
+  let fx = -(x + chunkInfo.x * chunkInfo.size) * chunkInfo.scale;
+  let fz = (z + chunkInfo.z * chunkInfo.size) * chunkInfo.scale;
   
   let final_x = fx - (localX * chunkInfo.scale);
   let final_y = height_val * input.position.y;

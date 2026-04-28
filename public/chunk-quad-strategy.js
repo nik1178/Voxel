@@ -6,21 +6,43 @@ import HeightmapGrid from "./heightmap-grid.js";
 
 
 export default class ChunkQuadStrategy {
-  chunkSize = 1000;
-  constructor(voxelSize = 100) {
+  constructor(voxelSize = 100, chunkSize = 1000) {  
     this.voxelSize = voxelSize;
+    this.chunkSize = chunkSize;
     this.hmapLoader = new HmapLoader();
   }
 
-  timesRun = 0;
+  getBaseChunkList() {
+    const chunks = [];
+
+    for (let x = 0; x < 1000; x+=this.chunkSize) {
+      for (let z = 0; z < 1000; z+=this.chunkSize) {
+        chunks.push({x: x/this.chunkSize, z: z/this.chunkSize, levelOfDetail: 1});
+      }
+    }
+    
+    return chunks;
+  }
+
+  initializing = false;
   async updateChunks(playerPosition) {
     if (!this.quadTree) {
-      this.quadTree = new QuadTree();
-      let heightMapData = await this.getChunk(0, 0, 1);
-      let chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, null, 1);
-      chunk.scale = 2**8;
-      chunk.rawData = heightMapData;
-      this.quadTree.addChunk(chunk);
+      this.initializing = true;
+      this.quadTree = new QuadTree(this.chunkSize);
+      //let heightMapData = await this.getChunk(0, 0, 1);
+      let baseChunks = this.getBaseChunkList();
+      for (const chunkCoords of baseChunks) {
+        let heightMapData = await this.getChunk(chunkCoords.x, chunkCoords.z, chunkCoords.levelOfDetail);
+        let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, null, null, 0, null, chunkCoords.levelOfDetail);
+        chunk.scale = 2**8;
+        chunk.rawData = heightMapData;
+        this.quadTree.addChunk(chunk);
+      }
+      //this.quadTree.addChunk(chunk);
+      this.initializing = false;
+      return;
+    }
+    if (this.initializing) {
       return;
     }
     
@@ -68,7 +90,8 @@ export default class ChunkQuadStrategy {
   }
 
   async getChunk(chunkX, chunkZ, levelOfDetail = 0) {
-    vprint(`Requesting chunk at (${chunkX}, ${chunkZ})`);
+    vprint(`Requesting chunk at (${chunkX}, ${chunkZ}) at size ${this.chunkSize}, LOD ${levelOfDetail}`);
+    
     return this.hmapLoader.loadHeightMap(
       chunkX,
       chunkZ,
@@ -178,8 +201,11 @@ export default class ChunkQuadStrategy {
 }
 
 class QuadTree {
-  constructor() {
+  constructor(chunkSize = 256) {
     this.baseNode = new ChunkNode();
+    this.baseNode.chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, null, 0);
+    this.baseNode.chunk.scale = 2**9;
+    this.chunkSize = chunkSize;
   }
 
   getChunkData() {
@@ -207,18 +233,18 @@ class QuadTree {
 
   getPlayerChunkNode(playerPosition) {
     // Traverse the quad tree using world-space midpoints to find the container node
-    let currentNode = this.baseNode.children[0]; 
+    let currentNode = this.baseNode;
     if (!currentNode) return null;
 
     while (currentNode.children.length > 0) {
       const currentChunk = currentNode.chunk;
       if (!currentChunk) break;
 
-      // Calculate the world-space center of the current chunk
-      // Mirroring shader: fx = -(chunkX * 1000) * scale, fz = (chunkZ * 1000) * scale
+      /* // Calculate the world-space center of the current chunk
+      // Mirroring shader: fx = -(chunkX * chunkSize) * scale, fz = (chunkZ * chunkSize) * scale
       const scale = currentChunk.scale;
-      const worldCenterX = -(currentChunk.position.x + 0.5) * 1000 * scale;
-      const worldCenterZ = (currentChunk.position.z + 0.5) * 1000 * scale;
+      const worldCenterX = -(currentChunk.position.x + 0.5) * this.chunkSize * scale;
+      const worldCenterZ = (currentChunk.position.z + 0.5) * this.chunkSize * scale;
 
       // Determine which quadrant the player is in.
       // Because X is negative-increasing, "further" (x+1) means playerX < centerX.
@@ -230,7 +256,13 @@ class QuadTree {
       }
       if (playerPosition.z > worldCenterZ) {
         nextZ += 1;
-      }
+      } */
+
+      let scale = currentChunk.scale;
+
+      let nextScale = scale / 2;
+      let nextX = Math.floor((-playerPosition.x) / (this.chunkSize * nextScale));
+      let nextZ = Math.floor(playerPosition.z / (this.chunkSize * nextScale));
 
       const children = currentNode.children;
       let foundChild = false;

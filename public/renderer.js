@@ -403,7 +403,7 @@ export default class Renderer {
         continue;
       }
 
-      const chunkSize = chunk.colorTexture.width;
+      //const chunkSize = chunk.colorTexture.width;
 
       // Lazy-initialize the VTF (Vertex Texture Fetch) bind group for this specific chunk
       if (!chunk.vtfBindGroup) {
@@ -413,7 +413,7 @@ export default class Renderer {
           usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
         this.device.queue.writeBuffer(chunkInfoBuffer, 0, new Float32Array([
-          chunk.position.x, chunk.position.z, chunkSize, chunk.scale
+          chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale
         ]));
 
         chunk.vtfBindGroup = this.device.createBindGroup({
@@ -430,9 +430,9 @@ export default class Renderer {
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
       if (renderMode == "cube") {
-        pass.drawIndexed(this.gridIndexCount, chunkSize * chunkSize);
+        pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
       } else {
-        pass.drawIndexed(this.faceIndexCount, chunkSize * chunkSize * 5);
+        pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * 5);
       }
     }
 
