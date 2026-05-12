@@ -9,6 +9,7 @@ struct ChunkInfo {
     z: f32,
     size: f32,
     scale: f32,
+    age: f32,
 }
 @group(1) @binding(3) var<uniform> chunkInfo: ChunkInfo;
 
@@ -20,6 +21,7 @@ struct VertexInput {
 struct VertexOutput {
     @builtin(position) position : vec4<f32>,
     @location(0) color          : vec4<f32>,
+    @location(1) chunkUV        : vec2<f32>,
 };
 
 @vertex
@@ -123,24 +125,32 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   let color = textureLoad(colorMap, texCoord, 0);
   output.color = vec4<f32>(color.rgb * shade, color.a);
   
+  // Calculate normalized chunk coordinates [0, 1]
+  output.chunkUV = vec2<f32>((x + localX) / f32(chunkSize), (z + localZ) / f32(chunkSize));
+
   return output;
 }
 
-
-
 @fragment
 fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-  // var r = input.color.r;
-  // var g = input.color.g;
-  // var b = input.color.b;
-  // var a = input.color.a;
+  var r = input.color.r;
+  var g = input.color.g;
+  var b = input.color.b;
+  var a = input.color.a;
 
-  // // round to nearest tenth
-  // r = round(r * 10.0) / 10.0;
-  // g = round(g * 10.0) / 10.0;
-  // b = round(b * 10.0) / 10.0;
-  // a = round(a * 10.0) / 10.0;
-  // return vec4<f32>(r, g, b, a);
+  // Debug color: tint red based on age
+  let tint = chunkInfo.age;
+  var finalColor = vec4<f32>(r + tint, g - tint, b - tint, a);
 
-  return input.color;
+  // Draw white outline at chunk boundaries
+  // We check if we are near the [0, 1] edges of the chunkUV
+  let edgeWidth = 0.02; // Adjust for thickness
+  let isEdge = input.chunkUV.x < edgeWidth || input.chunkUV.x > (1.0 - edgeWidth) ||
+               input.chunkUV.y < edgeWidth || input.chunkUV.y > (1.0 - edgeWidth);
+
+  if (isEdge) {
+    return vec4<f32>(1.0, 1.0, 1.0, 1.0);
+  }
+
+  return finalColor;
 }

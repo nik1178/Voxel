@@ -82,7 +82,7 @@ export default class ChunkManager {
   async updateChunks(playerPosition) {
     this.quadStrategy.updateChunks(playerPosition);
 
-    
+
 
     /*
     // Check which chunk is needed next based on player position and stored chunks
@@ -140,7 +140,7 @@ export default class ChunkManager {
         z: player.camera.transform.translation[2],
       });
 
-      await new Promise(resolve => setTimeout(resolve, 1)); 
+      await new Promise(resolve => setTimeout(resolve, 1));
     }
   }
 

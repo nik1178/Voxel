@@ -46,13 +46,13 @@ export default class Renderer {
   async init(player, canvas) {
     this.player = player;
     vprint("Initializing renderer...");
-    
+
     await this.getShaders();
     this.createBufferLayouts();
     this.createBuffers();
 
     this.updateVPMatrix(player.camera, canvas);
-    
+
     // Compile the core shader module using the loaded WGSL code.
     this.cellShaderModule = this.device.createShaderModule({
       label: "Cell shader",
@@ -70,7 +70,7 @@ export default class Renderer {
       this.chunkSize
     );
     this.chunkManager.startLoop(player);
-    
+
     this.initialized = true;
     vprint("Renderer initialized");
   }
@@ -142,7 +142,7 @@ export default class Renderer {
    */
   createBuffers() {
     // Uniform buffer for vpMatrix (4x4 float matrix)
-    const uniformBufferSize = 4 * 16; 
+    const uniformBufferSize = 4 * 16;
     this.uniformBuffer = this.device.createBuffer({
       size: uniformBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -152,48 +152,48 @@ export default class Renderer {
     // This cube geometry is shared across all chunk cells and scaled/positioned in the shader.
     const cubeVerts = new Float32Array([
       // Top face (y=1) -> height driven
-      0, 1, 0,  1, 1, 0,  0, 1, 1,  1, 1, 1,
+      0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,
       // Front face (+z)
-      0, 0, 1,  1, 0, 1,  0, 1, 1,  1, 1, 1,
+      0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
       // Back face (-z)
-      1, 0, 0,  0, 0, 0,  1, 1, 0,  0, 1, 0,
+      1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0,
       // Left face (-x)
-      0, 0, 0,  0, 0, 1,  0, 1, 0,  0, 1, 1,
+      0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1,
       // Right face (+x)
-      1, 0, 1,  1, 0, 0,  1, 1, 1,  1, 1, 0,
+      1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0,
     ]);
-    
+
     const cubeIndices = new Uint32Array([
-      0, 1, 2,  1, 3, 2, // Top
-      4, 5, 6,  5, 7, 6, // Front
-      8, 9, 10,  9, 11, 10, // Back
-      12, 13, 14,  13, 15, 14, // Left
-      16, 17, 18,  17, 19, 18, // Right
+      0, 1, 2, 1, 3, 2, // Top
+      4, 5, 6, 5, 7, 6, // Front
+      8, 9, 10, 9, 11, 10, // Back
+      12, 13, 14, 13, 15, 14, // Left
+      16, 17, 18, 17, 19, 18, // Right
     ]);
-    
+
     this.gridIndexCount = cubeIndices.length;
-    
+
     this.gridVertexBuffer = this.device.createBuffer({
       size: cubeVerts.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
     this.device.queue.writeBuffer(this.gridVertexBuffer, 0, cubeVerts);
-    
+
     this.gridIndexBuffer = this.device.createBuffer({
       size: cubeIndices.byteLength,
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
     });
     this.device.queue.writeBuffer(this.gridIndexBuffer, 0, cubeIndices);
-    
+
 
 
     // Single face for better instancing not requiring to draw full cube geometry
     const faceVerts = new Float32Array([
-      0, 0, 0,  1, 0, 0,  0, 0, 1,  1, 0, 1,
+      0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1,
     ]);
 
     const faceIndices = new Uint32Array([
-      0, 1, 2,  1, 3, 2,
+      0, 1, 2, 1, 3, 2,
     ]);
 
     this.faceIndexCount = faceIndices.length;
@@ -247,7 +247,7 @@ export default class Renderer {
         { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, sampler: { type: "non-filtering" } },
         { binding: 1, visibility: GPUShaderStage.VERTEX, texture: { sampleType: "uint" } },
         { binding: 2, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } },
-        { binding: 3, visibility: GPUShaderStage.VERTEX, buffer: { type: "uniform" } }
+        { binding: 3, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } }
       ]
     });
 
@@ -268,7 +268,7 @@ export default class Renderer {
         entryPoint: "fragmentMain",
         targets: [{ format: this.format }],
       },
-        primitive: {
+      primitive: {
         topology: 'triangle-list',
         cullMode: 'back', // <--- Add this! Let the hardware do the heavy lifting
       },
@@ -350,12 +350,12 @@ export default class Renderer {
    * Main rendering loop execution. 
    * Encodes render commands, processes chunk textures, and submits the command buffer.
    */
-  render() {
+  render(dt) {
     if (!this.initialized) return;
     this.frameIndex++;
 
     const commandEncoder = this.device.createCommandEncoder();
-    
+
     // Begin the main render pass, clearing the color and depth attachments.
     const pass = commandEncoder.beginRenderPass({
       colorAttachments: [
@@ -373,7 +373,7 @@ export default class Renderer {
         depthClearValue: 1.0,
       },
     });
-    
+
     // Bind global pipeline state
     pass.setPipeline(this.cellPipeline);
     pass.setBindGroup(0, this.bindGroup);
@@ -391,7 +391,7 @@ export default class Renderer {
     // Iterate through all chunks managed by the ChunkManager
     const chunkData = this.chunkManager.getChunkData();
     for (const chunk of chunkData.values()) {
-      
+
       // If a chunk has raw data ready but no GPU textures, initialize them
       if (chunk.rawData && (!chunk.colorTexture || !chunk.heightTexture)) {
         this.createWebGPUTextures(chunk, chunk.rawData);
@@ -409,12 +409,11 @@ export default class Renderer {
       if (!chunk.vtfBindGroup) {
         // Uniform buffer storing position, size, and scale of the chunk
         const chunkInfoBuffer = this.device.createBuffer({
-          size: 16, // 4 floats: x, z, size, scale
+          size: 32, // 8 floats (32 bytes) for 16-byte alignment
           usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
-        this.device.queue.writeBuffer(chunkInfoBuffer, 0, new Float32Array([
-          chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale
-        ]));
+
+        chunk.chunkInfoBuffer = chunkInfoBuffer;
 
         chunk.vtfBindGroup = this.device.createBindGroup({
           layout: this.vtfBindGroupLayout,
@@ -426,7 +425,11 @@ export default class Renderer {
           ]
         });
       }
+      chunk.age = Math.max(0, chunk.age - dt * 2);
 
+      this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
+        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age
+      ]));
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
       if (renderMode == "cube") {

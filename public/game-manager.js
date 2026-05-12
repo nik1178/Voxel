@@ -34,20 +34,20 @@ export default class GameManager {
   frame(time) {
     if (!this.running) return;
 
-    let dt = (time - this.lastTime)/1000;
+    let dt = (time - this.lastTime) / 1000;
     this.updateFPS(dt);
     this.lastTime = time;
 
     this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
-    this.renderer.render();
+    this.renderer.render(dt);
     // --------------------------------------------
     requestAnimationFrame(this.frame.bind(this));
   }
-  
+
   updateFPS(dt) {
     if (this.fpsCounter) {
-      this.lastFrames.push(1/dt);
+      this.lastFrames.push(1 / dt);
       if (this.lastFrames.length > 10) {
         this.lastFrames.shift();
       }

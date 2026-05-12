@@ -9,7 +9,8 @@ export default class Chunk {
     colorTexture = null;
     heightTexture = null;
     vtfBindGroup = null;
-    
+    age = 1.0;
+
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
         this.vertexBuffer = vertexBuffer;
@@ -39,4 +40,26 @@ export default class Chunk {
         this.vertices = vertices;
     }
 
+    getWorldPosition(strategy, chunkSize) {
+        if (strategy == "quad") {
+            return [-(this.position.x + 0.5) * chunkSize * this.scale, 0, (this.position.z + 0.5) * chunkSize * this.scale];
+        }
+
+        return [this.position.x * chunkSize * this.scale, 0, this.position.z * chunkSize * this.scale];
+    }
+
+    destroy() {
+        this.vertexBuffer?.destroy();
+        this.indexBuffer?.destroy();
+        this.vertices = null;
+        this.indexCount = null;
+        this.heightMap = null;
+        this.colorTexture?.destroy();
+        this.colorTexture = null;
+        this.heightTexture?.destroy();
+        this.heightTexture = null;
+        this.chunkInfoBuffer?.destroy();
+        this.chunkInfoBuffer = null;
+        this.vtfBindGroup = null;
+    }
 }
