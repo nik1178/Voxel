@@ -1,3 +1,4 @@
+import time
 from flask import Flask, send_from_directory, Response
 from flask_sock import Sock
 from python.chunk_manager import ChunkManager
@@ -13,7 +14,7 @@ sock = Sock(app)
 BASE_DIR = path.dirname(path.abspath(__file__))
 chunk_dir = path.join(BASE_DIR, "public", "map")
 laz_dir = path.join("E:", "gkot")
-verbose = False
+verbose = True
 chunk_manager = ChunkManager(chunk_size=1000, voxel_size=100, data_dir=chunk_dir, laz_dir=laz_dir, verbose=verbose)
 
 @app.route("/get_chunk/<int:x>/<int:z>/<int:chunk_size>/<int:lod>/<string:version>/", methods=["GET"])
@@ -26,35 +27,58 @@ def get_chunk(x, z, chunk_size, lod, version):
 
 @sock.route('/ws/chunks')
 def chunk_socket(ws):
-    while True:
-        # 1. Receive JSON request from client
-        message = ws.receive()
-        if not message:
-            break
-            
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    executor = ThreadPoolExecutor(max_workers=8)
+    write_lock = threading.Lock()
+
+    def process_and_send(req, request_id):
         try:
-            req = json.loads(message)
+            start_time = time.time()
             x = int(req['x'])
             z = int(req['z'])
             chunk_size = int(req.get('chunk_size', 1000))
             lod = int(req.get('lod', 0))
             version = req.get('version', 'quad')
-            request_id = int(req['requestId']) # Correlation ID
-        except (ValueError, KeyError, TypeError):
-            continue
-        # 2. Fetch chunk data
-        data = chunk_manager.get_chunk(x, z, chunk_size=chunk_size, lod=lod, version=version)
-        
-        if data == 404:
-            # Send error status header with 0 bytes of payload
-            # Header: 4 bytes RequestID (int32), 4 bytes Status (int32)
-            header = struct.pack('<ii', request_id, 404)
-            ws.send(header)
-        else:
-            # 3. Pack header + chunk data and send as a single binary frame
-            # Header: 4 bytes RequestID (int32), 4 bytes Status (200 OK)
-            header = struct.pack('<ii', request_id, 200)
-            ws.send(header + data)
+            
+            data = chunk_manager.get_chunk(x, z, chunk_size=chunk_size, lod=lod, version=version)
+            
+            if data == 404:
+                header = struct.pack('<ii', request_id, 404)
+                payload = header
+            else:
+                header = struct.pack('<ii', request_id, 200)
+                payload = header + data
+            
+            with write_lock:
+                ws.send(payload)
+            end_time = time.time()
+            vprint(verbose, "Chunk loaded in ", end_time - start_time)
+        except Exception as e:
+            try:
+                header = struct.pack('<ii', request_id, 500)
+                with write_lock:
+                    ws.send(header)
+            except Exception:
+                pass
+
+    try:
+        while True:
+            # 1. Receive JSON request from client
+            message = ws.receive()
+            if not message:
+                break
+                
+            try:
+                req = json.loads(message)
+                request_id = int(req['requestId']) # Correlation ID
+                # Offload the chunk loading to the thread pool so the loop doesn't block
+                executor.submit(process_and_send, req, request_id)
+            except (ValueError, KeyError, TypeError):
+                continue
+    finally:
+        executor.shutdown(wait=False)
 
 @app.route("/")
 def home():

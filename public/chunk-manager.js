@@ -140,7 +140,7 @@ export default class ChunkManager {
         z: player.camera.transform.translation[2],
       });
 
-      await new Promise(resolve => setTimeout(resolve, 0.001));
+      await new Promise(resolve => setTimeout(resolve, 1));
     }
   }
 

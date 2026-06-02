@@ -1,5 +1,10 @@
 import { alertError } from "./errors.js";
 import HeightmapGrid from "./heightmap-grid.js";
+import ChunkWebSocketClient from "./chunk-websocket.js";
+
+// Instantiate the persistent socket connection
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const wsClient = new ChunkWebSocketClient(`${protocol}//${window.location.host}/ws/chunks`);
 
 export default class HmapLoader {
 
@@ -84,7 +89,26 @@ export default class HmapLoader {
   }
 
 
-  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false) {
+  loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false, sockets=true) {
+
+    if (sockets) {
+      return wsClient.requestChunk(chunkX, chunkZ, chunkSize, levelOfDetail, version)
+      .then((buffer) => {
+        if (buffer === 404) {
+          return 404; // Propagate 404 for chunk not found
+        }
+        
+        if (parseToFloats) {
+          return this.bufferTo1DArray(buffer);
+        } else {
+          return this.bufferToWebGPUArrays(buffer);
+        }
+      })
+      .catch((err) => {
+        alertError(`Failed to load chunk (${chunkX}, ${chunkZ}) via WebSocket: ${err.message}`);
+        throw err;
+      });
+    }
 
     const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}/${version}`;
 
