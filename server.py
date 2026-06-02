@@ -14,7 +14,7 @@ sock = Sock(app)
 BASE_DIR = path.dirname(path.abspath(__file__))
 chunk_dir = path.join(BASE_DIR, "public", "map")
 laz_dir = path.join("E:", "gkot")
-verbose = True
+verbose = False
 chunk_manager = ChunkManager(chunk_size=1000, voxel_size=100, data_dir=chunk_dir, laz_dir=laz_dir, verbose=verbose)
 
 @app.route("/get_chunk/<int:x>/<int:z>/<int:chunk_size>/<int:lod>/<string:version>/", methods=["GET"])

@@ -125,10 +125,10 @@ export default class Renderer {
    */
   createBufferLayouts() {
     this.vertexBufferLayout = {
-      arrayStride: 3 * 4, // 3 floats x 4 bytes (position x, y, z)
+      arrayStride: 4, // 4 bytes per vertex (uint8x4)
       attributes: [
         {
-          format: "float32x3",
+          format: "uint8x4",
           offset: 0,
           shaderLocation: 0,
         }
@@ -150,17 +150,17 @@ export default class Renderer {
 
     // Unit Cube Vertex Buffer
     // This cube geometry is shared across all chunk cells and scaled/positioned in the shader.
-    const cubeVerts = new Float32Array([
+    const cubeVerts = new Uint8Array([
       // Top face (y=1) -> height driven
-      0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1,
+      0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0,
       // Front face (+z)
-      0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
+      0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0,
       // Back face (-z)
-      1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0,
+      1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0,
       // Left face (-x)
-      0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1,
+      0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0,
       // Right face (+x)
-      1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0,
+      1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0,
     ]);
 
     const cubeIndices = new Uint32Array([
@@ -188,8 +188,8 @@ export default class Renderer {
 
 
     // Single face for better instancing not requiring to draw full cube geometry
-    const faceVerts = new Float32Array([
-      0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1,
+    const faceVerts = new Uint8Array([
+      0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0,
     ]);
 
     const faceIndices = new Uint32Array([

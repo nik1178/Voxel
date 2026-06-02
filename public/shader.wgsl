@@ -14,7 +14,7 @@ struct ChunkInfo {
 @group(1) @binding(3) var<uniform> chunkInfo: ChunkInfo;
 
 struct VertexInput {
-    @location(0) position : vec3<f32>,
+    @location(0) position : vec4<u32>,
     @builtin(instance_index) instance_index : u32,
 };
 
@@ -47,8 +47,8 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     return output;
   }
 
-  let ix = input.position.x;
-  let iz = input.position.z;
+  let ix = f32(input.position.x);
+  let iz = f32(input.position.z);
 
   var localX = 0.0;
   var localY = 0.0;
