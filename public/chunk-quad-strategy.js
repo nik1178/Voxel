@@ -24,7 +24,9 @@ export default class ChunkQuadStrategy {
     return chunks;
   }
 
-  loadingNewChunk = false;
+  howManyChunksLoading = 0;
+  maximumChunksLoading = 2;
+  previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
 
   initializing = false;
   async updateChunks(playerPosition) {
@@ -48,21 +50,27 @@ export default class ChunkQuadStrategy {
       return;
     }
 
+    let currentChunk = this.quadTree.getPlayerChunkNode(playerPosition);
+    if (currentChunk.chunk.position.x !== this.previousChunk.x || currentChunk.chunk.position.z !== this.previousChunk.z || currentChunk.chunk.levelOfDetail !== this.previousChunk.levelOfDetail) {
+      this.previousChunk = { x: currentChunk.chunk.position.x, z: currentChunk.chunk.position.z, levelOfDetail: currentChunk.chunk.levelOfDetail };
+      this.howManyChunksLoading = 0;
+    }
+
     // Get list of all the chunks that need new children
-    if (this.loadingNewChunk) {
+    if (this.howManyChunksLoading >= this.maximumChunksLoading) {
       return;
     }
 
     const allChunkNodes = this.quadTree.getChunkNodeData();
     for (const chunkNode of allChunkNodes) {
-      const worldPos = chunkNode.chunk.getWorldPosition("quad", this.chunkSize);
-      chunkNode.distanceFromPlayer = Math.sqrt((worldPos[0] - playerPosition.x) ** 2 + (worldPos[2] - playerPosition.z) ** 2);
+      chunkNode.distanceFromPlayer = chunkNode.chunk.distanceFromPlayer(playerPosition);
+      // console.log(chunkNode.distanceFromPlayer);
     }
     allChunkNodes.sort((a, b) => a.distanceFromPlayer - b.distanceFromPlayer);
 
 
     // Chunks to load in order of distance
-    let nodeToLoad = null;
+    let nodesToLoad = [];
     for (const chunkNode of allChunkNodes) {
       if (chunkNode.chunk.levelOfDetail > 9) {
         continue;
@@ -76,8 +84,9 @@ export default class ChunkQuadStrategy {
       const distanceRatio = Math.max(1, chunkNode.distanceFromPlayer / (this.chunkSize * 2));
       const expectedLOD = Math.min(9, 9 - Math.floor(Math.log2(distanceRatio * 1)));
 
-      if (chunkNode.chunk.levelOfDetail < expectedLOD && !nodeToLoad) {
-        nodeToLoad = chunkNode;
+      if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {
+        nodesToLoad.push(chunkNode);
+        this.howManyChunksLoading++;
       }
       else if (chunkNode.chunk.levelOfDetail > expectedLOD + 1 && chunkNode.chunk.levelOfDetail > 1) {
 
@@ -86,48 +95,52 @@ export default class ChunkQuadStrategy {
       }
     }
 
-    if (!nodeToLoad) {
+    if (nodesToLoad.length === 0) {
       return;
     }
 
     this.loadingNewChunk = performance.now();
-    const chunkNode = nodeToLoad;
-    const childCoordinates = chunkNode.getChildCoordinates();
-    for (const childCoordinate of childCoordinates) {
-      let chunkX = childCoordinate.x;
-      let chunkZ = childCoordinate.z;
-      let levelOfDetail = childCoordinate.levelOfDetail;
-      let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, null, levelOfDetail);
-      chunk.scale = chunkNode.chunk.scale / 2;
-      let childChunkNode = new ChunkNode();
-      childChunkNode.chunk = chunk;
-      childChunkNode.parent = chunkNode;
-      chunkNode.children.push(childChunkNode);
-      childChunkNode.isLoading = true;
+    for (const chunkNode of nodesToLoad) {
+      const childCoordinates = chunkNode.getChildCoordinates();
+      for (const childCoordinate of childCoordinates) {
+        let chunkX = childCoordinate.x;
+        let chunkZ = childCoordinate.z;
+        let levelOfDetail = childCoordinate.levelOfDetail;
+        let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, null, levelOfDetail);
+        chunk.scale = chunkNode.chunk.scale / 2;
+        let childChunkNode = new ChunkNode();
+        childChunkNode.chunk = chunk;
+        childChunkNode.parent = chunkNode;
+        chunkNode.children.push(childChunkNode);
+        childChunkNode.isLoading = true;
+      }
+
+      console.log("Getting new chunks: " + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z);
+
+      let loadPromises = chunkNode.children.map((childChunkNode) => {
+        const chunkX = childChunkNode.chunk.position.x;
+        const chunkZ = childChunkNode.chunk.position.z;
+        const levelOfDetail = childChunkNode.chunk.levelOfDetail;
+        return this.getChunk(chunkX, chunkZ, levelOfDetail).then(heightMapData => {
+          if (heightMapData === 404) {
+            vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
+            return;
+          }
+          heightMapData = this.handleNewHeightmapVTF(heightMapData, levelOfDetail, chunkNode, chunkX, chunkZ);
+          childChunkNode.chunk.rawData = heightMapData;
+          childChunkNode.isLoading = false;
+        }).catch(err => {
+          console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
+        });
+      });
+      Promise.all(loadPromises).then(() => {
+        this.howManyChunksLoading--;
+        if (this.howManyChunksLoading < 0) {
+          this.howManyChunksLoading = 0;
+        }
+      });
     }
 
-    console.log("Getting new chunks: " + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z);
-
-    let loadPromises = chunkNode.children.map((childChunkNode) => {
-      const chunkX = childChunkNode.chunk.position.x;
-      const chunkZ = childChunkNode.chunk.position.z;
-      const levelOfDetail = childChunkNode.chunk.levelOfDetail;
-      return this.getChunk(chunkX, chunkZ, levelOfDetail).then(heightMapData => {
-        if (heightMapData === 404) {
-          vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
-          return;
-        }
-        heightMapData = this.handleNewHeightmapVTF(heightMapData, levelOfDetail, chunkNode, chunkX, chunkZ);
-        childChunkNode.chunk.rawData = heightMapData;
-        childChunkNode.isLoading = false;
-      }).catch(err => {
-        console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
-      });
-    });
-
-    Promise.all(loadPromises).then(() => {
-      this.loadingNewChunk = false;
-    });
 
   }
 

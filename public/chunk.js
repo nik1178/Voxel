@@ -10,6 +10,7 @@ export default class Chunk {
     heightTexture = null;
     vtfBindGroup = null;
     age = 1.0;
+    chunkSize = 128;
 
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
@@ -61,5 +62,25 @@ export default class Chunk {
         this.chunkInfoBuffer?.destroy();
         this.chunkInfoBuffer = null;
         this.vtfBindGroup = null;
+    }
+
+    distanceFromPlayer(playerPosition) {
+        const chunkPos = this.getWorldPosition("quad", this.chunkSize);
+
+        // Align coordinates with the engine's inverted X logic
+        const px = -playerPosition.x;
+        const pz = playerPosition.z;
+        const cx = -chunkPos[0]; // chunkPos[0] is already negated in getWorldPosition
+        const cz = chunkPos[2];
+
+        const halfSize = 0.5 * this.chunkSize * this.scale;
+
+        // Calculate distance to the box on each axis. 
+        // If the point is inside the box on an axis, the distance on that axis is 0.
+        const dx = Math.max(0, Math.abs(px - cx) - halfSize);
+        const dz = Math.max(0, Math.abs(pz - cz) - halfSize);
+
+        // Return Euclidean distance. If both dx and dz are 0, player is inside the chunk.
+        return Math.sqrt(dx * dx + dz * dz);
     }
 }

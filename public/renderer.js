@@ -363,7 +363,7 @@ export default class Renderer {
           view: this.context.getCurrentTexture().createView(),
           loadOp: "clear",
           storeOp: "store",
-          clearValue: { r: 0, g: 0, b: 0.4, a: 1 }, // Sky blue background
+          clearValue: { r: 0.53, g: 0.81, b: 0.92, a: 1 }, // Sky blue background
         },
       ],
       depthStencilAttachment: {

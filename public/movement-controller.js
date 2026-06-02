@@ -19,6 +19,16 @@ export default class MovementController {
       this.camera.transform.rotation[1] -= event.movementX * 0.002;
       this.camera.transform.rotation[0] -= event.movementY * 0.002;
     });
+
+    // Add mouse wheel event listener for zooming
+    canvas.addEventListener("wheel", (event) => {
+      if (event.deltaY < 0) {
+        this.defaultSpeed *= 1.1;
+      } else {
+        this.defaultSpeed /= 1.1;
+      }
+      this.speed = this.defaultSpeed;
+    });
   }
 
   onKeyDown(event) {

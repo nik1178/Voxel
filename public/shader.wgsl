@@ -118,7 +118,7 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   let final_x = fx - (localX * chunkInfo.scale);
   let final_y = localY;
   let final_z = fz + (localZ * chunkInfo.scale);
-  
+
   let world_pos = vec4<f32>(final_x, final_y, final_z, 1.0);
   output.position = vpMatrix * world_pos;
   
