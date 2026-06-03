@@ -10,6 +10,9 @@ struct ChunkInfo {
     size: f32,
     scale: f32,
     age: f32,
+    manualCulling: f32,
+    orientationOffset: f32,
+    howManyFaces: f32,
 }
 @group(1) @binding(3) var<uniform> chunkInfo: ChunkInfo;
 
@@ -30,8 +33,21 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
 
   let chunkSize = u32(chunkInfo.size);
 
-  let voxelIndex = input.instance_index / 5u;
-  let orientation = input.instance_index % 5u;
+  var voxelIndex = input.instance_index / 5u;
+  if (chunkInfo.manualCulling == 1) {
+    voxelIndex = input.instance_index / u32(chunkInfo.howManyFaces);
+  }
+  var orientation = input.instance_index % 5u;
+  if (chunkInfo.manualCulling == 1) {
+    orientation = 0u;
+    let voxelInstanceIndex = input.instance_index % u32(chunkInfo.howManyFaces);
+    if (voxelInstanceIndex != 0) {
+      orientation = voxelInstanceIndex - 1u;
+      orientation+=u32(chunkInfo.orientationOffset);
+      orientation %= 4u;
+      orientation += 1u;
+    }
+  }
 
   let u_idx = voxelIndex % chunkSize;
   let v_idx = voxelIndex / chunkSize;
@@ -73,7 +89,7 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     localZ = 1.0;
     localY = neighbor_h + (height_val - neighbor_h) * iz;
     shade = 0.8;
-  } else if (orientation == 2u) {
+  } else if (orientation == 3u) {
     // Back face (-z)
     let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(0, -1), 0).r);
     if (neighbor_h >= height_val) {
@@ -84,7 +100,7 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     localZ = 0.0;
     localY = neighbor_h + (height_val - neighbor_h) * iz;
     shade = 0.8;
-  } else if (orientation == 3u) {
+  } else if (orientation == 4u) {
     // Left face (-x)
     let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(-1, 0), 0).r);
     if (neighbor_h >= height_val) {
@@ -95,7 +111,7 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     localZ = 1.0 - ix; // Z maps to local X of the face
     localY = neighbor_h + (height_val - neighbor_h) * iz;
     shade = 0.6;
-  } else if (orientation == 4u) {
+  } else if (orientation == 2u) {
     // Right face (+x)
     let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(1, 0), 0).r);
     if (neighbor_h >= height_val) {

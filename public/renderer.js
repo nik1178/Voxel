@@ -16,6 +16,8 @@ export default class Renderer {
   /** @type {boolean} Indicates whether the renderer has completed initialization. */
   initialized = false;
 
+  manualCulling = true;
+
   /**
    * Constructs the Renderer instance.
    * 
@@ -428,14 +430,47 @@ export default class Renderer {
       chunk.age = Math.max(0, chunk.age - dt * 2);
 
       this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age
+        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : 0, 0 /*orientationOffset*/, 5 /*howManyFaces*/
       ]));
+
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
       if (renderMode == "cube") {
         pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
       } else {
-        pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * 5);
+        if (!this.manualCulling) {
+          pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * 5);
+        } else {
+          // Orientations: 1 = +z, 2 = +x, 3 = -z, 4 = -x
+          let orientationOffset = 0;
+          if (chunk.position.z * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > this.player.camera.transform.translation[2]) {
+            orientationOffset+=1;
+          }
+          if (chunk.position.x * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > -this.player.camera.transform.translation[0]) {
+            if (orientationOffset==0) {
+              orientationOffset+=2;
+            }
+            orientationOffset+=1;
+          }
+
+          let facesToRender = 3;
+          let playerPosition = this.player.camera.transform.translation;
+          let pp = {
+            x: playerPosition[0],
+            z: playerPosition[2],
+            y: playerPosition[1]
+          }
+          let chunkDistance = chunk.distanceFromPlayer(pp);
+          if (chunkDistance == 0) {
+            orientationOffset = 0;
+            facesToRender = 5;
+          }
+
+          this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
+            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : 0, orientationOffset, facesToRender
+          ]));
+          pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
+        }
       }
     }
 
