@@ -16,7 +16,8 @@ export default class Renderer {
   /** @type {boolean} Indicates whether the renderer has completed initialization. */
   initialized = false;
 
-  manualCulling = true;
+  manualCulling = false;
+  greedyMeshing = true;
 
   /**
    * Constructs the Renderer instance.
@@ -117,7 +118,8 @@ export default class Renderer {
    * @returns {Promise<void>} Resolves when the shader source is loaded.
    */
   async getShaders() {
-    this.wgslShader = await fetch("shader.wgsl").then((response) =>
+    let shaderFile = this.greedyMeshing ? "instanced-greedy-shader.wgsl" : "shader.wgsl";
+    this.wgslShader = await fetch(shaderFile).then((response) =>
       response.text()
     );
   }
@@ -126,8 +128,9 @@ export default class Renderer {
    * Defines the memory layout for vertex attributes to be used by the pipeline.
    */
   createBufferLayouts() {
-    this.vertexBufferLayout = {
+    this.faceVertexBufferLayout = {
       arrayStride: 4, // 4 bytes per vertex (uint8x4)
+      stepMode: "vertex",
       attributes: [
         {
           format: "uint8x4",
@@ -136,6 +139,25 @@ export default class Renderer {
         }
       ],
     };
+
+    if (!this.greedyMeshing) {
+      // The normal shader.wgsl only needs the face geometry buffer
+      this.vertexBufferLayouts = [this.faceVertexBufferLayout];
+    } else {
+      // The greedy shader needs the face geometry AND the instance data buffer
+      this.instanceBufferLayout = {
+        arrayStride: 8, // 2 32-bit integers = 8 bytes
+        stepMode: "instance",
+        attributes: [
+          {
+            format: "uint32x2",
+            offset: 0,
+            shaderLocation: 1,
+          }
+        ],
+      };
+      this.vertexBufferLayouts = [this.faceVertexBufferLayout, this.instanceBufferLayout];
+    }
   }
 
   /**
@@ -258,12 +280,12 @@ export default class Renderer {
     });
 
     this.cellPipeline = this.device.createRenderPipeline({
-      label: "Cell pipeline",
+      label: "Goofy pipeline",
       layout: pipelineLayout,
       vertex: {
         module: this.cellShaderModule,
         entryPoint: "vertexMain",
-        buffers: [this.vertexBufferLayout],
+        buffers: this.vertexBufferLayouts,
       },
       fragment: {
         module: this.cellShaderModule,
@@ -407,6 +429,14 @@ export default class Renderer {
 
       //const chunkSize = chunk.colorTexture.width;
 
+      if (this.greedyMeshing && chunk.instanceArray && !chunk.instanceBuffer) {
+        chunk.instanceBuffer = this.device.createBuffer({
+          size: chunk.instanceArray.byteLength,
+          usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+        this.device.queue.writeBuffer(chunk.instanceBuffer, 0, chunk.instanceArray);
+      }
+
       // Lazy-initialize the VTF (Vertex Texture Fetch) bind group for this specific chunk
       if (!chunk.vtfBindGroup) {
         // Uniform buffer storing position, size, and scale of the chunk
@@ -435,7 +465,14 @@ export default class Renderer {
 
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
-      if (renderMode == "cube") {
+      if (this.greedyMeshing) {
+        if (chunk.instanceBuffer) {
+          pass.setVertexBuffer(1, chunk.instanceBuffer);
+          pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);
+        } else {
+          console.log("I AM A GOOFY, LOOK AT ME GOOF");
+        }
+      } else if (renderMode == "cube") {
         pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
       } else {
         if (!this.manualCulling) {

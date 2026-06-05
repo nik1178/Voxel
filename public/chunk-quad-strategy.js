@@ -3,6 +3,7 @@ import HmapLoader from "./hmap-loader.js";
 import Chunk from "./chunk.js";
 import ChunkMesher from "./chunk-mesher.js";
 import HeightmapGrid from "./heightmap-grid.js";
+import { GreedyMesher } from "./greedy-mesher.js";
 
 
 export default class ChunkQuadStrategy {
@@ -10,6 +11,7 @@ export default class ChunkQuadStrategy {
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
     this.hmapLoader = new HmapLoader();
+    this.greedyMesher = GreedyMesher.getMesher();
   }
 
   getBaseChunkList() {
@@ -25,7 +27,7 @@ export default class ChunkQuadStrategy {
   }
 
   howManyChunksLoading = 0;
-  maximumChunksLoading = 2;
+  maximumChunksLoading = 1;
   previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
 
   initializing = false;
@@ -40,6 +42,7 @@ export default class ChunkQuadStrategy {
         let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, null, null, 0, null, chunkCoords.levelOfDetail);
         chunk.scale = 2 ** 8;
         chunk.rawData = heightMapData;
+        chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
         this.quadTree.addChunk(chunk);
       }
       //this.quadTree.addChunk(chunk);
@@ -128,6 +131,7 @@ export default class ChunkQuadStrategy {
           }
           heightMapData = this.handleNewHeightmapVTF(heightMapData, levelOfDetail, chunkNode, chunkX, chunkZ);
           childChunkNode.chunk.rawData = heightMapData;
+          childChunkNode.chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(childChunkNode.chunk.rawData));
           childChunkNode.isLoading = false;
         }).catch(err => {
           console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);

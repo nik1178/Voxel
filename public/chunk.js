@@ -11,6 +11,7 @@ export default class Chunk {
     vtfBindGroup = null;
     age = 1.0;
     chunkSize = 128;
+    instanceArray = null;
 
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
