@@ -185,9 +185,9 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   // Draw wireframe around greedy quads to visibly see them
   // We use quadUV to check the boundaries of the greedy quad, NOT individual voxels.
   let edgeWidth = 0.02; 
-  // let isEdge = input.quadUV.x < edgeWidth || input.quadUV.x > (1.0 - edgeWidth) ||
-              //  input.quadUV.y < edgeWidth || input.quadUV.y > (1.0 - edgeWidth);
-  let isEdge = false;
+  let isEdge = input.quadUV.x < edgeWidth || input.quadUV.x > (1.0 - edgeWidth) ||
+               input.quadUV.y < edgeWidth || input.quadUV.y > (1.0 - edgeWidth);
+  // let isEdge = false;
   if (isEdge) {
     return vec4<f32>(1.0, 0.0, 1.0, 1.0); // White wireframe
   }

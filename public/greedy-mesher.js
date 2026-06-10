@@ -33,7 +33,7 @@ export class GreedyMesher {
 
                 // 2. Find length along Z (can we expand this row downwards?)
                 let lengthZ = 1;
-                /* let canExpandZ = true;
+                let canExpandZ = true;
                 while (z + lengthZ < size && canExpandZ) {
                     // Check the entire row of lengthX at z + lengthZ
                     for (let i = 0; i < lengthX; i++) {
@@ -46,7 +46,7 @@ export class GreedyMesher {
                     if (canExpandZ) {
                         lengthZ++;
                     }
-                } */
+                }
 
                 // Mark all covered voxels as cleared
                 for (let dz = 0; dz < lengthZ; dz++) {
