@@ -12,6 +12,7 @@ export default class Chunk {
     age = 1.0;
     chunkSize = 128;
     instanceArray = null;
+    maxHeight = null;
 
     constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
@@ -83,5 +84,51 @@ export default class Chunk {
 
         // Return Euclidean distance. If both dx and dz are 0, player is inside the chunk.
         return Math.sqrt(dx * dx + dz * dz);
+    }
+
+    getMaxHeight() {
+        if (this.maxHeight !== null) {
+            return this.maxHeight;
+        }
+        if (!this.rawData || !this.rawData.heightData) {
+            throw new Error("Chunk does not have height map");
+        }
+        this.maxHeight = 0;
+        for (let i = 0; i < this.rawData.heightData.length; i++) {
+            if (this.rawData.heightData[i] > this.maxHeight) {
+                this.maxHeight = this.rawData.heightData[i];
+            }
+        }
+        return this.maxHeight;
+    }
+
+    getWorldAABB() {
+        return {
+            min: {
+                x: this.position.x * this.chunkSize * this.scale,
+                y: 0,
+                z: this.position.z * this.chunkSize * this.scale
+            },
+            max: {
+                x: (this.position.x + 1) * this.chunkSize * this.scale,
+                y: this.getMaxHeight(),
+                z: (this.position.z + 1) * this.chunkSize * this.scale
+            }
+        }
+    }
+
+    getAABB() {
+        return {
+            min: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            max: {
+                x: this.chunkSize,
+                y: this.getMaxHeight(),
+                z: this.chunkSize
+            }
+        }
     }
 }

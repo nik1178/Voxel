@@ -17,7 +17,8 @@ export default class Renderer {
   initialized = false;
 
   manualCulling = false;
-  greedyMeshing = true;
+  greedyMeshing = false;
+  rayMarching = true;
 
   /**
    * Constructs the Renderer instance.
@@ -104,11 +105,23 @@ export default class Renderer {
   updateVPMatrix(camera, canvas) {
     if (!this.initialized) return;
     let vpMatrix = Matrix.getViewProjectionMatrix(camera, canvas);
+    let invVpMatrix = Matrix.inverse(vpMatrix);
+    let cameraPosition = new Float32Array([...camera.transform.translation, 1.0]);
 
     this.device.queue.writeBuffer(
       this.uniformBuffer,
       0,
       this.toColumnMajor(vpMatrix)
+    );
+    this.device.queue.writeBuffer(
+      this.uniformBuffer,
+      4 * 16,
+      this.toColumnMajor(invVpMatrix)
+    );
+    this.device.queue.writeBuffer(
+      this.uniformBuffer,
+      4 * 16 * 2,
+      cameraPosition
     );
   }
 
@@ -118,7 +131,12 @@ export default class Renderer {
    * @returns {Promise<void>} Resolves when the shader source is loaded.
    */
   async getShaders() {
-    let shaderFile = this.greedyMeshing ? "instanced-greedy-shader.wgsl" : "shader.wgsl";
+    let shaderFile = "shader.wgsl";
+    if (this.rayMarching) {
+        shaderFile = "ray-shader.wgsl";
+    } else if (this.greedyMeshing) {
+        shaderFile = "instanced-greedy-shader.wgsl";
+    }
     this.wgslShader = await fetch(shaderFile).then((response) =>
       response.text()
     );
@@ -140,7 +158,9 @@ export default class Renderer {
       ],
     };
 
-    if (!this.greedyMeshing) {
+    if (this.rayMarching) {
+      this.vertexBufferLayouts = [this.faceVertexBufferLayout];
+    } else if (!this.greedyMeshing) {
       // The normal shader.wgsl only needs the face geometry buffer
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
     } else {
@@ -166,7 +186,8 @@ export default class Renderer {
    */
   createBuffers() {
     // Uniform buffer for vpMatrix (4x4 float matrix)
-    const uniformBufferSize = 4 * 16;
+    // Now include inverse of VpMatrix and current camera position
+    const uniformBufferSize = 4 * (16 + 16 + 4);
     this.uniformBuffer = this.device.createBuffer({
       size: uniformBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -260,7 +281,7 @@ export default class Renderer {
     this.globalBindGroupLayout = this.device.createBindGroupLayout({
       label: "Global Bind Group Layout",
       entries: [
-        { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: { type: "uniform" } }
+        { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } }
       ]
     });
 
@@ -269,7 +290,7 @@ export default class Renderer {
       label: "VTF Bind Group Layout",
       entries: [
         { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, sampler: { type: "non-filtering" } },
-        { binding: 1, visibility: GPUShaderStage.VERTEX, texture: { sampleType: "uint" } },
+        { binding: 1, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, texture: { sampleType: "uint" } },
         { binding: 2, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } },
         { binding: 3, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } }
       ]
@@ -294,7 +315,7 @@ export default class Renderer {
       },
       primitive: {
         topology: 'triangle-list',
-        cullMode: 'back', // <--- Add this! Let the hardware do the heavy lifting
+        cullMode: this.rayMarching ? 'none' : 'back', // <--- Add this! Let the hardware do the heavy lifting
       },
       depthStencil: {
         format: this.depthFormat,
@@ -460,12 +481,16 @@ export default class Renderer {
       chunk.age = Math.max(0, chunk.age - dt * 2);
 
       this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : 0, 0 /*orientationOffset*/, 5 /*howManyFaces*/
+        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
       ]));
 
       // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
-      if (this.greedyMeshing) {
+      if (this.rayMarching) {
+        pass.setVertexBuffer(0, this.gridVertexBuffer);
+        pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
+        pass.drawIndexed(this.gridIndexCount, 1);
+      } else if (this.greedyMeshing) {
         if (chunk.instanceBuffer) {
           pass.setVertexBuffer(1, chunk.instanceBuffer);
           pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);

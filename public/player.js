@@ -8,7 +8,7 @@ export default class Player {
             rotation: [0, 0, 0],
         },
         fov: 1,
-        near: 5,
+        near: 1,
         far: 10000000,
     };
     constructor(canvas) {
