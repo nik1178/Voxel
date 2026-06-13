@@ -129,6 +129,7 @@ export default class Renderer {
   updateVPMatrix(camera, canvas) {
     if (!this.initialized) return;
     let vpMatrix = Matrix.getViewProjectionMatrix(camera, canvas);
+    this.vpMatrix = vpMatrix;
     let invVpMatrix = Matrix.inverse(vpMatrix);
     let cameraPosition = new Float32Array([...camera.transform.translation, 1.0]);
 
@@ -676,6 +677,57 @@ export default class Renderer {
 
     // Iterate through all chunks managed by the ChunkManager
     const chunkData = this.chunkManager.getChunkData();
+
+    // Remove all old labels from the previous frame to prevent crashing
+    document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
+
+    // Find 9 closest chunks
+    let dspoijfosdf = 0;
+    for (const chunk of chunkData.values()) {
+      const distance = chunk.distanceFromPlayer(this.player.getPositionVector());
+      chunk.distance = distance;
+      // if (dspoijfosdf == 0) {
+      //   console.log(this.player.position);
+      // }
+      // dspoijfosdf++;
+
+      // // Use chunk.scale instead of this.scale
+      // let worldX = -chunk.position.x * this.chunkSize * chunk.scale;
+      // let worldZ = chunk.position.z * this.chunkSize * chunk.scale;
+      
+      // // Calculate 4D clip space position
+      // let clipSpace = Matrix.multiplyMatrixVector4(this.vpMatrix, [worldX, 0, worldZ, 1]);
+      
+      // // If W > 0, the chunk is in front of the camera (not behind us)
+      // if (clipSpace[3] > 0) {
+      //     // Perspective Divide
+      //     let ndcX = clipSpace[0] / clipSpace[3];
+      //     let ndcY = clipSpace[1] / clipSpace[3];
+
+      //     // Map NDC (-1 to 1) to screen pixels (0 to width/height)
+      //     let screenX = ((ndcX + 1.0) / 2.0) * this.canvas.width;
+      //     let screenY = ((1.0 - ndcY) / 2.0) * this.canvas.height;
+
+      //     let distanceLabel = document.createElement("p");
+      //     distanceLabel.className = "chunk-debug-label"; // Add class for removal
+      //     distanceLabel.innerText = Math.round(distance);
+      //     distanceLabel.style.position = "absolute";
+      //     distanceLabel.style.color = "white";
+      //     distanceLabel.style.fontWeight = "bold";
+      //     distanceLabel.style.left = screenX + "px";
+      //     distanceLabel.style.top = screenY + "px";
+      //     //10px stroke
+      //     let strokeSize = 2;
+      //     distanceLabel.style.textShadow = `-`+strokeSize+"px "+strokeSize+"px black, "+strokeSize+"px "+strokeSize+"px black, -"+strokeSize+"px "+strokeSize+"px black, "+strokeSize+"px -"+strokeSize+"px black";
+          
+      //     document.body.appendChild(distanceLabel);
+      // }
+    }
+    // sort chunks by distance
+    const sortedChunks = Array.from(chunkData.values()).sort((a, b) => a.distance - b.distance);
+    const nineChunks = sortedChunks.slice(0, 9);
+
+
     for (const chunk of chunkData.values()) {
 
       // If a chunk has raw data ready but no GPU textures, initialize them
@@ -733,7 +785,14 @@ export default class Renderer {
       if (this.combinedMode) {
         // The 9 closest chunks around the player are precisely the ones that 
         // reach maximum subdivision (LOD 9) in the QuadTree.
-        if (chunk.levelOfDetail === 9) {
+        // if (chunk.levelOfDetail === 9) {
+        //   useGreedy = true;
+        //   useRaymarching = false;
+        // } else {
+        //   useGreedy = false;
+        //   useRaymarching = true;
+        // }
+        if (nineChunks.includes(chunk)) {
           useGreedy = true;
           useRaymarching = false;
         } else {

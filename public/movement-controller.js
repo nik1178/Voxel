@@ -47,6 +47,7 @@ export default class MovementController {
     }
     if (eventKey === " ") {
       this.moving.up = true;
+      event.preventDefault();
     }
     if (eventKey === "shift") {
       this.moving.down = true;

@@ -18,6 +18,18 @@ export function multiply(a, b) {
     return result;
 }
 
+export function multiplyMatrixVector4(m, v) {
+    var result = [];
+    for (let i = 0; i < m.length; i++) {
+        let sum = 0;
+        for (let j = 0; j < v.length; j++) {
+            sum += m[i][j] * v[j];
+        }
+        result.push(sum);
+    }
+    return result;
+}
+
 export function subtractVectors(v1, v2) {
     var result = [];
 

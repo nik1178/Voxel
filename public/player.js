@@ -20,4 +20,12 @@ export default class Player {
     update(dt) {
         this.movementController.updateMovement(dt);
     }
+
+    getTranslation() {
+        return this.camera.transform.translation;
+    }
+
+    getPositionVector() {
+        return {x: this.camera.transform.translation[0], y: this.camera.transform.translation[1], z: this.camera.transform.translation[2]};
+    }
 }
