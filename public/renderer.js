@@ -18,7 +18,8 @@ export default class Renderer {
 
   manualCulling = false;
   greedyMeshing = false;
-  rayMarching = true;
+  rayMarching = false;
+  combinedMode = true;
 
   /**
    * Constructs the Renderer instance.
@@ -54,16 +55,39 @@ export default class Renderer {
     await this.getShaders();
     this.createBufferLayouts();
     this.createBuffers();
+    await this.loadSkyboxTexture();
 
     this.updateVPMatrix(player.camera, canvas);
 
-    // Compile the core shader module using the loaded WGSL code.
-    this.cellShaderModule = this.device.createShaderModule({
-      label: "Cell shader",
-      code: this.wgslShader,
+    // Compile the core shader modules using the loaded WGSL code.
+    if (this.rayShaderText) {
+      this.rayShaderModule = this.device.createShaderModule({
+        label: "Ray shader",
+        code: this.rayShaderText,
+      });
+    }
+
+    if (this.greedyShaderText) {
+      this.greedyShaderModule = this.device.createShaderModule({
+        label: "Greedy shader",
+        code: this.greedyShaderText,
+      });
+    }
+    
+    // For legacy fallback
+    if (!this.rayShaderText && !this.greedyShaderText) {
+      this.cellShaderModule = this.device.createShaderModule({
+        label: "Cell shader",
+        code: this.wgslShader,
+      });
+    }
+
+    this.fxShaderModule = this.device.createShaderModule({
+      label: "FX shader",
+      code: this.fxShaderText,
     });
 
-    this.createDepthTexture();
+    this.createFramebuffers();
     this.createPipelines();
     this.createBindGroups();
 
@@ -131,14 +155,35 @@ export default class Renderer {
    * @returns {Promise<void>} Resolves when the shader source is loaded.
    */
   async getShaders() {
-    let shaderFile = "shader.wgsl";
-    if (this.rayMarching) {
-        shaderFile = "ray-shader.wgsl";
+    this.fxShaderText = await fetch("fx-shader.wgsl").then((r) => r.text());
+    
+    if (this.combinedMode) {
+      this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
+      this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
+    } else if (this.rayMarching) {
+      this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
     } else if (this.greedyMeshing) {
-        shaderFile = "instanced-greedy-shader.wgsl";
+      this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
+    } else {
+      this.wgslShader = await fetch("shader.wgsl").then((r) => r.text());
     }
-    this.wgslShader = await fetch(shaderFile).then((response) =>
-      response.text()
+  }
+
+  async loadSkyboxTexture() {
+    const response = await fetch("skybox.png");
+    const blob = await response.blob();
+    const imageBitmap = await createImageBitmap(blob);
+    
+    this.skyboxTexture = this.device.createTexture({
+      size: [imageBitmap.width, imageBitmap.height, 1],
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+    
+    this.device.queue.copyExternalImageToTexture(
+      { source: imageBitmap },
+      { texture: this.skyboxTexture },
+      [imageBitmap.width, imageBitmap.height]
     );
   }
 
@@ -158,9 +203,9 @@ export default class Renderer {
       ],
     };
 
-    if (this.rayMarching) {
+    if (this.rayMarching && !this.combinedMode) {
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
-    } else if (!this.greedyMeshing) {
+    } else if (!this.greedyMeshing && !this.combinedMode) {
       // The normal shader.wgsl only needs the face geometry buffer
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
     } else {
@@ -257,10 +302,10 @@ export default class Renderer {
   }
 
   /**
-   * Creates the depth texture attachment used for Z-buffering.
+   * Creates the offscreen color and depth texture attachments used for post-processing.
    */
-  createDepthTexture() {
-    this.depthFormat = "depth24plus";
+  createFramebuffers() {
+    this.depthFormat = "depth32float";
     this.depthTexture = this.device.createTexture({
       size: {
         width: this.canvas.width,
@@ -268,7 +313,32 @@ export default class Renderer {
         depthOrArrayLayers: 1,
       },
       format: this.depthFormat,
-      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    this.renderTargetTexture = this.device.createTexture({
+      size: {
+        width: this.canvas.width,
+        height: this.canvas.height,
+        depthOrArrayLayers: 1,
+      },
+      format: this.format,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    const bloomWidth = Math.max(1, Math.floor(this.canvas.width / 2));
+    const bloomHeight = Math.max(1, Math.floor(this.canvas.height / 2));
+
+    this.bloomTextureA = this.device.createTexture({
+      size: { width: bloomWidth, height: bloomHeight, depthOrArrayLayers: 1 },
+      format: this.format,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    this.bloomTextureB = this.device.createTexture({
+      size: { width: bloomWidth, height: bloomHeight, depthOrArrayLayers: 1 },
+      format: this.format,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
     });
   }
 
@@ -300,34 +370,163 @@ export default class Renderer {
       bindGroupLayouts: [this.globalBindGroupLayout, this.vtfBindGroupLayout]
     });
 
-    this.cellPipeline = this.device.createRenderPipeline({
-      label: "Goofy pipeline",
-      layout: pipelineLayout,
-      vertex: {
-        module: this.cellShaderModule,
-        entryPoint: "vertexMain",
-        buffers: this.vertexBufferLayouts,
-      },
-      fragment: {
-        module: this.cellShaderModule,
-        entryPoint: "fragmentMain",
-        targets: [{ format: this.format }],
-      },
-      primitive: {
-        topology: 'triangle-list',
-        cullMode: this.rayMarching ? 'none' : 'back', // <--- Add this! Let the hardware do the heavy lifting
-      },
-      depthStencil: {
-        format: this.depthFormat,
-        depthWriteEnabled: true,
-        depthCompare: "less",
-      },
-    });
+    if (this.rayShaderText) {
+      this.rayPipeline = this.device.createRenderPipeline({
+        label: "Ray pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.rayShaderModule,
+          entryPoint: "vertexMain",
+          buffers: [this.faceVertexBufferLayout],
+        },
+        fragment: {
+          module: this.rayShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+          cullMode: 'none',
+        },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
+
+    if (this.greedyShaderText) {
+      this.greedyPipeline = this.device.createRenderPipeline({
+        label: "Greedy pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.greedyShaderModule,
+          entryPoint: "vertexMain",
+          buffers: [this.faceVertexBufferLayout, this.instanceBufferLayout],
+        },
+        fragment: {
+          module: this.greedyShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+          cullMode: 'back', 
+        },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
+
+    if (!this.rayShaderText && !this.greedyShaderText) {
+      this.cellPipeline = this.device.createRenderPipeline({
+        label: "Legacy pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.cellShaderModule,
+          entryPoint: "vertexMain",
+          buffers: this.vertexBufferLayouts,
+        },
+        fragment: {
+          module: this.cellShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+          cullMode: 'back',
+        },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
 
     // We use a nearest-neighbor sampler for discrete voxel boundaries
     this.nearestSampler = this.device.createSampler({
       magFilter: 'nearest',
       minFilter: 'nearest'
+    });
+
+    this.fxBindGroupLayout = this.device.createBindGroupLayout({
+      label: "FX Bind Group Layout",
+      entries: [
+        { binding: 0, visibility: GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } },
+        { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: { type: "filtering" } },
+        { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } },
+        { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "depth" } },
+        { binding: 4, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } }, // bloom texture
+        { binding: 5, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } } // skybox texture
+      ]
+    });
+
+    const fxPipelineLayout = this.device.createPipelineLayout({
+      bindGroupLayouts: [this.fxBindGroupLayout]
+    });
+
+    this.fxPipeline = this.device.createRenderPipeline({
+      label: "FX pipeline",
+      layout: fxPipelineLayout,
+      vertex: {
+        module: this.fxShaderModule,
+        entryPoint: "vertexMain",
+      },
+      fragment: {
+        module: this.fxShaderModule,
+        entryPoint: "fragmentMain",
+        targets: [{ format: this.format }],
+      },
+      primitive: {
+        topology: 'triangle-list',
+      },
+    });
+
+    this.fxSampler = this.device.createSampler({
+      magFilter: 'linear',
+      minFilter: 'linear'
+    });
+
+    // Layout for Bloom passes
+    this.blurBindGroupLayout = this.device.createBindGroupLayout({
+      label: "Blur Bind Group Layout",
+      entries: [
+        { binding: 0, visibility: GPUShaderStage.FRAGMENT, sampler: { type: "filtering" } },
+        { binding: 1, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } }
+      ]
+    });
+
+    const blurPipelineLayout = this.device.createPipelineLayout({
+      bindGroupLayouts: [this.blurBindGroupLayout]
+    });
+
+    this.extractPipeline = this.device.createRenderPipeline({
+      label: "Extract pipeline",
+      layout: blurPipelineLayout,
+      vertex: { module: this.fxShaderModule, entryPoint: "vertexMain" },
+      fragment: { module: this.fxShaderModule, entryPoint: "extractBright", targets: [{ format: this.format }] },
+      primitive: { topology: 'triangle-list' },
+    });
+
+    this.blurXPipeline = this.device.createRenderPipeline({
+      label: "Blur X pipeline",
+      layout: blurPipelineLayout,
+      vertex: { module: this.fxShaderModule, entryPoint: "vertexMain" },
+      fragment: { module: this.fxShaderModule, entryPoint: "blurX", targets: [{ format: this.format }] },
+      primitive: { topology: 'triangle-list' },
+    });
+
+    this.blurYPipeline = this.device.createRenderPipeline({
+      label: "Blur Y pipeline",
+      layout: blurPipelineLayout,
+      vertex: { module: this.fxShaderModule, entryPoint: "vertexMain" },
+      fragment: { module: this.fxShaderModule, entryPoint: "blurY", targets: [{ format: this.format }] },
+      primitive: { topology: 'triangle-list' },
     });
   }
 
@@ -344,6 +543,46 @@ export default class Renderer {
           resource: { buffer: this.uniformBuffer },
         },
       ],
+    });
+
+    this.fxBindGroup = this.device.createBindGroup({
+      label: "FX bind group",
+      layout: this.fxBindGroupLayout,
+      entries: [
+        { binding: 0, resource: { buffer: this.uniformBuffer } }, // vp matrix
+        { binding: 1, resource: this.fxSampler },
+        { binding: 2, resource: this.renderTargetTexture.createView() },
+        { binding: 3, resource: this.depthTexture.createView() },
+        { binding: 4, resource: this.bloomTextureA.createView() },
+        { binding: 5, resource: this.skyboxTexture.createView() }
+      ]
+    });
+
+    this.bloomExtractBindGroup = this.device.createBindGroup({
+      label: "Bloom Extract Bind Group",
+      layout: this.blurBindGroupLayout,
+      entries: [
+        { binding: 0, resource: this.fxSampler },
+        { binding: 1, resource: this.renderTargetTexture.createView() }
+      ]
+    });
+
+    this.bloomBlurXBindGroup = this.device.createBindGroup({
+      label: "Bloom Blur X Bind Group",
+      layout: this.blurBindGroupLayout,
+      entries: [
+        { binding: 0, resource: this.fxSampler },
+        { binding: 1, resource: this.bloomTextureA.createView() }
+      ]
+    });
+
+    this.bloomBlurYBindGroup = this.device.createBindGroup({
+      label: "Bloom Blur Y Bind Group",
+      layout: this.blurBindGroupLayout,
+      entries: [
+        { binding: 0, resource: this.fxSampler },
+        { binding: 1, resource: this.bloomTextureB.createView() }
+      ]
     });
   }
 
@@ -405,7 +644,7 @@ export default class Renderer {
     const pass = commandEncoder.beginRenderPass({
       colorAttachments: [
         {
-          view: this.context.getCurrentTexture().createView(),
+          view: this.renderTargetTexture.createView(),
           loadOp: "clear",
           storeOp: "store",
           clearValue: { r: 0.53, g: 0.81, b: 0.92, a: 1 }, // Sky blue background
@@ -419,18 +658,20 @@ export default class Renderer {
       },
     });
 
-    // Bind global pipeline state
-    pass.setPipeline(this.cellPipeline);
+    // Remove pass.setPipeline here, we'll set it per-chunk depending on mode
     pass.setBindGroup(0, this.bindGroup);
 
-    // TODO: Change to actual variable later
+    // Default buffers for legacy mode
     let renderMode = "face";
-    if (renderMode == "cube") {
-      pass.setVertexBuffer(0, this.gridVertexBuffer);
-      pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
-    } else {
-      pass.setVertexBuffer(0, this.faceVertexBuffer);
-      pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
+    if (!this.combinedMode && !this.rayMarching && !this.greedyMeshing) {
+      pass.setPipeline(this.cellPipeline);
+      if (renderMode == "cube") {
+        pass.setVertexBuffer(0, this.gridVertexBuffer);
+        pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
+      } else {
+        pass.setVertexBuffer(0, this.faceVertexBuffer);
+        pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
+      }
     }
 
     // Iterate through all chunks managed by the ChunkManager
@@ -450,7 +691,7 @@ export default class Renderer {
 
       //const chunkSize = chunk.colorTexture.width;
 
-      if (this.greedyMeshing && chunk.instanceArray && !chunk.instanceBuffer) {
+      if ((this.greedyMeshing || this.combinedMode) && chunk.instanceArray && !chunk.instanceBuffer) {
         chunk.instanceBuffer = this.device.createBuffer({
           size: chunk.instanceArray.byteLength,
           usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
@@ -484,18 +725,38 @@ export default class Renderer {
         chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
       ]));
 
-      // Execute the instanced draw call for the chunk
       pass.setBindGroup(1, chunk.vtfBindGroup);
-      if (this.rayMarching) {
+      
+      let useGreedy = this.greedyMeshing;
+      let useRaymarching = this.rayMarching;
+
+      if (this.combinedMode) {
+        // The 9 closest chunks around the player are precisely the ones that 
+        // reach maximum subdivision (LOD 9) in the QuadTree.
+        if (chunk.levelOfDetail === 9) {
+          useGreedy = true;
+          useRaymarching = false;
+        } else {
+          useGreedy = false;
+          useRaymarching = true;
+        }
+      }
+
+      // Execute the instanced draw call for the chunk
+      if (useRaymarching) {
+        pass.setPipeline(this.rayPipeline);
         pass.setVertexBuffer(0, this.gridVertexBuffer);
         pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
         pass.drawIndexed(this.gridIndexCount, 1);
-      } else if (this.greedyMeshing) {
+      } else if (useGreedy) {
+        pass.setPipeline(this.greedyPipeline);
         if (chunk.instanceBuffer) {
+          pass.setVertexBuffer(0, this.faceVertexBuffer);
           pass.setVertexBuffer(1, chunk.instanceBuffer);
+          pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
           pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);
         } else {
-          console.log("I AM A GOOFY, LOOK AT ME GOOF");
+          console.log("Chunk missing instanceBuffer for greedy meshing!");
         }
       } else if (renderMode == "cube") {
         pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
@@ -536,8 +797,63 @@ export default class Renderer {
       }
     }
 
-    // Finalize and submit the command buffer to the GPU queue
+    // Finalize the main pass
     pass.end();
+
+    // 1. Bloom Extract Pass (reads renderTargetTexture, writes to bloomTextureA)
+    const extractPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: this.bloomTextureA.createView(),
+        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+      }]
+    });
+    extractPass.setPipeline(this.extractPipeline);
+    extractPass.setBindGroup(0, this.bloomExtractBindGroup);
+    extractPass.draw(3);
+    extractPass.end();
+
+    // 2. Bloom Blur X Pass (reads bloomTextureA, writes to bloomTextureB)
+    const blurXPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: this.bloomTextureB.createView(),
+        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+      }]
+    });
+    blurXPass.setPipeline(this.blurXPipeline);
+    blurXPass.setBindGroup(0, this.bloomBlurXBindGroup);
+    blurXPass.draw(3);
+    blurXPass.end();
+
+    // 3. Bloom Blur Y Pass (reads bloomTextureB, writes back to bloomTextureA)
+    const blurYPass = commandEncoder.beginRenderPass({
+      colorAttachments: [{
+        view: this.bloomTextureA.createView(),
+        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+      }]
+    });
+    blurYPass.setPipeline(this.blurYPipeline);
+    blurYPass.setBindGroup(0, this.bloomBlurYBindGroup);
+    blurYPass.draw(3);
+    blurYPass.end();
+
+    // Begin the post-processing FX pass
+    const fxPass = commandEncoder.beginRenderPass({
+      colorAttachments: [
+        {
+          view: this.context.getCurrentTexture().createView(),
+          loadOp: "clear",
+          storeOp: "store",
+          clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
+        },
+      ]
+    });
+
+    fxPass.setPipeline(this.fxPipeline);
+    fxPass.setBindGroup(0, this.fxBindGroup);
+    fxPass.draw(3);
+    fxPass.end();
+
+    // Submit the command buffer to the GPU queue
     this.device.queue.submit([commandEncoder.finish()]);
   }
 }

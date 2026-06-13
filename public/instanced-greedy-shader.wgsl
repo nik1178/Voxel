@@ -20,7 +20,7 @@ struct VertexInput {
     @location(0) position : vec4<u32>,        // From faceVertexBuffer (stepMode: "vertex")
     @location(1) instanceData : vec2<u32>,    // From instanceBuffer (stepMode: "instance")
 };
-// instanceData (64bits): 000000000 | ooo | hhhhhhhhhhhh | lzlzlzlz ||| lz | lxlxlxlxlx | zzzzzzzzzz | xxxxxxxxxx
+// instanceData (64bits): 000000 | oooooo | hhhhhhhhhhhh | lzlzlzlz ||| lz | lxlxlxlxlx | zzzzzzzzzz | xxxxxxxxxx
 
 struct VertexOutput {
     @builtin(position) position : vec4<f32>,
@@ -72,12 +72,13 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   // 8 bits == FF
   // 12 bits == FFF
   // 3 bits == 7
+  // 6 bits == 3F
   let gridX = f32(rawDataRight & (0x3FFu));
   let gridZ = f32((rawDataRight >> 10u) & (0x3FFu));
   let lengthX = f32((rawDataRight >> 20u) & (0x3FFu));
   let lengthZ = f32(((rawDataRight >> 30u) & (0x3FFu)) | ((rawDataLeft & (0xFFu)) << 2u));
   let height = f32((rawDataLeft >> 8u) & (0xFFFu));
-  let orientation = (rawDataLeft >> 20u) & (7u);
+  var orientation = (rawDataLeft >> 20u) & (0x3Fu);
 
   // We are drawing just the top face.
   // The face geometry in renderer.js goes from x: 0..1, z: 0..1
@@ -85,9 +86,21 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   var localY = 0.0;
   var localZ = 0.0;
   var shade = 1.0; // Add some fake lighting based on face normal
-  var ix = f32(input.position.x) * lengthX;
-  var iz = f32(input.position.z) * lengthZ;
+
+  let sizeMultiplier = 1.0;
+
+  var ix = f32(input.position.x) * lengthX * sizeMultiplier;
+  var iz = f32(input.position.z) * lengthZ * sizeMultiplier;
   let texCoord = vec2<i32>(i32(gridX), i32(gridZ));
+
+
+
+  var boundaryFace = false;
+  let boundaryHeight = 10u;
+  if (orientation>10) {
+    orientation-=10;
+    boundaryFace = true;
+  }
 
   if (orientation == 0u) {
     // Top face
@@ -98,17 +111,24 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     shade = 1.0;
   } else if (orientation == 1u) {
     // Front face (+z)
-    let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(0, 1), 0).r);
+    var neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(0, 1), 0).r);
+    localZ = 1;
+    if (boundaryFace) {
+      neighbor_h = f32(height) - f32(boundaryHeight);
+      localZ = 0;
+    }
     // if (neighbor_h >= height) { return output; }
     localX = lengthX - ix; // CCW winding
-    localZ = 1;
     localY = neighbor_h + (height - neighbor_h) * iz;
     shade = 0.8;
     // output.position = vec4<f32>(0, 0, 0, 1.0);
     // return output;
   } else if (orientation == 3u) {
     // Back face (-z)
-    let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(0, -1), 0).r);
+    var neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(0, -1), 0).r);
+    if (boundaryFace) {
+      neighbor_h = f32(height) - f32(boundaryHeight);
+    }
     // if (neighbor_h >= height) { return output; }
     localX = ix;
     localZ = 0.0;
@@ -118,10 +138,15 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     // return output;
   } else if (orientation == 2u) {
     // Left face (-x)
-    let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(1, 0), 0).r);
-    // if (neighbor_h >= height) { return output; }
+    var neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(1, 0), 0).r);
     localX = 1.0;
     localZ = iz;
+    if (boundaryFace) {
+      neighbor_h = f32(height) - f32(boundaryHeight);
+      localZ = 1-iz;
+      localX = 0;
+    }
+    // if (neighbor_h >= height) { return output; }
     // localY = height + ix;
     localY = height + (height - neighbor_h) * (-ix);
     shade = 0.6;
@@ -129,10 +154,15 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
     // return output;
   } else if (orientation == 4u) {
     // Right face (+x)
-    let neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(-1, 0), 0).r);
+    var neighbor_h = f32(textureLoad(heightMap, texCoord + vec2<i32>(-1, 0), 0).r);
+    localZ = iz;
+    if (boundaryFace) {
+      neighbor_h = f32(height) - f32(boundaryHeight);
+      localZ = 1-iz;
+      
+    }
     // if (neighbor_h >= height) { return output; }
     localX = 0.0;
-    localZ = iz;
     localY = height + (height - neighbor_h)*(-(1-ix));
     // localY = height + (height - neighbor_h) * ix;
     shade = 0.6;
@@ -162,7 +192,8 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   output.position = vpMatrix * world_pos;
   
   // Color will be fetched in fragment shader!
-  output.color = vec4<f32>(random(gridX*chunkInfo.x+chunkInfo.z + final_y), random(gridZ*chunkInfo.z + final_y), random(lengthX + gridX + final_y), 1.0);
+  // output.color = vec4<f32>(random(gridX*chunkInfo.x+chunkInfo.z + final_y), random(gridZ*chunkInfo.z + final_y), random(lengthX + gridX + final_y), 1.0);
+  output.color.a = shade;
 
   return output;
 }
@@ -173,9 +204,9 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   let texCoord = vec2<i32>(i32(input.chunkCoord.x-0.001), i32(input.chunkCoord.y-0.001));
   let color = textureLoad(colorMap, texCoord, 0);
 
-  var r = color.r;
-  var g = color.g;
-  var b = color.b;
+  var r = color.r * input.color.a;
+  var g = color.g * input.color.a;
+  var b = color.b * sqrt(input.color.a);
   var a = color.a;
 
   // Debug color: tint based on age
@@ -185,9 +216,9 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   // Draw wireframe around greedy quads to visibly see them
   // We use quadUV to check the boundaries of the greedy quad, NOT individual voxels.
   let edgeWidth = 0.02; 
-  let isEdge = input.quadUV.x < edgeWidth || input.quadUV.x > (1.0 - edgeWidth) ||
-               input.quadUV.y < edgeWidth || input.quadUV.y > (1.0 - edgeWidth);
-  // let isEdge = false;
+  // let isEdge = input.quadUV.x < edgeWidth || input.quadUV.x > (1.0 - edgeWidth) ||
+  //              input.quadUV.y < edgeWidth || input.quadUV.y > (1.0 - edgeWidth);
+  let isEdge = false;
   if (isEdge) {
     return vec4<f32>(1.0, 0.0, 1.0, 1.0); // White wireframe
   }

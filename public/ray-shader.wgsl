@@ -167,10 +167,6 @@ fn fragmentMain(input: VertexOutput) -> FragmentOutput {
     
     let hitPos = startPos + t * rd;
     
-    let dist = hitPos - ro;
-    let fog = sqrt(clamp(length(dist) / 150000.0, 0.0, 1.0));
-    finalColor = mix(finalColor, vec4<f32>(0.53, 0.81, 0.92, 1.0), fog);
-    
     let clipPos = globals.vpMatrix * vec4<f32>(hitPos, 1.0);
     
     var out: FragmentOutput;

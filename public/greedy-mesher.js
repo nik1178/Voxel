@@ -59,7 +59,6 @@ export class GreedyMesher {
             }
         }
 
-        let before = planes.length;
         // Side faces parallel to X axis (Front +Z / Back -Z)
         let clearedZ = new Uint8Array(heightMap.length).fill(0);
         for (let z = 0; z < size - 1; z++) {
@@ -128,13 +127,32 @@ export class GreedyMesher {
             }
         }
 
-        console.log("Side planes: ", planes.length - before);
+        for (let x = 0; x < size; x++) { // +z face
+            const height = heightMap[size * (size - 1) + x];
+            if (height === 0) continue;
+            planes.push({x: x, z: size, lengthX: 1, lengthZ: 1, height: height, orientation: 11});
+        }
+        for (let x = 0; x < size; x++) { // -z face
+            const height = heightMap[x];
+            if (height === 0) continue;
+            planes.push({x: x, z: 0, lengthX: 1, lengthZ: 1, height: height, orientation: 13});
+        }
+        for (let z = 0; z < size; z++) { // -x face
+            const height = heightMap[size * z];
+            if (height === 0) continue;
+            planes.push({x: 0, z: z, lengthX: 1, lengthZ: 1, height: height, orientation: 12});
+        }
+        for (let z = 0; z < size; z++) { // +x face
+            const height = heightMap[size * z + size - 1];
+            if (height === 0) continue;
+            planes.push({x: size, z: z, lengthX: 1, lengthZ: 1, height: height, orientation: 14});
+        }
 
         return planes;
     }
 
     toInstanceArray(planes) {
-        // Max needed X and Z are 1000, so 10 bits per POS, Y max is 3000, so 12 bits, maximum X and Z size is 1000, so 10 bits * 2 for X and Z, orientation max is 4, so 3 bits, 
+        // Max needed X and Z are 1000, so 10 bits per POS, Y max is 3000, so 12 bits, maximum X and Z size is 1000, so 10 bits * 2 for X and Z, orientation max is 4, so 3 bits, but we are abusing it for the boundary instances, so now 6 bits 
         // 10+10+12+20+3 = 55 bits, can fit in 64 bit uint
         // 4 16-bit integers = 64 bits, can fit in 64 bit uint = 8 bytes
         const instanceArray = new Uint32Array(planes.length * 2);
