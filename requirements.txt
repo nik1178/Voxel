@@ -1,0 +1,5 @@
+flask==3.0.0
+flask-sock==0.2.9
+numpy==1.24.3
+laspy==2.8.1
+tqdm==4.65.0

@@ -3,4 +3,5 @@ python/__pycache__/
 python/util/__pycache__/
 venv/
 *.txt
+!requirements.txt
 node_modules/

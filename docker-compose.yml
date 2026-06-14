@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  node-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: voxel-node
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voxel-node.rule=Host(`voxel-playground.ddns.net`)"
+      - "traefik.http.routers.voxel-node.entrypoints=web,websecure"
+      - "traefik.http.routers.voxel-node.tls=true"
+      - "traefik.http.routers.voxel-node.tls.certresolver=letsencrypt"
+      - "traefik.http.services.voxel-node.loadbalancer.server.port=8000"
+
+  python-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: voxel-python
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voxel-python.rule=Host(`voxel-api.ddns.net`)"
+      - "traefik.http.routers.voxel-python.entrypoints=web,websecure"
+      - "traefik.http.routers.voxel-python.tls=true"
+      - "traefik.http.routers.voxel-python.tls.certresolver=letsencrypt"
+      - "traefik.http.services.voxel-python.loadbalancer.server.port=5000"
+
+networks:
+  web:
+    external: true
