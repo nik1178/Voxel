@@ -14,13 +14,8 @@ services:
     networks:
       - web
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.voxel-node.rule=Host(`voxel-playground.ddns.net`) && !(PathPrefix(`/ws`) || PathPrefix(`/get_chunk`))"
-      - "traefik.http.routers.voxel-node.entrypoints=web,websecure"
-      - "traefik.http.routers.voxel-node.tls=true"
-      - "traefik.http.routers.voxel-node.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.voxel-node.priority=10"
-      - "traefik.http.services.voxel-node.loadbalancer.server.port=8000"
+      - "traefik.enable=false"
+      # node is not used for the public site anymore; python serves both static assets and the WebSocket/chunk endpoints on the main domain.
 
   python-server:
     build:
@@ -42,13 +37,17 @@ services:
       - "traefik.http.routers.voxel-python.tls.certresolver=letsencrypt"
       - "traefik.http.routers.voxel-python.priority=10"
       - "traefik.http.services.voxel-python.loadbalancer.server.port=8000"
-      # Route WS and chunk API paths from the playground host to this python backend (so WS works when page served from playground domain)
-      - "traefik.http.routers.voxel-python-ws.rule=Host(`voxel-playground.ddns.net`) && (PathPrefix(`/ws`) || PathPrefix(`/get_chunk`))"
-      - "traefik.http.routers.voxel-python-ws.entrypoints=web,websecure"
-      - "traefik.http.routers.voxel-python-ws.tls=true"
-      - "traefik.http.routers.voxel-python-ws.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.voxel-python-ws.priority=100"
-      - "traefik.http.routers.voxel-python-ws.service=voxel-python"
+      # Main public site (playground) is now served entirely by the python container.
+      # This ensures static assets + /ws/chunks (WebSocket) + /get_chunk come from the same origin/backend.
+      # The python container has the public/ assets (see Dockerfile.python) and implements the WS endpoint.
+      - "traefik.http.routers.voxel-playground.rule=Host(`voxel-playground.ddns.net`)"
+      - "traefik.http.routers.voxel-playground.entrypoints=web,websecure"
+      - "traefik.http.routers.voxel-playground.tls=true"
+      - "traefik.http.routers.voxel-playground.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.voxel-playground.priority=10"
+      - "traefik.http.routers.voxel-playground.service=voxel-python"
+      # Best practice for reverse-proxying (helps with headers for WebSocket upgrades etc.)
+      - "traefik.http.services.voxel-python.loadbalancer.passHostHeader=true"
 
 volumes:
   public-data:
