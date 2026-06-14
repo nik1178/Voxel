@@ -1,22 +1,4 @@
-version: '3.8'
-
 services:
-  node-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.node
-    container_name: voxel-node
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - public-data:/app/public/map
-    networks:
-      - web
-    labels:
-      - "traefik.enable=false"
-      # node is not used for the public site anymore; python serves both static assets and the WebSocket/chunk endpoints on the main domain.
-
   python-server:
     build:
       context: .
@@ -37,16 +19,15 @@ services:
       - "traefik.http.routers.voxel-python.tls.certresolver=letsencrypt"
       - "traefik.http.routers.voxel-python.priority=10"
       - "traefik.http.services.voxel-python.loadbalancer.server.port=8000"
-      # Main public site (playground) is now served entirely by the python container.
-      # This ensures static assets + /ws/chunks (WebSocket) + /get_chunk come from the same origin/backend.
-      # The python container has the public/ assets (see Dockerfile.python) and implements the WS endpoint.
+      # Serves the playground (static assets from public/), /get_chunk, and the WebSocket at /ws/chunks.
+      # Both voxel-api and voxel-playground domains route here so WS and assets share origin.
       - "traefik.http.routers.voxel-playground.rule=Host(`voxel-playground.ddns.net`)"
       - "traefik.http.routers.voxel-playground.entrypoints=web,websecure"
       - "traefik.http.routers.voxel-playground.tls=true"
       - "traefik.http.routers.voxel-playground.tls.certresolver=letsencrypt"
       - "traefik.http.routers.voxel-playground.priority=10"
       - "traefik.http.routers.voxel-playground.service=voxel-python"
-      # Best practice for reverse-proxying (helps with headers for WebSocket upgrades etc.)
+      # Required for WebSocket upgrades through the reverse proxy.
       - "traefik.http.services.voxel-python.loadbalancer.passHostHeader=true"
 
 volumes:

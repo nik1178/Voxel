@@ -9,4 +9,6 @@ COPY python ./python
 COPY server.py .
 COPY public ./public
 
-CMD ["python", "server.py"]
+# Use gunicorn + eventlet worker for reliable WebSocket (flask-sock) support in production.
+# Single worker is typical for stateful/long-lived WS connections; heavy work is offloaded inside handlers.
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "--bind", "0.0.0.0:8000", "--timeout", "0", "--access-logfile", "-", "server:app"]
