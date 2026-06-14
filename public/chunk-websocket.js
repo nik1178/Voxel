@@ -4,27 +4,12 @@ export default class ChunkWebSocketClient {
     this.ws = null;
     this.nextRequestId = 1;
     this.pendingRequests = new Map(); // requestId -> { resolve, reject }
-    this.isConnected = false;
-    this.connectionPromise = null;
     this.connect();
   }
 
   connect() {
     this.ws = new WebSocket(this.url);
     this.ws.binaryType = 'arraybuffer';
-
-    this.connectionPromise = new Promise((resolve, reject) => {
-      this.ws.onopen = () => {
-        console.log('WebSocket connected to', this.url);
-        this.isConnected = true;
-        resolve();
-      };
-
-      this.ws.onerror = (event) => {
-        console.error('WebSocket connection error:', event);
-        reject(new Error("WebSocket connection failed"));
-      };
-    });
 
     this.ws.onmessage = (event) => {
       const buffer = event.data;
@@ -50,8 +35,6 @@ export default class ChunkWebSocketClient {
     };
 
     this.ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      this.isConnected = false;
       // Reject all pending requests on connection loss
       for (const [id, handlers] of this.pendingRequests.entries()) {
         handlers.reject(new Error("WebSocket disconnected"));
@@ -63,19 +46,10 @@ export default class ChunkWebSocketClient {
     };
   }
 
-  async requestChunk(x, z, chunkSize, lod, version) {
-    // Wait for connection to be established
-    if (!this.isConnected) {
-      try {
-        await this.connectionPromise;
-      } catch (err) {
-        throw new Error("Failed to connect WebSocket: " + err.message);
-      }
-    }
-
+  requestChunk(x, z, chunkSize, lod, version) {
     return new Promise((resolve, reject) => {
       if (this.ws.readyState !== WebSocket.OPEN) {
-        reject(new Error("WebSocket is not open (readyState: " + this.ws.readyState + ")"));
+        reject(new Error("WebSocket is not open"));
         return;
       }
 
@@ -83,19 +57,14 @@ export default class ChunkWebSocketClient {
       this.pendingRequests.set(requestId, { resolve, reject });
 
       // Send JSON message requesting the chunk
-      try {
-        this.ws.send(JSON.stringify({
-          requestId,
-          x,
-          z,
-          chunk_size: chunkSize,
-          lod,
-          version
-        }));
-      } catch (err) {
-        this.pendingRequests.delete(requestId);
-        reject(err);
-      }
+      this.ws.send(JSON.stringify({
+        requestId,
+        x,
+        z,
+        chunk_size: chunkSize,
+        lod,
+        version
+      }));
     });
   }
 }
