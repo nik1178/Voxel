@@ -1,5 +1,5 @@
 flask==3.0.0
 flask-sock==0.7.0
 numpy==1.24.3
-laspy==2.8.1
+laspy==2.7.0
 tqdm==4.65.0
