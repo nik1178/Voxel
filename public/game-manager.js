@@ -1,6 +1,7 @@
 import Renderer from "./renderer.js";
 import Player from "./player.js";
 import { vprint } from "./vprint.js";
+import { UIManager } from "./ui-manager.js";
 
 export default class GameManager {
   constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 128) {
@@ -21,6 +22,7 @@ export default class GameManager {
       this.canvas.requestPointerLock();
     });
     vprint("Game started");
+    this.uiManager = new UIManager();
     requestAnimationFrame(this.frame.bind(this));
   }
 

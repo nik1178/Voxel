@@ -17,9 +17,7 @@ export default class Renderer {
   initialized = false;
 
   manualCulling = false;
-  greedyMeshing = false;
-  rayMarching = false;
-  combinedMode = true;
+  renderType = "hybrid";
 
   /**
    * Constructs the Renderer instance.
@@ -38,6 +36,26 @@ export default class Renderer {
     this.canvas = canvas;
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    document.addEventListener("render-type-changed", (e) => {
+      this.setRenderType(e.detail);
+    });
+
+    document.addEventListener("culling-toggled", (e) => {
+      this.setManualCulling(e.detail);
+    });
+  }
+
+  setRenderType(type) {
+    this.renderType = type;
+  }
+
+  setManualCulling(culling) {
+    this.manualCulling = culling;
   }
 
   /**
@@ -74,11 +92,17 @@ export default class Renderer {
       });
     }
     
-    // For legacy fallback
-    if (!this.rayShaderText && !this.greedyShaderText) {
-      this.cellShaderModule = this.device.createShaderModule({
-        label: "Cell shader",
-        code: this.wgslShader,
+    if (this.instancedShaderText) {
+      this.instancedShaderModule = this.device.createShaderModule({
+        label: "Instanced shader",
+        code: this.instancedShaderText,
+      });
+    }
+
+    if (this.cubeShaderText) {
+      this.cubeShaderModule = this.device.createShaderModule({
+        label: "Cube shader",
+        code: this.cubeShaderText,
       });
     }
 
@@ -158,16 +182,19 @@ export default class Renderer {
   async getShaders() {
     this.fxShaderText = await fetch("fx-shader.wgsl").then((r) => r.text());
     
-    if (this.combinedMode) {
-      this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
-      this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
-    } else if (this.rayMarching) {
-      this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
-    } else if (this.greedyMeshing) {
-      this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
-    } else {
-      this.wgslShader = await fetch("shader.wgsl").then((r) => r.text());
-    }
+    // if (this.renderType === "hybrid") {
+    //   this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
+    //   this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
+    // } else if (this.renderType === "raycast") {
+    //   this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
+    // } else if (this.renderType === "greedy") {
+    //   this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
+    // // } else {
+    // }
+    this.rayShaderText = await fetch("ray-shader.wgsl").then((r) => r.text());
+    this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
+    this.instancedShaderText = await fetch("instanced-shader.wgsl").then((r) => r.text());
+    this.cubeShaderText = await fetch("instanced-cubes-shader.wgsl").then((r) => r.text());
   }
 
   async loadSkyboxTexture() {
@@ -204,10 +231,7 @@ export default class Renderer {
       ],
     };
 
-    if (this.rayMarching && !this.combinedMode) {
-      this.vertexBufferLayouts = [this.faceVertexBufferLayout];
-    } else if (!this.greedyMeshing && !this.combinedMode) {
-      // The normal shader.wgsl only needs the face geometry buffer
+    if (this.renderType === "raycast" || this.renderType === "mesh" || this.renderType === "planes") {
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
     } else {
       // The greedy shader needs the face geometry AND the instance data buffer
@@ -423,17 +447,43 @@ export default class Renderer {
       });
     }
 
-    if (!this.rayShaderText && !this.greedyShaderText) {
-      this.cellPipeline = this.device.createRenderPipeline({
-        label: "Legacy pipeline",
+    if (this.instancedShaderModule) {
+      this.planesPipeline = this.device.createRenderPipeline({
+        label: "Planes pipeline",
         layout: pipelineLayout,
         vertex: {
-          module: this.cellShaderModule,
+          module: this.instancedShaderModule,
           entryPoint: "vertexMain",
-          buffers: this.vertexBufferLayouts,
+          buffers: [this.faceVertexBufferLayout],
         },
         fragment: {
-          module: this.cellShaderModule,
+          module: this.instancedShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+          cullMode: 'back',
+        },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
+
+    if (this.cubeShaderModule) {
+      this.cubePipeline = this.device.createRenderPipeline({
+        label: "Cube pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.cubeShaderModule,
+          entryPoint: "vertexMain",
+          buffers: [this.faceVertexBufferLayout],
+        },
+        fragment: {
+          module: this.cubeShaderModule,
           entryPoint: "fragmentMain",
           targets: [{ format: this.format }],
         },
@@ -659,21 +709,8 @@ export default class Renderer {
       },
     });
 
-    // Remove pass.setPipeline here, we'll set it per-chunk depending on mode
+    // Set bind group for all render pipelines
     pass.setBindGroup(0, this.bindGroup);
-
-    // Default buffers for legacy mode
-    let renderMode = "face";
-    if (!this.combinedMode && !this.rayMarching && !this.greedyMeshing) {
-      pass.setPipeline(this.cellPipeline);
-      if (renderMode == "cube") {
-        pass.setVertexBuffer(0, this.gridVertexBuffer);
-        pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
-      } else {
-        pass.setVertexBuffer(0, this.faceVertexBuffer);
-        pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
-      }
-    }
 
     // Iterate through all chunks managed by the ChunkManager
     const chunkData = this.chunkManager.getChunkData();
@@ -743,7 +780,7 @@ export default class Renderer {
 
       //const chunkSize = chunk.colorTexture.width;
 
-      if ((this.greedyMeshing || this.combinedMode) && chunk.instanceArray && !chunk.instanceBuffer) {
+      if ((this.renderType === "greedy" || this.renderType === "hybrid") && chunk.instanceArray && !chunk.instanceBuffer) {
         chunk.instanceBuffer = this.device.createBuffer({
           size: chunk.instanceArray.byteLength,
           usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
@@ -779,19 +816,12 @@ export default class Renderer {
 
       pass.setBindGroup(1, chunk.vtfBindGroup);
       
-      let useGreedy = this.greedyMeshing;
-      let useRaymarching = this.rayMarching;
+      let useGreedy = this.renderType === "greedy" || this.renderType === "hybrid";
+      let useRaymarching = this.renderType === "raycast" || this.renderType === "hybrid";
+      let useCubes = this.renderType === "cubes";
+      let usePlanes = this.renderType === "planes" || this.renderType === "mesh"; // Fallback mesh to planes
 
-      if (this.combinedMode) {
-        // The 9 closest chunks around the player are precisely the ones that 
-        // reach maximum subdivision (LOD 9) in the QuadTree.
-        // if (chunk.levelOfDetail === 9) {
-        //   useGreedy = true;
-        //   useRaymarching = false;
-        // } else {
-        //   useGreedy = false;
-        //   useRaymarching = true;
-        // }
+      if (this.renderType === "hybrid") {
         if (nineChunks.includes(chunk)) {
           useGreedy = true;
           useRaymarching = false;
@@ -817,11 +847,22 @@ export default class Renderer {
         } else {
           console.log("Chunk missing instanceBuffer for greedy meshing!");
         }
-      } else if (renderMode == "cube") {
+      } else if (useCubes) {
+        pass.setPipeline(this.cubePipeline);
+        pass.setVertexBuffer(0, this.gridVertexBuffer);
+        pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
         pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
-      } else {
+      } else if (usePlanes) {
+        pass.setPipeline(this.planesPipeline);
+        pass.setVertexBuffer(0, this.faceVertexBuffer);
+        pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
+        
+        let facesToRender = 1;
         if (!this.manualCulling) {
-          pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * 5);
+          facesToRender = 5;
+          this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
+            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 0, 0, 5
+          ]));
         } else {
           // Orientations: 1 = +z, 2 = +x, 3 = -z, 4 = -x
           let orientationOffset = 0;
@@ -835,7 +876,7 @@ export default class Renderer {
             orientationOffset+=1;
           }
 
-          let facesToRender = 3;
+          facesToRender = 3;
           let playerPosition = this.player.camera.transform.translation;
           let pp = {
             x: playerPosition[0],
@@ -849,10 +890,11 @@ export default class Renderer {
           }
 
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : 0, orientationOffset, facesToRender
+            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 1, orientationOffset, facesToRender
           ]));
-          pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
         }
+        
+        pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
       }
     }
 

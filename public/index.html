@@ -10,10 +10,36 @@
 </head>
 
 <body>
-    <canvas id="viewport" style="width: 1920px; aspect-ratio: 16/9;;"></canvas>
-    <div style="display:flex; flex-direction: row;">
-        <p>FPS: </p>
-        <p id="fpscounter"> 0</p>
+    <canvas id="viewport" style="width: 100%; aspect-ratio: 16/9;;"></canvas>
+    <div id="ui">
+        <div class="container fpscounter-container">
+            <div class="container-content">
+                <div class="row">
+                    <div>FPS: </div>
+                    <div id="fpscounter"> 0</div>
+                </div>
+            </div>
+        </div>
+        <div class="container render-type-container">
+            <div class="container-content">
+                <div>Render Type:</div>
+                <div class="dropdown">
+                    <select>
+                        <option value="mesh">Mesh</option>
+                        <option value="cubes">Instanced Cubes</option>
+                        <option value="planes">Instanced Planes</option>
+                        <option value="greedy">Instanced Planes Greedy Meshing</option>
+                        <option value="raycast">Raycasting</option>
+                        <option value="hybrid">Raycasting and Greedy</option>
+                    </select>
+                </div>
+                <div class="planes-options">
+                    <div class="toggle" id="culling-toggle">
+                        Manual culling
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

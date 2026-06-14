@@ -132,7 +132,7 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4<f32> {
         
         for (var i = 0; i < 16; i++) {
             let offsetUV = input.uv + taps[i] * blurRadius;
-            blurredColor += textureSample(colorTexture, textureSampler, offsetUV);
+            blurredColor += textureSampleLevel(colorTexture, textureSampler, offsetUV, 0.0);
             samples += 1.0;
         }
         colorValue = blurredColor / samples;

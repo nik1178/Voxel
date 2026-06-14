@@ -13,7 +13,7 @@ struct ChunkInfo {
 @group(1) @binding(3) var<uniform> chunkInfo: ChunkInfo;
 
 struct VertexInput {
-    @location(0) position : vec3<f32>,
+    @location(0) position : vec4<u32>,
     @builtin(instance_index) instance_index : u32,
 };
 
@@ -35,19 +35,21 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
   
   let texCoord = vec2<i32>(i32(u_idx), i32(v_idx));
   let height_val = f32(textureLoad(heightMap, texCoord, 0).r);
+
+  let p = vec3<f32>(f32(input.position.x), f32(input.position.y), f32(input.position.z));
   
   // Calculate inset to prevent Z-fighting
   // If the vertex is at the base (y=0), we inset it slightly more than the top (y=1)
   // this creates a very slight "taper" that prevents adjacent faces from overlapping
-  let inset = 1.0 - (1.0 - input.position.y) * 0.1;
-  let localX = (input.position.x - 0.5) * inset + 0.5;
-  let localZ = (input.position.z - 0.5) * inset + 0.5;
+  let inset = 1.0 - (1.0 - p.y) * 0.1;
+  let localX = (p.x - 0.5) * inset + 0.5;
+  let localZ = (p.z - 0.5) * inset + 0.5;
 
   let fx = -(x + chunkInfo.x * chunkInfo.size) * chunkInfo.scale;
   let fz = (z + chunkInfo.z * chunkInfo.size) * chunkInfo.scale;
   
   let final_x = fx - (localX * chunkInfo.scale);
-  let final_y = height_val * input.position.y;
+  let final_y = height_val * p.y;
   let final_z = fz + (localZ * chunkInfo.scale);
   
   let world_pos = vec4<f32>(final_x, final_y, final_z, 1.0);
