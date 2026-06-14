@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^5.1.0",
-    "gl-matrix": "^3.4.4"
+    "gl-matrix": "^3.4.4",
+    "ws": "^8.14.0"
   }
 }
