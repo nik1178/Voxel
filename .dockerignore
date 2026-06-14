@@ -1,0 +1,6 @@
+node_modules
+public/map
+python/__pycache__
+.git
+.DS_Store
+*.pyc

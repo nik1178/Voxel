@@ -9,6 +9,8 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    volumes:
+      - public-data:/app/public/map
     networks:
       - web
     labels:
@@ -27,6 +29,8 @@ services:
     restart: unless-stopped
     environment:
       - FLASK_ENV=production
+    volumes:
+      - public-data:/app/public/map
     networks:
       - web
     labels:
@@ -36,6 +40,10 @@ services:
       - "traefik.http.routers.voxel-python.tls=true"
       - "traefik.http.routers.voxel-python.tls.certresolver=letsencrypt"
       - "traefik.http.services.voxel-python.loadbalancer.server.port=5000"
+
+volumes:
+  public-data:
+    driver: local
 
 networks:
   web:
