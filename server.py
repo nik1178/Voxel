@@ -3,6 +3,7 @@ from flask import Flask, send_from_directory, Response
 from flask_sock import Sock
 from python.chunk_manager import ChunkManager
 from os import path
+import os # Added for environment variable access
 import json
 import struct
 
@@ -13,8 +14,8 @@ sock = Sock(app)
 
 BASE_DIR = path.dirname(path.abspath(__file__))
 chunk_dir = path.join(BASE_DIR, "public", "map")
-laz_dir = path.join("E:", "gkot")
-verbose = False
+laz_dir = os.environ.get("LAZ_DIR_MOUNT_PATH", path.join("E:", "gkot")) # Read from env, default to original
+verbose = os.environ.get("VERBOSE", "False").lower() == "true" # Read from env, default to False
 chunk_manager = ChunkManager(chunk_size=1000, voxel_size=100, data_dir=chunk_dir, laz_dir=laz_dir, verbose=verbose)
 
 @app.route("/get_chunk/<int:x>/<int:z>/<int:chunk_size>/<int:lod>/<string:version>/", methods=["GET"])

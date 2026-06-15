@@ -1,6 +1,6 @@
-flask==3.0.0
-flask-sock==0.7.0
-gunicorn==22.0.0
+Flask
+Flask-Sock
+gunicorn
 eventlet==0.36.1
 numpy==1.24.3
 laspy==2.7.0
