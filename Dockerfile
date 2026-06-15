@@ -6,7 +6,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# The server.py and python/ directory will be mounted as volumes,
-# so no need to COPY them here.
+COPY gunicorn_config.py /app/gunicorn_config.py
 
-CMD ["gunicorn", "--worker-class", "eventlet", "--bind", "0.0.0.0:8000", "server:app"]
+CMD ["gunicorn", "-c", "gunicorn_config.py", "server:app"]
