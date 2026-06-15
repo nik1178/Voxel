@@ -6,6 +6,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the Gunicorn configuration file
 COPY gunicorn_config.py /app/gunicorn_config.py
 
+# Command to run the application using Gunicorn with the config file
 CMD ["gunicorn", "-c", "gunicorn_config.py", "server:app"]
