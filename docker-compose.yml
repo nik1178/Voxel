@@ -17,7 +17,7 @@ services:
     volumes:
       - ./server.py:/app/server.py # Mount the main application file
       - ./python:/app/python       # Mount the custom python modules (chunk_manager, vprint)
-      - ./public/map:/app/public/map # Mount the large map data, avoiding copying into the image
+      - ./public:/app/public       # Mount the entire public directory, including index.html and map data
       # Mount the laz_dir from your host. Assuming E:\gkot on Windows maps to /mnt/e/gkot on Linux host.
       # Adjust the host path (/mnt/e/gkot) to where your 'gkot' directory is located on your Docker host.
       - /mnt/e/gkot:/app/E_gkot_mount
