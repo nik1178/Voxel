@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  # This assumes your Traefik instance is running on a Docker network named 'web'.
+  # If your Traefik uses a different network name, update this accordingly.
+  web:
+    external: true
+
+services:
+  voxel:
+    build:
+      context: . # Build from the current directory (where Dockerfile and requirements.txt are)
+      dockerfile: Dockerfile
+    container_name: voxel_server
+    restart: unless-stopped
+    # Mount the necessary files and directories from your host machine
+    volumes:
+      - ./server.py:/app/server.py # Mount the main application file
+      - ./python:/app/python       # Mount the custom python modules (chunk_manager, vprint)
+      - ./public/map:/app/public/map # Mount the large map data, avoiding copying into the image
+      # Mount the laz_dir from your host. Assuming E:\gkot on Windows maps to /mnt/e/gkot on Linux host.
+      # Adjust the host path (/mnt/e/gkot) to where your 'gkot' directory is located on your Docker host.
+      - /mnt/e/gkot:/app/E_gkot_mount
+    environment:
+      # Set the path for laz_dir inside the container
+      LAZ_DIR_MOUNT_PATH: /app/E_gkot_mount
+      # Set VERBOSE to "true" for debug logging, "false" otherwise
+      VERBOSE: "false"
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+      # Define the rule for routing traffic to this service based on the host header
+      - "traefik.http.routers.voxel.rule=Host(`voxel-playground.ddns.net`)"
+      # Use the 'websecure' entrypoint for HTTPS traffic
+      - "traefik.http.routers.voxel.entrypoints=websecure"
+      # Specify the certificate resolver for HTTPS (e.g., 'myresolver' or 'letsencrypt')
+      - "traefik.http.routers.voxel.tls.certresolver=myresolver" # IMPORTANT: Replace 'myresolver' with your actual Traefik cert resolver name
+      # Tell Traefik which port the Flask app is listening on inside the container
+      - "traefik.http.services.voxel.loadbalancer.server.port=8000"
+    networks:
+      - web
