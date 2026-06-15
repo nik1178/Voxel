@@ -30,6 +30,8 @@ services:
       # Enable Traefik for this service
       - "traefik.enable=true"
       # Define the rule for routing traffic to this service based on the host header
+      # Add a middleware for WebSocket support
+      - "traefik.http.routers.voxel.middlewares=websocket-compress@docker"
       - "traefik.http.routers.voxel.rule=Host(`voxel-playground.ddns.net`)"
       # Use the 'websecure' entrypoint for HTTPS traffic
       - "traefik.http.routers.voxel.entrypoints=websecure"
@@ -37,5 +39,10 @@ services:
       - "traefik.http.routers.voxel.tls.certresolver=myresolver" # IMPORTANT: Replace 'myresolver' with your actual Traefik cert resolver name
       # Tell Traefik which port the Flask app is listening on inside the container
       - "traefik.http.services.voxel.loadbalancer.server.port=8000"
+      # Define a middleware for WebSocket compression (Traefik 2.x feature)
+      # This is a common way to enable WebSocket proxying in Traefik.
+      # The name 'websocket-compress' is arbitrary but consistent.
+      # The 'compress' option is good practice for WebSockets.
+      - "traefik.http.middlewares.websocket-compress.compress=true"
     networks:
       - web

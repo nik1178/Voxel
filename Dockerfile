@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # The server.py and python/ directory will be mounted as volumes,
 # so no need to COPY them here.
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "server:app"]
+CMD ["gunicorn", "--worker-class", "eventlet", "--bind", "0.0.0.0:8000", "server:app"]
