@@ -31,7 +31,7 @@ export default class ChunkQuadStrategy {
       this.quadTree = new QuadTree(this.chunkSize);
       let baseChunks = this.getBaseChunkList();
       for (const chunkCoords of baseChunks) {
-        let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, null, null, 0, null, chunkCoords.levelOfDetail);
+        let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, this.chunkSize, null, null, 0, null, chunkCoords.levelOfDetail);
         chunk.scale = 2 ** 8;
         await this.chunkMesher.generateChunkData(chunk);
         this.quadTree.addChunk(chunk);
@@ -100,7 +100,7 @@ export default class ChunkQuadStrategy {
         let chunkX = childCoordinate.x;
         let chunkZ = childCoordinate.z;
         let levelOfDetail = childCoordinate.levelOfDetail;
-        let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, null, levelOfDetail);
+        let chunk = new Chunk({ x: chunkX, z: chunkZ }, this.chunkSize, null, null, 0, null, levelOfDetail);
         chunk.scale = chunkNode.chunk.scale / 2;
         let childChunkNode = new ChunkNode();
         childChunkNode.chunk = chunk;
@@ -147,7 +147,7 @@ export default class ChunkQuadStrategy {
 class QuadTree {
   constructor(chunkSize = 256) {
     this.baseNode = new ChunkNode();
-    this.baseNode.chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, null, 0);
+    this.baseNode.chunk = new Chunk({ x: 0, z: 0 }, chunkSize, null, null, 0, null, 0);
     this.baseNode.chunk.scale = 2 ** 9;
     this.chunkSize = chunkSize;
   }

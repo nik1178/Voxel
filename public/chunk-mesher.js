@@ -32,7 +32,7 @@ export default class ChunkMesher {
     //   chunk.heightMap = this.hmapLoader.webGPUArraysTo1DArray(chunk.rawData);
     // }
     const { localVertices, localIndices } = this.buildMesh(chunk);
-    chunk.setVertices(localVertices);
+    // chunk.setVertices(localVertices);
     const { vertexBuffer, indexBuffer } = this.createBuffers(localVertices, localIndices);
     chunk.setMeshData(vertexBuffer, indexBuffer, localIndices.length);
     return chunk;
@@ -43,6 +43,7 @@ export default class ChunkMesher {
     let heightMapData = chunk.rawData.heightData;
     let colorData = chunk.rawData.colorData;
     let scale = chunk.scale;
+    let chunkSize = chunk.size;
     let zOffset = chunk.position.z;
     let xOffset = chunk.position.x;
     let localVertices;
@@ -95,9 +96,9 @@ export default class ChunkMesher {
         const b = colorData[colorIndex + 2];
         const height = heightMapData[index];
 
-        const fx = -(x + xOffset * 1000) * scale;
+        const fx = -(x + xOffset * chunkSize) * scale;
         const fy = height;
-        const fz = (z + zOffset * 1000) * scale;
+        const fz = (z + zOffset * chunkSize) * scale;
 
         // if (height <= 0) {
         //   mapArray[x][z] = []; // No cube, but still need to fill mapArray

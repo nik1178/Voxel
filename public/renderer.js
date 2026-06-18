@@ -17,7 +17,7 @@ export default class Renderer {
   initialized = false;
 
   manualCulling = false;
-  renderType = "hybrid";
+  renderType = "mesh";
 
   /**
    * Constructs the Renderer instance.
@@ -538,10 +538,10 @@ export default class Renderer {
           entryPoint: "fragmentMain",
           targets: [{ format: this.format }],
         },
-        primitive: {
-          topology: 'triangle-list',
-          cullMode: 'none',
-        },
+        // primitive: {
+        //   topology: 'triangle-list',
+        //   cullMode: 'none',
+        // },
         depthStencil: {
           format: this.depthFormat,
           depthWriteEnabled: true,

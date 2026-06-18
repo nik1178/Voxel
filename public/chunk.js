@@ -15,8 +15,9 @@ export default class Chunk {
     instanceArray = null;
     maxHeight = null;
 
-    constructor(position, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
+    constructor(position, size, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
+        this.size = size;
         this.vertexBuffer = vertexBuffer;
         this.indexBuffer = indexBuffer;
         this.indexCount = indexCount;
