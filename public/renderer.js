@@ -106,6 +106,13 @@ export default class Renderer {
       });
     }
 
+    if (this.meshShaderText) {
+      this.meshShaderModule = this.device.createShaderModule({
+        label: "Mesh shader",
+        code: this.meshShaderText,
+      });
+    }
+
     this.fxShaderModule = this.device.createShaderModule({
       label: "FX shader",
       code: this.fxShaderText,
@@ -195,6 +202,7 @@ export default class Renderer {
     this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
     this.instancedShaderText = await fetch("instanced-shader.wgsl").then((r) => r.text());
     this.cubeShaderText = await fetch("instanced-cubes-shader.wgsl").then((r) => r.text());
+    this.meshShaderText = await fetch("mesh-shader.wgsl").then((r) => r.text());
   }
 
   async loadSkyboxTexture() {
@@ -231,7 +239,24 @@ export default class Renderer {
       ],
     };
 
-    if (this.renderType === "raycast" || this.renderType === "mesh" || this.renderType === "planes") {
+    this.meshVertexBufferLayout = {
+      arrayStride: 32, // 8 floats (x, y, z, w, r, g, b, a) = 32 bytes
+      stepMode: "vertex",
+      attributes: [
+        {
+          format: "float32x4",
+          offset: 0,
+          shaderLocation: 0,
+        },
+        {
+          format: "float32x4",
+          offset: 16,
+          shaderLocation: 1,
+        }
+      ],
+    };
+
+    if (this.renderType === "raycast" || this.renderType === "planes") {
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
     } else {
       // The greedy shader needs the face geometry AND the instance data buffer
@@ -490,6 +515,32 @@ export default class Renderer {
         primitive: {
           topology: 'triangle-list',
           cullMode: 'back',
+        },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
+
+    if (this.meshShaderModule) {
+      this.meshPipeline = this.device.createRenderPipeline({
+        label: "Mesh pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.meshShaderModule,
+          entryPoint: "vertexMain",
+          buffers: [this.meshVertexBufferLayout],
+        },
+        fragment: {
+          module: this.meshShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+          cullMode: 'none',
         },
         depthStencil: {
           format: this.depthFormat,
@@ -816,10 +867,11 @@ export default class Renderer {
 
       pass.setBindGroup(1, chunk.vtfBindGroup);
       
-      let useGreedy = this.renderType === "greedy" || this.renderType === "hybrid";
-      let useRaymarching = this.renderType === "raycast" || this.renderType === "hybrid";
+      let useGreedy = this.renderType === "greedy";
+      let useRaymarching = this.renderType === "raycast";
       let useCubes = this.renderType === "cubes";
-      let usePlanes = this.renderType === "planes" || this.renderType === "mesh"; // Fallback mesh to planes
+      let usePlanes = this.renderType === "planes";
+      let useMesh = this.renderType === "mesh";
 
       if (this.renderType === "hybrid") {
         if (nineChunks.includes(chunk)) {
@@ -890,11 +942,20 @@ export default class Renderer {
           }
 
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 1, orientationOffset, facesToRender
+            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, chunk.getMaxHeight(), orientationOffset, facesToRender
           ]));
         }
         
         pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
+      } else if (useMesh) {
+        pass.setPipeline(this.meshPipeline);
+        if (chunk.vertexBuffer && chunk.indexBuffer) {
+          pass.setVertexBuffer(0, chunk.vertexBuffer);
+          pass.setIndexBuffer(chunk.indexBuffer, "uint32");
+          pass.drawIndexed(chunk.indexCount);
+        } else {
+          console.log("Chunk missing vertexBuffer for mesh rendering!");
+        }
       }
     }
 

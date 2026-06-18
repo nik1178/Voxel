@@ -1,5 +1,6 @@
 export default class Chunk {
-    heightMap = null;
+    heightMap = null; //Actual 2D array heightMap
+    rawData = null; //Heightmap and colormap as bits in buffer
     vertexBuffer = null;
     indexBuffer = null;
     vertices = null;

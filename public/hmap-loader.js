@@ -84,10 +84,49 @@ export default class HmapLoader {
       
       heightData[i] = data[base + 3] | (data[base + 4] << 8);
     }
+
+    console.log("Heightmap: ", heightData);
     
     return { colorData, heightData };
   }
 
+  webGPUArraysTo1DArray(webGPUArrays) {
+    const { colorData, heightData } = webGPUArrays;
+    const numPixels = heightData.length;
+    const array = new Array(numPixels);
+
+    for (let i = 0; i < numPixels; i++) {
+      const cBase = i * 4;
+      array[i] = [
+        colorData[cBase],
+        colorData[cBase + 1],
+        colorData[cBase + 2],
+        heightData[i]
+      ];
+    }
+
+    return array;
+  }
+
+  array1DToWebGPUArrays(array) {
+    const numPixels = array.length;
+    const colorData = new Uint8Array(numPixels * 4);
+    const heightData = new Uint16Array(numPixels);
+
+    for (let i = 0; i < numPixels; i++) {
+      const pixel = array[i];
+      const cBase = i * 4;
+
+      colorData[cBase] = pixel[0];
+      colorData[cBase + 1] = pixel[1];
+      colorData[cBase + 2] = pixel[2];
+      colorData[cBase + 3] = 255;
+      
+      heightData[i] = pixel[3];
+    }
+
+    return { colorData, heightData };
+  }
 
   loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false, sockets=true) {
 
