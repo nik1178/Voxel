@@ -1,6 +1,5 @@
 import { vprint } from "./vprint.js";
 import Chunk from "./chunk.js";
-import HeightmapGrid from "./heightmap-grid.js";
 import HmapLoader from "./hmap-loader.js";
 import { GreedyMesher } from "./greedy-mesher.js";
 
@@ -12,8 +11,8 @@ export default class ChunkMesher {
     this.greedyMesher = GreedyMesher.getMesher();
   }
 
-  async generateChunkData(chunk, parentChunk = null) {
-    let heightMapData = await this.getChunk(chunk.position.x, chunk.position.z, chunk.levelOfDetail);
+  async generateChunkData(chunk, parentChunk = null, strategy="quad") {
+    let heightMapData = await this.getChunk(chunk.position.x, chunk.position.z, chunk.levelOfDetail, strategy);
     if (heightMapData === 404) return 404;
 
     if (parentChunk) {
@@ -43,7 +42,7 @@ export default class ChunkMesher {
     let heightMapData = chunk.rawData.heightData;
     let colorData = chunk.rawData.colorData;
     let scale = chunk.scale;
-    let chunkSize = chunk.size;
+    let chunkSize = chunk.chunkSize;
     let zOffset = chunk.position.z;
     let xOffset = chunk.position.x;
     let localVertices;
@@ -301,7 +300,7 @@ export default class ChunkMesher {
   }
 
   // QUAD STRATEGY
-  async getChunk(chunkX, chunkZ, levelOfDetail = 0) {
+  async getChunk(chunkX, chunkZ, levelOfDetail = 0, strategy="quad") {
     vprint(`Requesting chunk at (${chunkX}, ${chunkZ}) at size ${this.chunkSize}, LOD ${levelOfDetail}`);
     
     return this.hmapLoader.loadHeightMap(
@@ -309,7 +308,7 @@ export default class ChunkMesher {
       chunkZ,
       this.chunkSize,
       levelOfDetail,
-      "quad",
+      strategy,
       false // use VTF repacked typed arrays
     );
   }
@@ -381,9 +380,9 @@ export default class ChunkMesher {
           [x1, topY, z1],
         ];
 
-        if (x === width-1 && z === depth-1) {
-          console.log("First cube corners:", corners);
-        }
+        // if (x === width-1 && z === depth-1) {
+        //   console.log("First cube corners:", corners);
+        // }
 
         for (const corner of corners) {
           vertexArray.push(...corner, 1.0, cr, cg, cb, ca);

@@ -11,13 +11,13 @@ export default class Chunk {
     heightTexture = null;
     vtfBindGroup = null;
     age = 1.0;
-    chunkSize = 128;
+    chunkSize = null;
     instanceArray = null;
     maxHeight = null;
 
     constructor(position, size, vertexBuffer = null, indexBuffer = null, indexCount = null, heightMap = null, levelOfDetail = null) {
         this.position = position;
-        this.size = size;
+        this.chunkSize = size;
         this.vertexBuffer = vertexBuffer;
         this.indexBuffer = indexBuffer;
         this.indexCount = indexCount;

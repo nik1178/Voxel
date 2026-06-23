@@ -85,8 +85,6 @@ export default class HmapLoader {
       heightData[i] = data[base + 3] | (data[base + 4] << 8);
     }
 
-    console.log("Heightmap: ", heightData);
-    
     return { colorData, heightData };
   }
 

@@ -24,6 +24,15 @@ export default class ChunkQuadStrategy {
   maximumChunksLoading = 1;
   previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
 
+  destroy() {
+    if (this.quadTree) {
+      this.quadTree.baseNode.destroy();
+      this.quadTree = null;
+    }
+    this.howManyChunksLoading = 0;
+    this.previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
+  }
+
   initializing = false;
   async updateChunks(playerPosition) {
     if (!this.quadTree) {
@@ -34,6 +43,9 @@ export default class ChunkQuadStrategy {
         let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, this.chunkSize, null, null, 0, null, chunkCoords.levelOfDetail);
         chunk.scale = 2 ** 8;
         await this.chunkMesher.generateChunkData(chunk);
+        if (!this.quadTree) {
+          return;
+        }
         this.quadTree.addChunk(chunk);
       }
       //this.quadTree.addChunk(chunk);
@@ -77,6 +89,7 @@ export default class ChunkQuadStrategy {
       }
       const distanceRatio = Math.max(1, chunkNode.distanceFromPlayer / (this.chunkSize * 2));
       const expectedLOD = Math.min(9, 9 - Math.floor(Math.log2(distanceRatio * 1)));
+      // const expectedLOD = 9;
 
       if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {
         nodesToLoad.push(chunkNode);
@@ -108,8 +121,6 @@ export default class ChunkQuadStrategy {
         chunkNode.children.push(childChunkNode);
         childChunkNode.isLoading = true;
       }
-
-      console.log("Getting new chunks: " + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z);
 
       let loadPromises = chunkNode.children.map((childChunkNode) => {
         const chunkX = childChunkNode.chunk.position.x;

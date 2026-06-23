@@ -35,8 +35,12 @@ class ChunkManager:
         
         heightmap_binary = None
         if version == "v1":
-            heightmap_binary = self.chunk_builder.get_chunk(x, z, chunk_size=chunk_size, lod=lod, verbose=self.verbose)
+            heightmap_binary = self.chunk_builder.get_chunk(int(x+(1000/chunk_size * 421)), int(z+(1000/chunk_size * 31)), chunk_size=chunk_size, lod=lod, verbose=self.verbose)
         elif version == "quad":
             heightmap_binary = self.chunk_quad_builder.get_chunk(x, z, chunk_size=chunk_size, lod=lod, verbose=self.verbose)
+        else:
+            vprint(self.verbose, f"Unknown version: {version}. Defaulting to None.")
+            heightmap_binary = None
+            
         return heightmap_binary
 

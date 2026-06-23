@@ -5,6 +5,7 @@ export default class Player {
         transform: {
             // translation: [-40000, 300, 75000], // Gameljne
             translation: [-90000, 500, 50000], // Novo mesto
+            // translation: [-430000, 500, 120000],
             rotation: [0, 0, 0],
         },
         fov: 1,

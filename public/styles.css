@@ -107,3 +107,7 @@ select {
 .invisible {
     display: none;
 }
+
+.chunk-strategy-container {
+    top: 250px;
+}

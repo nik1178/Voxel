@@ -33,7 +33,8 @@ export default class GameManager {
 
   lastTime = 0;
   lastFrames = [];
-  frame(time) {
+  framesToCapture = 100;
+  async frame(time) {
     if (!this.running) return;
 
     let dt = (time - this.lastTime) / 1000;
@@ -43,6 +44,7 @@ export default class GameManager {
     this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
     this.renderer.render(dt);
+
     // --------------------------------------------
     requestAnimationFrame(this.frame.bind(this));
   }
@@ -50,10 +52,12 @@ export default class GameManager {
   updateFPS(dt) {
     if (this.fpsCounter) {
       this.lastFrames.push(1 / dt);
-      if (this.lastFrames.length > 10) {
+      if (this.lastFrames.length > this.framesToCapture) {
         this.lastFrames.shift();
       }
       this.fpsCounter.innerText = (this.lastFrames.reduce((a, b) => a + b, 0) / this.lastFrames.length).toFixed(2);
+      // const sortedFrames = [...this.lastFrames].sort((a, b) => a - b);
+      // this.fpsCounter.innerText = Math.floor(sortedFrames[Math.floor(sortedFrames.length / 2)]);
     }
   }
 }

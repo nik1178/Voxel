@@ -15,13 +15,27 @@ export default class ChunkManager {
     this.radiusStrategy = new ChunkRadiusStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
 
     this.activeStrategy = this.quadStrategy;
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    document.addEventListener("chunk-strategy-changed", (e) => {
+      this.setStrategy(e.detail);
+    });
   }
   
   setStrategy(type) {
+    if (this.activeStrategy) {
+      this.activeStrategy.destroy();
+    }
+    
     if (type === "quad") {
       this.activeStrategy = this.quadStrategy;
     } else if (type === "radius") {
       this.activeStrategy = this.radiusStrategy;
+    } else {
+      console.warn(`Invalid chunk strategy: ${type}`);
     }
   }
 

@@ -17,7 +17,7 @@ export default class Renderer {
   initialized = false;
 
   manualCulling = false;
-  renderType = "mesh";
+  renderType = "hybrid";
 
   /**
    * Constructs the Renderer instance.
@@ -825,7 +825,7 @@ export default class Renderer {
 
       // Skip rendering if textures are still unavailable
       if (!chunk.colorTexture || !chunk.heightTexture) {
-        vprint("Chunk at", chunk.position, "not ready for rendering");
+        vprint("Chunk at", chunk.position, "not ready for rendering with textures");
         continue;
       }
 
@@ -862,7 +862,7 @@ export default class Renderer {
       chunk.age = Math.max(0, chunk.age - dt * 2);
 
       this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
+        chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
       ]));
 
       pass.setBindGroup(1, chunk.vtfBindGroup);
@@ -903,7 +903,7 @@ export default class Renderer {
         pass.setPipeline(this.cubePipeline);
         pass.setVertexBuffer(0, this.gridVertexBuffer);
         pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
-        pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
+        pass.drawIndexed(this.gridIndexCount, chunk.chunkSize * chunk.chunkSize);
       } else if (usePlanes) {
         pass.setPipeline(this.planesPipeline);
         pass.setVertexBuffer(0, this.faceVertexBuffer);
@@ -913,15 +913,15 @@ export default class Renderer {
         if (!this.manualCulling) {
           facesToRender = 5;
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 0, 0, 5
+            chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, 0, 0, 5
           ]));
         } else {
           // Orientations: 1 = +z, 2 = +x, 3 = -z, 4 = -x
           let orientationOffset = 0;
-          if (chunk.position.z * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > this.player.camera.transform.translation[2]) {
+          if (chunk.position.z * chunk.scale * chunk.chunkSize + chunk.scale * chunk.chunkSize/2 > this.player.camera.transform.translation[2]) {
             orientationOffset+=1;
           }
-          if (chunk.position.x * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > -this.player.camera.transform.translation[0]) {
+          if (chunk.position.x * chunk.scale * chunk.chunkSize + chunk.scale * chunk.chunkSize/2 > -this.player.camera.transform.translation[0]) {
             if (orientationOffset==0) {
               orientationOffset+=2;
             }
@@ -942,11 +942,11 @@ export default class Renderer {
           }
 
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, chunk.getMaxHeight(), orientationOffset, facesToRender
+            chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, 1, orientationOffset, facesToRender
           ]));
         }
         
-        pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
+        pass.drawIndexed(this.faceIndexCount, chunk.chunkSize * chunk.chunkSize * facesToRender);
       } else if (useMesh) {
         pass.setPipeline(this.meshPipeline);
         if (chunk.vertexBuffer && chunk.indexBuffer) {

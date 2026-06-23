@@ -35,7 +35,13 @@ export class UIManager {
             });
         }
 
-
+        const chunkStrategySelect = document.querySelector(".chunk-strategy-container select");
+        if (chunkStrategySelect) {
+            chunkStrategySelect.addEventListener("change", (e) => {
+                console.log("Changed chunk strategy to: ", e.target.value);
+                document.dispatchEvent(new CustomEvent("chunk-strategy-changed", { detail: e.target.value }));
+            });
+        }
 
     }
 }
