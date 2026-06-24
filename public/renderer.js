@@ -18,6 +18,7 @@ export default class Renderer {
 
   manualCulling = false;
   renderType = "hybrid";
+  viewDistance = Infinity;
 
   /**
    * Constructs the Renderer instance.
@@ -48,6 +49,10 @@ export default class Renderer {
     document.addEventListener("culling-toggled", (e) => {
       this.setManualCulling(e.detail);
     });
+
+    document.addEventListener("render-distance-changed", (e) => {
+      this.updateViewDistance(e.detail);
+    });
   }
 
   setRenderType(type) {
@@ -56,6 +61,19 @@ export default class Renderer {
 
   setManualCulling(culling) {
     this.manualCulling = culling;
+  }
+
+  updateChunkSize(chunkSize) {
+    this.chunkSize = chunkSize;
+    this.chunkManager.updateChunkSize(chunkSize);
+  }
+
+  updateViewDistance(viewDistance) {
+    this.viewDistance = viewDistance;
+  }
+
+  updateLODLimits(lodLimits) {
+    this.lodLimits = lodLimits;
   }
 
   /**
@@ -770,10 +788,14 @@ export default class Renderer {
     document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
 
     // Find 9 closest chunks
-    let dspoijfosdf = 0;
     for (const chunk of chunkData.values()) {
       const distance = chunk.distanceFromPlayer(this.player.getPositionVector());
       chunk.distance = distance;
+      if (distance > this.viewDistance) {
+        chunk.render = false;
+      } else {
+        chunk.render = true;
+      }
       // if (dspoijfosdf == 0) {
       //   console.log(this.player.position);
       // }
@@ -817,6 +839,7 @@ export default class Renderer {
 
 
     for (const chunk of chunkData.values()) {
+      if (!chunk.render) continue;
 
       // If a chunk has raw data ready but no GPU textures, initialize them
       if (chunk.rawData && (!chunk.colorTexture || !chunk.heightTexture)) {

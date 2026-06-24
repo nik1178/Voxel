@@ -5,6 +5,7 @@ import ChunkQuadStrategy from "./chunk-quad-strategy.js";
 import ChunkMesher from "./chunk-mesher.js";
 
 export default class ChunkManager {
+  paused = false;
   constructor(device, voxelSize = 100, chunkSize = 1000) {
     this.device = device;
     this.voxelSize = voxelSize;
@@ -14,7 +15,7 @@ export default class ChunkManager {
     this.quadStrategy = new ChunkQuadStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
     this.radiusStrategy = new ChunkRadiusStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
 
-    this.activeStrategy = this.quadStrategy;
+    this.activeStrategy = this.radiusStrategy;
 
     this.setupEventListeners();
   }
@@ -23,6 +24,23 @@ export default class ChunkManager {
     document.addEventListener("chunk-strategy-changed", (e) => {
       this.setStrategy(e.detail);
     });
+  }
+
+  destroyChunks() {
+    this.activeStrategy.destroy();
+  }
+
+  updateChunkSize(chunkSize) {
+    console.log("Updating chunk size to: ", chunkSize);
+    this.pauseLoop();
+    this.chunkSize = chunkSize;
+    this.quadStrategy.chunkSize = chunkSize;
+    this.radiusStrategy.updateChunkSize(chunkSize);
+    this.quadStrategy.destroy();
+    // this.quadStrategy = new ChunkQuadStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
+    // this.radiusStrategy = new ChunkRadiusStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
+    this.chunkMesher.updateChunkSize(chunkSize);
+    this.continueLoop();
   }
   
   setStrategy(type) {
@@ -56,13 +74,23 @@ export default class ChunkManager {
       }
     }, 100); // Update every second */
     while (this.running) {
-      await this.updateChunks({
-        x: player.camera.transform.translation[0],
-        z: player.camera.transform.translation[2],
-      });
+      if (!this.paused) {
+        await this.updateChunks({
+          x: player.camera.transform.translation[0],
+          z: player.camera.transform.translation[2],
+        });
+      }
 
       await new Promise(resolve => setTimeout(resolve, 1));
     }
+  }
+
+  pauseLoop() {
+    this.paused = true;
+  }
+
+  continueLoop() {
+    this.paused = false;
   }
 
   stopLoop() {

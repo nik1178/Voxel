@@ -11,6 +11,10 @@ export default class ChunkMesher {
     this.greedyMesher = GreedyMesher.getMesher();
   }
 
+  updateChunkSize(chunkSize) {
+    this.chunkSize = chunkSize;
+  }
+
   async generateChunkData(chunk, parentChunk = null, strategy="quad") {
     let heightMapData = await this.getChunk(chunk.position.x, chunk.position.z, chunk.levelOfDetail, strategy);
     if (heightMapData === 404) return 404;
@@ -21,7 +25,7 @@ export default class ChunkMesher {
     
     chunk.rawData = heightMapData;
     chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
-    this.addChunkMesh(chunk);
+    // this.addChunkMesh(chunk);
     
     return chunk;
   }

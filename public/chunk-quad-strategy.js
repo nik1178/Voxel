@@ -6,6 +6,31 @@ export default class ChunkQuadStrategy {
     this.chunkMesher = chunkMesher;
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
+
+    this.setupEventListeners();
+  }
+
+  lodMinBound = 0;
+  lodMaxBound = 9;
+  renderDistance = Infinity;
+
+  setupEventListeners() {
+    document.addEventListener("lod-limits-changed", (e) => {
+      this.updateLODLimits(e.detail);
+    });
+    document.addEventListener("view-distance-changed", (e) => {
+      this.updateViewDistance(e.detail);
+    });
+  }
+
+  updateLODLimits(lodLimits) {
+    console.log("LOD Lims: ", lodLimits);
+    this.lodMinBound = Math.round(lodLimits[0]);
+    this.lodMaxBound = Math.round(lodLimits[1]);
+  }
+
+  updateViewDistance(viewDistance) {
+    this.renderDistance = viewDistance;
   }
 
   getBaseChunkList() {
@@ -23,6 +48,7 @@ export default class ChunkQuadStrategy {
   howManyChunksLoading = 0;
   maximumChunksLoading = 1;
   previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
+  iteration = 0;
 
   destroy() {
     if (this.quadTree) {
@@ -31,6 +57,7 @@ export default class ChunkQuadStrategy {
     }
     this.howManyChunksLoading = 0;
     this.previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
+    this.iteration++;
   }
 
   initializing = false;
@@ -42,8 +69,9 @@ export default class ChunkQuadStrategy {
       for (const chunkCoords of baseChunks) {
         let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, this.chunkSize, null, null, 0, null, chunkCoords.levelOfDetail);
         chunk.scale = 2 ** 8;
+        chunk.iteration = this.iteration;
         await this.chunkMesher.generateChunkData(chunk);
-        if (!this.quadTree) {
+        if (!this.quadTree || this.iteration !== chunk.iteration) {
           return;
         }
         this.quadTree.addChunk(chunk);
@@ -87,8 +115,15 @@ export default class ChunkQuadStrategy {
       if (chunkNode.children.length > 0) {
         continue;
       }
+      if (chunkNode.distanceFromPlayer > this.renderDistance) {
+        continue;
+      }
       const distanceRatio = Math.max(1, chunkNode.distanceFromPlayer / (this.chunkSize * 2));
-      const expectedLOD = Math.min(9, 9 - Math.floor(Math.log2(distanceRatio * 1)));
+      let expectedLOD = Math.min(this.lodMaxBound, this.lodMaxBound - Math.floor(Math.log2(distanceRatio * 1)));
+
+      if (expectedLOD < this.lodMinBound) {
+        expectedLOD = this.lodMinBound;
+      }
       // const expectedLOD = 9;
 
       if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {

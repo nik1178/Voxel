@@ -26,6 +26,22 @@ export default class GameManager {
     requestAnimationFrame(this.frame.bind(this));
   }
 
+  updateChunkSize(chunkSize) {
+    chunkSize = Math.floor(chunkSize/2)*2;
+
+    this.chunkSize = chunkSize;
+    this.renderer.updateChunkSize(chunkSize);
+  }
+
+  updateViewDistance(viewDistance) {
+    this.renderer.updateViewDistance(viewDistance);
+  }
+
+  updateLODLimits(lodLimits) {
+    this.renderer.updateLODLimits(lodLimits);
+  }
+
+
   pauseGame() {
     vprint("Game paused");
     this.running = false;
