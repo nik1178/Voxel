@@ -6,6 +6,10 @@ from os import path
 import os # Added for environment variable access
 import json
 import struct
+import mimetypes
+
+mimetypes.add_type('application/json', '.json')
+mimetypes.add_type('application/javascript', '.js')
 
 from python.util.vprint import vprint
 
