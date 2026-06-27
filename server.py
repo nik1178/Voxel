@@ -5,6 +5,10 @@ from python.chunk_manager import ChunkManager
 from os import path
 import json
 import struct
+import mimetypes
+
+mimetypes.add_type('application/json', '.json')
+mimetypes.add_type('application/javascript', '.js')
 
 from python.util.vprint import vprint
 
