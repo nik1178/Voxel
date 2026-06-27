@@ -4,6 +4,23 @@ export class UIManager {
     }
 
     setupListeners() {
+        const ui = document.getElementById("ui");
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                e.preventDefault();
+                ui.classList.toggle("invisible");
+                document.body.focus();
+            }
+        });
+
+        const positionFields = document.querySelectorAll(".position-field");
+        positionFields.forEach((field) => {
+            field.addEventListener("click", () => {
+                // Copy position to clipboard
+                navigator.clipboard.writeText(field.innerText);
+            });
+        });
+
         // Toggles
         const toggles = document.querySelectorAll(".toggle");
         toggles.forEach((toggle) => {
@@ -20,13 +37,21 @@ export class UIManager {
             });
         }
 
+        const fxToggle = document.getElementById("fx-toggle");
+        if (fxToggle) {
+            fxToggle.addEventListener("click", () => {
+                let isActive = fxToggle.classList.contains("active");
+                document.dispatchEvent(new CustomEvent("fx-toggled", { detail: isActive }));
+            });
+        }
+
         // Sliders
         // const sliders = document.querySelectorAll(".slider");
         // sliders.forEach((slider) => {
         //     new Slider(slider, -1000, 1000, false);
         // });
         const chunkSizeSlider = document.querySelector("#chunk-size");
-        new Slider(chunkSizeSlider, 2, 1000, false, 0);
+        new Slider(chunkSizeSlider, 2, 1000, false, 0, 2);
         const viewDistanceSlider = document.querySelector("#view-distance");
         new Slider(viewDistanceSlider, 0, 200000, false, 0, 5);
         const lodLimitsSlider = document.querySelector("#lod-limits");
@@ -37,7 +62,9 @@ export class UIManager {
         if (renderTypeSelect) {
             renderTypeSelect.addEventListener("change", (e) => {
                 console.log("Changed render type to: ", e.target.value);
+                document.dispatchEvent(new CustomEvent("culling-toggled", { detail: false }));
                 document.dispatchEvent(new CustomEvent("render-type-changed", { detail: e.target.value }));
+                cullingToggle.classList.remove("active");
 
                 if (e.target.value === "planes") {
                     cullingToggle.classList.remove("invisible");
@@ -54,6 +81,9 @@ export class UIManager {
                 document.dispatchEvent(new CustomEvent("chunk-strategy-changed", { detail: e.target.value }));
             });
         }
+
+        const inputField = document.querySelector("#command-input");
+        new InputField(inputField);
 
     }
 }
@@ -180,5 +210,62 @@ class Slider {
 
     dispatch() {
         document.dispatchEvent(new CustomEvent(`${this.domElement.id}-changed`, { detail: this.double ? [this.handle1.value, this.handle2.value] : this.value }));
+    }
+}
+
+class InputField {
+    holdingControl = false;
+    constructor(containerDomElement) {
+        this.domElement = containerDomElement;
+
+        if (!this.domElement.id) {
+            throw new Error("Input field must have an ID");
+        }
+
+        this.setupHTML();
+        this.setupListeners();
+    }
+
+    setupHTML() {
+        this.inputElement = document.createElement("div");
+        this.inputElement.style.whiteSpace = "pre-wrap";
+        this.domElement.appendChild(this.inputElement);
+
+        this.placeholderElement = document.createElement("div");
+        this.placeholderElement.innerText = "e.g. Ljubljana...";
+        this.placeholderElement.style.whiteSpace = "pre-wrap";
+        this.domElement.appendChild(this.placeholderElement);
+    }
+
+    setupListeners() {
+        document.addEventListener("keydown", async (e) => {
+
+            if (e.key === "Backspace") {
+                this.inputElement.innerText = this.inputElement.innerText.slice(0, -1);
+            } else if (e.key === "Enter") {
+                this.dispatch();
+                this.inputElement.innerText = "";
+            } else if (e.key === "Escape") {
+                this.inputElement.innerText = "";
+            } else if (e.key === "Control") {
+                this.holdingControl = true;
+            }
+            else if (e.key.length === 1) {
+                // const charCode = e.which || e.keyCode;
+                // if ((charCode >= 'a'.charCodeAt(0) && charCode <= 'z'.charCodeAt(0)) || (charCode >= 'A'.charCodeAt(0) && charCode <= 'Z'.charCodeAt(0))) {
+                    this.inputElement.innerText += e.key;
+                // }
+            }
+
+            if (this.inputElement.innerText.length > 0) {
+                this.placeholderElement.classList.add("invisible");
+            } else {
+                this.placeholderElement.classList.remove("invisible");
+            }
+        });
+    }
+
+    dispatch() {
+        document.dispatchEvent(new CustomEvent(`${this.domElement.id}-entered`, { detail: this.inputElement.innerText }));
     }
 }

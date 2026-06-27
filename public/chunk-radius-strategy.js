@@ -98,6 +98,7 @@ export default class ChunkRadiusStrategy {
           lod = Math.min(this.lodMaxBound, lod);
           lod = Math.max(this.lodMinBound, lod);
           lod = Math.min(7, lod);
+          lod = Math.max(0, lod);
           if (!this.chunkData.has(key) || this.chunkData.get(key).levelOfDetail !== lod) {
             // if (this.chunkData.has(key) && this.chunkData.get(key).lod > lod) {
             //   this.chunkData.get(key).destroy();

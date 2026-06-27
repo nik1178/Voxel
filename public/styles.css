@@ -63,8 +63,8 @@ canvas#viewport {
     flex-direction: row;
 }
 
-.fpscounter-container {
-    width: 200px;
+.general-info-container {
+    width: 500px;
 }
 
 .render-type-container {
@@ -106,7 +106,7 @@ select {
 }
 
 .invisible {
-    display: none;
+    display: none !important;
 }
 
 .chunk-strategy-container {
@@ -145,4 +145,9 @@ select {
     height: 5px;
     background-color: rgba(180, 221, 255, 0.3);
     border-radius: 1000px;
+}
+
+#command-input-container {
+    width: max(300px, max-content);
+    top: 85%;
 }

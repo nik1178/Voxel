@@ -11,12 +11,16 @@
 
 <body>
     <canvas id="viewport" style="width: 100%; aspect-ratio: 16/9;;"></canvas>
-    <div id="ui">
-        <div class="container fpscounter-container">
+    <div id="ui" class="">
+        <div class="container general-info-container">
             <div class="container-content">
                 <div class="row">
                     <div>FPS: </div>
                     <div id="fpscounter"> 0</div>
+                </div>
+                <div class="row">
+                    <div>XYZ: </div>
+                    <div class="position-field"></div>
                 </div>
             </div>
         </div>
@@ -67,7 +71,18 @@
                     <div>Level of detail distance: </div>
                     <div id="lod-limits" class="slider"></div>
                 </div>
+                <div class="row">
+                    <div class="toggle" id="fx-toggle">
+                        Effects
+                    </div>
+                </div>
 
+            </div>
+        </div>
+        <div id="command-input-container" class="container">
+            <div class="container-content">
+                <div>Enter city name: </div>
+                <div class="input-field" id="command-input"></div>
             </div>
         </div>
     </div>

@@ -15,7 +15,7 @@ export default class ChunkManager {
     this.quadStrategy = new ChunkQuadStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
     this.radiusStrategy = new ChunkRadiusStrategy(this.chunkMesher, this.voxelSize, this.chunkSize);
 
-    this.activeStrategy = this.radiusStrategy;
+    this.activeStrategy = this.quadStrategy;
 
     this.setupEventListeners();
   }

@@ -19,6 +19,7 @@ export default class Renderer {
   manualCulling = false;
   renderType = "hybrid";
   viewDistance = Infinity;
+  useFX = true;
 
   /**
    * Constructs the Renderer instance.
@@ -53,6 +54,10 @@ export default class Renderer {
     document.addEventListener("render-distance-changed", (e) => {
       this.updateViewDistance(e.detail);
     });
+
+    document.addEventListener("fx-toggled", (e) => {
+      this.setFX(e.detail);
+    });
   }
 
   setRenderType(type) {
@@ -74,6 +79,10 @@ export default class Renderer {
 
   updateLODLimits(lodLimits) {
     this.lodLimits = lodLimits;
+  }
+
+  setFX(fx) {
+    this.useFX = fx;
   }
 
   /**
@@ -764,7 +773,7 @@ export default class Renderer {
     const pass = commandEncoder.beginRenderPass({
       colorAttachments: [
         {
-          view: this.renderTargetTexture.createView(),
+          view: this.useFX ? this.renderTargetTexture.createView() : this.context.getCurrentTexture().createView(),
           loadOp: "clear",
           storeOp: "store",
           clearValue: { r: 0.53, g: 0.81, b: 0.92, a: 1 }, // Sky blue background
@@ -986,57 +995,59 @@ export default class Renderer {
     pass.end();
 
     // 1. Bloom Extract Pass (reads renderTargetTexture, writes to bloomTextureA)
-    const extractPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureA.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    extractPass.setPipeline(this.extractPipeline);
-    extractPass.setBindGroup(0, this.bloomExtractBindGroup);
-    extractPass.draw(3);
-    extractPass.end();
+    if (this.useFX) {
+      const extractPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureA.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      extractPass.setPipeline(this.extractPipeline);
+      extractPass.setBindGroup(0, this.bloomExtractBindGroup);
+      extractPass.draw(3);
+      extractPass.end();
 
-    // 2. Bloom Blur X Pass (reads bloomTextureA, writes to bloomTextureB)
-    const blurXPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureB.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    blurXPass.setPipeline(this.blurXPipeline);
-    blurXPass.setBindGroup(0, this.bloomBlurXBindGroup);
-    blurXPass.draw(3);
-    blurXPass.end();
+      // 2. Bloom Blur X Pass (reads bloomTextureA, writes to bloomTextureB)
+      const blurXPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureB.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      blurXPass.setPipeline(this.blurXPipeline);
+      blurXPass.setBindGroup(0, this.bloomBlurXBindGroup);
+      blurXPass.draw(3);
+      blurXPass.end();
 
-    // 3. Bloom Blur Y Pass (reads bloomTextureB, writes back to bloomTextureA)
-    const blurYPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureA.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    blurYPass.setPipeline(this.blurYPipeline);
-    blurYPass.setBindGroup(0, this.bloomBlurYBindGroup);
-    blurYPass.draw(3);
-    blurYPass.end();
+      // 3. Bloom Blur Y Pass (reads bloomTextureB, writes back to bloomTextureA)
+      const blurYPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureA.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      blurYPass.setPipeline(this.blurYPipeline);
+      blurYPass.setBindGroup(0, this.bloomBlurYBindGroup);
+      blurYPass.draw(3);
+      blurYPass.end();
 
-    // Begin the post-processing FX pass
-    const fxPass = commandEncoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: this.context.getCurrentTexture().createView(),
-          loadOp: "clear",
-          storeOp: "store",
-          clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
-        },
-      ]
-    });
+      // Begin the post-processing FX pass
+      const fxPass = commandEncoder.beginRenderPass({
+        colorAttachments: [
+          {
+            view: this.context.getCurrentTexture().createView(),
+            loadOp: "clear",
+            storeOp: "store",
+            clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
+          },
+        ]
+      });
 
-    fxPass.setPipeline(this.fxPipeline);
-    fxPass.setBindGroup(0, this.fxBindGroup);
-    fxPass.draw(3);
-    fxPass.end();
+      fxPass.setPipeline(this.fxPipeline);
+      fxPass.setBindGroup(0, this.fxBindGroup);
+      fxPass.draw(3);
+      fxPass.end();
+    }
 
     // Submit the command buffer to the GPU queue
     this.device.queue.submit([commandEncoder.finish()]);

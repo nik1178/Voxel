@@ -2,6 +2,7 @@ import Renderer from "./renderer.js";
 import Player from "./player.js";
 import { vprint } from "./vprint.js";
 import { UIManager } from "./ui-manager.js";
+import { CommandConverter } from "./command-converter.js";
 
 export default class GameManager {
   constructor(device, context, format, canvas, voxelSize = 100, chunkSize = 128) {
@@ -13,7 +14,21 @@ export default class GameManager {
     this.running = false;
     this.renderer = new Renderer(device, context, format, canvas, voxelSize, chunkSize);
     this.player = new Player(canvas);
+
+    this.commandConverter = new CommandConverter();
+    this.setupEventListeners();
   }
+
+  setupEventListeners() {
+    document.addEventListener("command-input-entered", (e) => {
+      const newPosition = this.commandConverter.getPosition(e.detail);
+      if (newPosition) {
+          this.player.camera.transform.translation = newPosition;
+          this.player.camera.transform.rotation[0] = -Math.PI/2;
+      }
+    });
+  }
+
   async startGame() {
     vprint("Starting game...");
     await this.renderer.init(this.player, this.canvas);
