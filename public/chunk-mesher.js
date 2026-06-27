@@ -9,6 +9,16 @@ export default class ChunkMesher {
     this.chunkSize = chunkSize;
     this.hmapLoader = new HmapLoader();
     this.greedyMesher = GreedyMesher.getMesher();
+
+    this.setupEventListeners();
+  }
+
+  useWebsockets = true;
+
+  setupEventListeners() {
+    document.addEventListener("socket-toggled", (e) => {
+      this.useWebsockets = !e.detail;
+    });
   }
 
   updateChunkSize(chunkSize) {
@@ -25,7 +35,7 @@ export default class ChunkMesher {
     
     chunk.rawData = heightMapData;
     chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
-    // this.addChunkMesh(chunk);
+    this.addChunkMesh(chunk);
     
     return chunk;
   }
@@ -313,7 +323,8 @@ export default class ChunkMesher {
       this.chunkSize,
       levelOfDetail,
       strategy,
-      false // use VTF repacked typed arrays
+      false, // use VTF repacked typed arrays
+      this.useWebsockets
     );
   }
   

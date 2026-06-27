@@ -82,7 +82,11 @@ export default class GameManager {
 
   updateFPS(dt) {
     if (this.fpsCounter) {
-      this.lastFrames.push(1 / dt);
+      let value = 1 / dt;
+      if (value == Infinity) {
+        return;
+      }
+      this.lastFrames.push(value);
       if (this.lastFrames.length > this.framesToCapture) {
         this.lastFrames.shift();
       }

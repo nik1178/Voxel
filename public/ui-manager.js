@@ -45,6 +45,14 @@ export class UIManager {
             });
         }
 
+        const socketToggle = document.getElementById("socket-toggle");
+        if (socketToggle) {
+            socketToggle.addEventListener("click", () => {
+                let isActive = socketToggle.classList.contains("active");
+                document.dispatchEvent(new CustomEvent("socket-toggled", { detail: isActive }));
+            });
+        }
+
         // Sliders
         // const sliders = document.querySelectorAll(".slider");
         // sliders.forEach((slider) => {
