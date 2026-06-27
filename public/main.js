@@ -35,3 +35,14 @@ const fpsCounter = document.getElementById("fpscounter");
 const gameManager = new GameManager(device, context, format, canvas);
 gameManager.fpsCounter = fpsCounter;
 gameManager.startGame();
+
+// Listen for events
+document.addEventListener("chunk-size-changed", (e) => {
+  gameManager.updateChunkSize(e.detail);
+});
+document.addEventListener("view-distance-changed", (e) => {
+  gameManager.updateViewDistance(e.detail);
+});
+document.addEventListener("lod-limits-changed", (e) => {
+  gameManager.updateLODLimits(e.detail);
+});

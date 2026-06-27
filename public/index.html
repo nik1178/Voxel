@@ -10,13 +10,17 @@
 </head>
 
 <body>
-    <canvas id="viewport" style="width: 100%; aspect-ratio: 16/9;;"></canvas>
-    <div id="ui">
-        <div class="container fpscounter-container">
+    <canvas id="viewport"></canvas>
+    <div id="ui" class="">
+        <div class="container general-info-container">
             <div class="container-content">
                 <div class="row">
                     <div>FPS: </div>
                     <div id="fpscounter"> 0</div>
+                </div>
+                <div class="row">
+                    <div>XYZ: </div>
+                    <div class="position-field"></div>
                 </div>
             </div>
         </div>
@@ -25,7 +29,7 @@
                 <div>Render Type:</div>
                 <div class="dropdown">
                     <select>
-                        <option value="mesh">Mesh</option>
+                        <option value="mesh">Mesh (Chunks will reload)</option>
                         <option value="cubes">Instanced Cubes</option>
                         <option value="planes">Instanced Planes</option>
                         <option value="greedy">Instanced Planes Greedy Meshing</option>
@@ -38,6 +42,52 @@
                         Manual culling
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="container chunk-strategy-container">
+            <div class="container-content">
+                <div class="row">
+                    <div>Chunk loading strategy: </div>
+                    <div class="dropdown">
+                        <select>
+                            <option value="radius">Radius</option>
+                            <option value="quad">Quad</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="sliders" class="container">
+            <div class="container-content">
+                <div class="row">
+                    <div>Chunk size: </div>
+                    <div id="chunk-size" class="slider"></div>
+                </div>
+                <div class="row">
+                    <div>View distance: </div>
+                    <div id="view-distance" class="slider"></div>
+                </div>
+                <div class="row">
+                    <div>Level of detail distance: </div>
+                    <div id="lod-limits" class="slider"></div>
+                </div>
+                <div class="row">
+                    <div class="toggle" id="fx-toggle">
+                        Effects
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="toggle" id="socket-toggle">
+                        RPC not Websockets (Chunk acquisition)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="command-input-container" class="container">
+            <div class="container-content">
+                <div>Enter coordinates or city name: </div>
+                <div class="input-field" id="command-input"></div>
             </div>
         </div>
     </div>

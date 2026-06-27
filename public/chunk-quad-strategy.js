@@ -1,17 +1,36 @@
 import { vprint } from "./vprint.js";
-import HmapLoader from "./hmap-loader.js";
 import Chunk from "./chunk.js";
-import ChunkMesher from "./chunk-mesher.js";
-import HeightmapGrid from "./heightmap-grid.js";
-import { GreedyMesher } from "./greedy-mesher.js";
-
 
 export default class ChunkQuadStrategy {
-  constructor(voxelSize = 100, chunkSize = 1000) {
+  constructor(chunkMesher, voxelSize = 100, chunkSize = 1000) {
+    this.chunkMesher = chunkMesher;
     this.voxelSize = voxelSize;
     this.chunkSize = chunkSize;
-    this.hmapLoader = new HmapLoader();
-    this.greedyMesher = GreedyMesher.getMesher();
+
+    this.setupEventListeners();
+  }
+
+  lodMinBound = 0;
+  lodMaxBound = 9;
+  renderDistance = Infinity;
+
+  setupEventListeners() {
+    document.addEventListener("lod-limits-changed", (e) => {
+      this.updateLODLimits(e.detail);
+    });
+    document.addEventListener("view-distance-changed", (e) => {
+      this.updateViewDistance(e.detail);
+    });
+  }
+
+  updateLODLimits(lodLimits) {
+    console.log("LOD Lims: ", lodLimits);
+    this.lodMinBound = Math.round(lodLimits[0]);
+    this.lodMaxBound = Math.round(lodLimits[1]);
+  }
+
+  updateViewDistance(viewDistance) {
+    this.renderDistance = viewDistance;
   }
 
   getBaseChunkList() {
@@ -29,20 +48,32 @@ export default class ChunkQuadStrategy {
   howManyChunksLoading = 0;
   maximumChunksLoading = 1;
   previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
+  iteration = 0;
+
+  destroy() {
+    if (this.quadTree) {
+      this.quadTree.baseNode.destroy();
+      this.quadTree = null;
+    }
+    this.howManyChunksLoading = 0;
+    this.previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
+    this.iteration++;
+  }
 
   initializing = false;
   async updateChunks(playerPosition) {
     if (!this.quadTree) {
       this.initializing = true;
       this.quadTree = new QuadTree(this.chunkSize);
-      //let heightMapData = await this.getChunk(0, 0, 1);
       let baseChunks = this.getBaseChunkList();
       for (const chunkCoords of baseChunks) {
-        let heightMapData = await this.getChunk(chunkCoords.x, chunkCoords.z, chunkCoords.levelOfDetail);
-        let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, null, null, 0, null, chunkCoords.levelOfDetail);
+        let chunk = new Chunk({ x: chunkCoords.x, z: chunkCoords.z }, this.chunkSize, null, null, 0, null, chunkCoords.levelOfDetail);
         chunk.scale = 2 ** 8;
-        chunk.rawData = heightMapData;
-        chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
+        chunk.iteration = this.iteration;
+        await this.chunkMesher.generateChunkData(chunk);
+        if (!this.quadTree || this.iteration !== chunk.iteration) {
+          return;
+        }
         this.quadTree.addChunk(chunk);
       }
       //this.quadTree.addChunk(chunk);
@@ -84,8 +115,16 @@ export default class ChunkQuadStrategy {
       if (chunkNode.children.length > 0) {
         continue;
       }
+      if (chunkNode.distanceFromPlayer > this.renderDistance) {
+        continue;
+      }
       const distanceRatio = Math.max(1, chunkNode.distanceFromPlayer / (this.chunkSize * 2));
-      const expectedLOD = Math.min(9, 9 - Math.floor(Math.log2(distanceRatio * 1)));
+      let expectedLOD = Math.min(this.lodMaxBound, this.lodMaxBound - Math.floor(Math.log2(distanceRatio * 1)));
+
+      if (expectedLOD < this.lodMinBound) {
+        expectedLOD = this.lodMinBound;
+      }
+      // const expectedLOD = 9;
 
       if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {
         nodesToLoad.push(chunkNode);
@@ -93,7 +132,7 @@ export default class ChunkQuadStrategy {
       }
       else if (chunkNode.chunk.levelOfDetail > expectedLOD + 1 && chunkNode.chunk.levelOfDetail > 1) {
 
-        console.log("Destroying chunk at (" + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z + ") at size " + this.chunkSize + ", LOD " + chunkNode.chunk.levelOfDetail);
+        vprint("Destroying chunk at (" + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z + ") at size " + this.chunkSize + ", LOD " + chunkNode.chunk.levelOfDetail);
         chunkNode.destroyFamily();
       }
     }
@@ -109,7 +148,7 @@ export default class ChunkQuadStrategy {
         let chunkX = childCoordinate.x;
         let chunkZ = childCoordinate.z;
         let levelOfDetail = childCoordinate.levelOfDetail;
-        let chunk = new Chunk({ x: chunkX, z: chunkZ }, null, null, 0, null, levelOfDetail);
+        let chunk = new Chunk({ x: chunkX, z: chunkZ }, this.chunkSize, null, null, 0, null, levelOfDetail);
         chunk.scale = chunkNode.chunk.scale / 2;
         let childChunkNode = new ChunkNode();
         childChunkNode.chunk = chunk;
@@ -118,20 +157,14 @@ export default class ChunkQuadStrategy {
         childChunkNode.isLoading = true;
       }
 
-      console.log("Getting new chunks: " + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z);
-
       let loadPromises = chunkNode.children.map((childChunkNode) => {
         const chunkX = childChunkNode.chunk.position.x;
         const chunkZ = childChunkNode.chunk.position.z;
-        const levelOfDetail = childChunkNode.chunk.levelOfDetail;
-        return this.getChunk(chunkX, chunkZ, levelOfDetail).then(heightMapData => {
-          if (heightMapData === 404) {
+        return this.chunkMesher.generateChunkData(childChunkNode.chunk, chunkNode.chunk).then(res => {
+          if (res === 404) {
             vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
             return;
           }
-          heightMapData = this.handleNewHeightmapVTF(heightMapData, levelOfDetail, chunkNode, chunkX, chunkZ);
-          childChunkNode.chunk.rawData = heightMapData;
-          childChunkNode.chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(childChunkNode.chunk.rawData));
           childChunkNode.isLoading = false;
         }).catch(err => {
           console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
@@ -148,93 +181,6 @@ export default class ChunkQuadStrategy {
 
   }
 
-  async getChunk(chunkX, chunkZ, levelOfDetail = 0) {
-    vprint(`Requesting chunk at (${chunkX}, ${chunkZ}) at size ${this.chunkSize}, LOD ${levelOfDetail}`);
-
-    return this.hmapLoader.loadHeightMap(
-      chunkX,
-      chunkZ,
-      this.chunkSize,
-      levelOfDetail,
-      "quad",
-      false // use VTF repacked typed arrays
-    );
-  }
-
-  handleNewHeightmapVTF(childDataObj, levelOfDetail, parentNode, chunkX, chunkZ) {
-    if (levelOfDetail == 1) {
-      return childDataObj;
-    }
-
-    const size = this.chunkSize;
-    const fullColorData = new Uint8Array(size * size * 4);
-    const fullHeightData = new Uint16Array(size * size);
-
-    const parentData = parentNode.chunk.rawData;
-    let index = 0;
-
-    // X, Z are coordinates within the parent's local space.
-    // By multiplying by size/2, we map the child's quadrant to the parent's actual offset.
-    const xOffset = chunkX % 2 * (size / 2);
-    const pyOffset = chunkZ % 2 * (size / 2);
-
-    for (let py = 0; py < size / 2; py++) {
-      for (let px = 0; px < size / 2; px++) {
-        const x = px * 2;
-        const y = py * 2;
-
-        // TR (Top-Right -> x + 1, y)
-        let idxTR = (y * size + (x + 1));
-        let srcIdx = index * 4;
-        let dstIdx = idxTR * 4;
-        fullColorData[dstIdx] = childDataObj.colorData[srcIdx];
-        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
-        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
-        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
-        fullHeightData[idxTR] = childDataObj.heightData[index];
-        index++;
-
-        // BL (Bottom-Left -> x, y + 1)
-        let idxBL = ((y + 1) * size + x);
-        srcIdx = index * 4;
-        dstIdx = idxBL * 4;
-        fullColorData[dstIdx] = childDataObj.colorData[srcIdx];
-        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
-        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
-        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
-        fullHeightData[idxBL] = childDataObj.heightData[index];
-        index++;
-
-        // BR (Bottom-Right -> x + 1, y + 1)
-        let idxBR = ((y + 1) * size + (x + 1));
-        srcIdx = index * 4;
-        dstIdx = idxBR * 4;
-        fullColorData[dstIdx] = childDataObj.colorData[srcIdx];
-        fullColorData[dstIdx + 1] = childDataObj.colorData[srcIdx + 1];
-        fullColorData[dstIdx + 2] = childDataObj.colorData[srcIdx + 2];
-        fullColorData[dstIdx + 3] = childDataObj.colorData[srcIdx + 3];
-        fullHeightData[idxBR] = childDataObj.heightData[index];
-        index++;
-
-        // TL (Top-Left -> from parent)
-        let parentX = px + xOffset;
-        let parentY = py + pyOffset;
-        let pIdx = parentY * size + parentX;
-        let idxTL = y * size + x;
-
-        let pSrcIdx = pIdx * 4;
-        let tDstIdx = idxTL * 4;
-        fullColorData[tDstIdx] = parentData.colorData[pSrcIdx];
-        fullColorData[tDstIdx + 1] = parentData.colorData[pSrcIdx + 1];
-        fullColorData[tDstIdx + 2] = parentData.colorData[pSrcIdx + 2];
-        fullColorData[tDstIdx + 3] = parentData.colorData[pSrcIdx + 3];
-        fullHeightData[idxTL] = parentData.heightData[pIdx];
-      }
-    }
-
-    return { colorData: fullColorData, heightData: fullHeightData };
-  }
-
   getChunkData() {
     if (!this.quadTree) {
       return new Map(); // Return empty if quad tree isn't initialized
@@ -247,7 +193,7 @@ export default class ChunkQuadStrategy {
 class QuadTree {
   constructor(chunkSize = 256) {
     this.baseNode = new ChunkNode();
-    this.baseNode.chunk = new Chunk({ x: 0, z: 0 }, null, null, 0, null, 0);
+    this.baseNode.chunk = new Chunk({ x: 0, z: 0 }, chunkSize, null, null, 0, null, 0);
     this.baseNode.chunk.scale = 2 ** 9;
     this.chunkSize = chunkSize;
   }

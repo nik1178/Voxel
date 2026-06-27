@@ -18,6 +18,8 @@ export default class Renderer {
 
   manualCulling = false;
   renderType = "hybrid";
+  viewDistance = Infinity;
+  useFX = true;
 
   /**
    * Constructs the Renderer instance.
@@ -48,14 +50,49 @@ export default class Renderer {
     document.addEventListener("culling-toggled", (e) => {
       this.setManualCulling(e.detail);
     });
+
+    document.addEventListener("render-distance-changed", (e) => {
+      this.updateViewDistance(e.detail);
+    });
+
+    document.addEventListener("fx-toggled", (e) => {
+      this.setFX(e.detail);
+    });
+
+    window.addEventListener("resize", () => {
+      //resize
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    })
   }
 
   setRenderType(type) {
+    let previousType = this.renderType;
     this.renderType = type;
+    if (type === "mesh" || previousType === "mesh") {
+      this.chunkManager.destroyChunks();
+    }
   }
 
   setManualCulling(culling) {
     this.manualCulling = culling;
+  }
+
+  updateChunkSize(chunkSize) {
+    this.chunkSize = chunkSize;
+    this.chunkManager.updateChunkSize(chunkSize);
+  }
+
+  updateViewDistance(viewDistance) {
+    this.viewDistance = viewDistance;
+  }
+
+  updateLODLimits(lodLimits) {
+    this.lodLimits = lodLimits;
+  }
+
+  setFX(fx) {
+    this.useFX = fx;
   }
 
   /**
@@ -103,6 +140,13 @@ export default class Renderer {
       this.cubeShaderModule = this.device.createShaderModule({
         label: "Cube shader",
         code: this.cubeShaderText,
+      });
+    }
+
+    if (this.meshShaderText) {
+      this.meshShaderModule = this.device.createShaderModule({
+        label: "Mesh shader",
+        code: this.meshShaderText,
       });
     }
 
@@ -195,6 +239,7 @@ export default class Renderer {
     this.greedyShaderText = await fetch("instanced-greedy-shader.wgsl").then((r) => r.text());
     this.instancedShaderText = await fetch("instanced-shader.wgsl").then((r) => r.text());
     this.cubeShaderText = await fetch("instanced-cubes-shader.wgsl").then((r) => r.text());
+    this.meshShaderText = await fetch("mesh-shader.wgsl").then((r) => r.text());
   }
 
   async loadSkyboxTexture() {
@@ -231,7 +276,24 @@ export default class Renderer {
       ],
     };
 
-    if (this.renderType === "raycast" || this.renderType === "mesh" || this.renderType === "planes") {
+    this.meshVertexBufferLayout = {
+      arrayStride: 32, // 8 floats (x, y, z, w, r, g, b, a) = 32 bytes
+      stepMode: "vertex",
+      attributes: [
+        {
+          format: "float32x4",
+          offset: 0,
+          shaderLocation: 0,
+        },
+        {
+          format: "float32x4",
+          offset: 16,
+          shaderLocation: 1,
+        }
+      ],
+    };
+
+    if (this.renderType === "raycast" || this.renderType === "planes") {
       this.vertexBufferLayouts = [this.faceVertexBufferLayout];
     } else {
       // The greedy shader needs the face geometry AND the instance data buffer
@@ -499,6 +561,32 @@ export default class Renderer {
       });
     }
 
+    if (this.meshShaderModule) {
+      this.meshPipeline = this.device.createRenderPipeline({
+        label: "Mesh pipeline",
+        layout: pipelineLayout,
+        vertex: {
+          module: this.meshShaderModule,
+          entryPoint: "vertexMain",
+          buffers: [this.meshVertexBufferLayout],
+        },
+        fragment: {
+          module: this.meshShaderModule,
+          entryPoint: "fragmentMain",
+          targets: [{ format: this.format }],
+        },
+        // primitive: {
+        //   topology: 'triangle-list',
+        //   cullMode: 'none',
+        // },
+        depthStencil: {
+          format: this.depthFormat,
+          depthWriteEnabled: true,
+          depthCompare: "less",
+        },
+      });
+    }
+
     // We use a nearest-neighbor sampler for discrete voxel boundaries
     this.nearestSampler = this.device.createSampler({
       magFilter: 'nearest',
@@ -695,7 +783,7 @@ export default class Renderer {
     const pass = commandEncoder.beginRenderPass({
       colorAttachments: [
         {
-          view: this.renderTargetTexture.createView(),
+          view: this.useFX ? this.renderTargetTexture.createView() : this.context.getCurrentTexture().createView(),
           loadOp: "clear",
           storeOp: "store",
           clearValue: { r: 0.53, g: 0.81, b: 0.92, a: 1 }, // Sky blue background
@@ -719,10 +807,14 @@ export default class Renderer {
     document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
 
     // Find 9 closest chunks
-    let dspoijfosdf = 0;
     for (const chunk of chunkData.values()) {
       const distance = chunk.distanceFromPlayer(this.player.getPositionVector());
       chunk.distance = distance;
+      if (distance > this.viewDistance) {
+        chunk.render = false;
+      } else {
+        chunk.render = true;
+      }
       // if (dspoijfosdf == 0) {
       //   console.log(this.player.position);
       // }
@@ -766,6 +858,7 @@ export default class Renderer {
 
 
     for (const chunk of chunkData.values()) {
+      if (!chunk.render) continue;
 
       // If a chunk has raw data ready but no GPU textures, initialize them
       if (chunk.rawData && (!chunk.colorTexture || !chunk.heightTexture)) {
@@ -774,7 +867,7 @@ export default class Renderer {
 
       // Skip rendering if textures are still unavailable
       if (!chunk.colorTexture || !chunk.heightTexture) {
-        vprint("Chunk at", chunk.position, "not ready for rendering");
+        vprint("Chunk at", chunk.position, "not ready for rendering with textures");
         continue;
       }
 
@@ -811,15 +904,16 @@ export default class Renderer {
       chunk.age = Math.max(0, chunk.age - dt * 2);
 
       this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-        chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
+        chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, this.manualCulling ? 1 : chunk.getMaxHeight(), 0 /*orientationOffset*/, 5 /*howManyFaces*/
       ]));
 
       pass.setBindGroup(1, chunk.vtfBindGroup);
       
-      let useGreedy = this.renderType === "greedy" || this.renderType === "hybrid";
-      let useRaymarching = this.renderType === "raycast" || this.renderType === "hybrid";
+      let useGreedy = this.renderType === "greedy";
+      let useRaymarching = this.renderType === "raycast";
       let useCubes = this.renderType === "cubes";
-      let usePlanes = this.renderType === "planes" || this.renderType === "mesh"; // Fallback mesh to planes
+      let usePlanes = this.renderType === "planes";
+      let useMesh = this.renderType === "mesh";
 
       if (this.renderType === "hybrid") {
         if (nineChunks.includes(chunk)) {
@@ -845,13 +939,13 @@ export default class Renderer {
           pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
           pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);
         } else {
-          console.log("Chunk missing instanceBuffer for greedy meshing!");
+          vprint("Chunk missing instanceBuffer for greedy meshing!");
         }
       } else if (useCubes) {
         pass.setPipeline(this.cubePipeline);
         pass.setVertexBuffer(0, this.gridVertexBuffer);
         pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
-        pass.drawIndexed(this.gridIndexCount, this.chunkSize * this.chunkSize);
+        pass.drawIndexed(this.gridIndexCount, chunk.chunkSize * chunk.chunkSize);
       } else if (usePlanes) {
         pass.setPipeline(this.planesPipeline);
         pass.setVertexBuffer(0, this.faceVertexBuffer);
@@ -861,15 +955,15 @@ export default class Renderer {
         if (!this.manualCulling) {
           facesToRender = 5;
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 0, 0, 5
+            chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, 0, 0, 5
           ]));
         } else {
           // Orientations: 1 = +z, 2 = +x, 3 = -z, 4 = -x
           let orientationOffset = 0;
-          if (chunk.position.z * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > this.player.camera.transform.translation[2]) {
+          if (chunk.position.z * chunk.scale * chunk.chunkSize + chunk.scale * chunk.chunkSize/2 > this.player.camera.transform.translation[2]) {
             orientationOffset+=1;
           }
-          if (chunk.position.x * chunk.scale * this.chunkSize + chunk.scale * this.chunkSize/2 > -this.player.camera.transform.translation[0]) {
+          if (chunk.position.x * chunk.scale * chunk.chunkSize + chunk.scale * chunk.chunkSize/2 > -this.player.camera.transform.translation[0]) {
             if (orientationOffset==0) {
               orientationOffset+=2;
             }
@@ -890,11 +984,20 @@ export default class Renderer {
           }
 
           this.device.queue.writeBuffer(chunk.chunkInfoBuffer, 0, new Float32Array([
-            chunk.position.x, chunk.position.z, this.chunkSize, chunk.scale, chunk.age, 1, orientationOffset, facesToRender
+            chunk.position.x, chunk.position.z, chunk.chunkSize, chunk.scale, chunk.age, 1, orientationOffset, facesToRender
           ]));
         }
         
-        pass.drawIndexed(this.faceIndexCount, this.chunkSize * this.chunkSize * facesToRender);
+        pass.drawIndexed(this.faceIndexCount, chunk.chunkSize * chunk.chunkSize * facesToRender);
+      } else if (useMesh) {
+        pass.setPipeline(this.meshPipeline);
+        if (chunk.vertexBuffer && chunk.indexBuffer) {
+          pass.setVertexBuffer(0, chunk.vertexBuffer);
+          pass.setIndexBuffer(chunk.indexBuffer, "uint32");
+          pass.drawIndexed(chunk.indexCount);
+        } else {
+          vprint("Chunk missing vertexBuffer for mesh rendering!");
+        }
       }
     }
 
@@ -902,57 +1005,59 @@ export default class Renderer {
     pass.end();
 
     // 1. Bloom Extract Pass (reads renderTargetTexture, writes to bloomTextureA)
-    const extractPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureA.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    extractPass.setPipeline(this.extractPipeline);
-    extractPass.setBindGroup(0, this.bloomExtractBindGroup);
-    extractPass.draw(3);
-    extractPass.end();
+    if (this.useFX) {
+      const extractPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureA.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      extractPass.setPipeline(this.extractPipeline);
+      extractPass.setBindGroup(0, this.bloomExtractBindGroup);
+      extractPass.draw(3);
+      extractPass.end();
 
-    // 2. Bloom Blur X Pass (reads bloomTextureA, writes to bloomTextureB)
-    const blurXPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureB.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    blurXPass.setPipeline(this.blurXPipeline);
-    blurXPass.setBindGroup(0, this.bloomBlurXBindGroup);
-    blurXPass.draw(3);
-    blurXPass.end();
+      // 2. Bloom Blur X Pass (reads bloomTextureA, writes to bloomTextureB)
+      const blurXPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureB.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      blurXPass.setPipeline(this.blurXPipeline);
+      blurXPass.setBindGroup(0, this.bloomBlurXBindGroup);
+      blurXPass.draw(3);
+      blurXPass.end();
 
-    // 3. Bloom Blur Y Pass (reads bloomTextureB, writes back to bloomTextureA)
-    const blurYPass = commandEncoder.beginRenderPass({
-      colorAttachments: [{
-        view: this.bloomTextureA.createView(),
-        loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
-      }]
-    });
-    blurYPass.setPipeline(this.blurYPipeline);
-    blurYPass.setBindGroup(0, this.bloomBlurYBindGroup);
-    blurYPass.draw(3);
-    blurYPass.end();
+      // 3. Bloom Blur Y Pass (reads bloomTextureB, writes back to bloomTextureA)
+      const blurYPass = commandEncoder.beginRenderPass({
+        colorAttachments: [{
+          view: this.bloomTextureA.createView(),
+          loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 },
+        }]
+      });
+      blurYPass.setPipeline(this.blurYPipeline);
+      blurYPass.setBindGroup(0, this.bloomBlurYBindGroup);
+      blurYPass.draw(3);
+      blurYPass.end();
 
-    // Begin the post-processing FX pass
-    const fxPass = commandEncoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: this.context.getCurrentTexture().createView(),
-          loadOp: "clear",
-          storeOp: "store",
-          clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
-        },
-      ]
-    });
+      // Begin the post-processing FX pass
+      const fxPass = commandEncoder.beginRenderPass({
+        colorAttachments: [
+          {
+            view: this.context.getCurrentTexture().createView(),
+            loadOp: "clear",
+            storeOp: "store",
+            clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 1 },
+          },
+        ]
+      });
 
-    fxPass.setPipeline(this.fxPipeline);
-    fxPass.setBindGroup(0, this.fxBindGroup);
-    fxPass.draw(3);
-    fxPass.end();
+      fxPass.setPipeline(this.fxPipeline);
+      fxPass.setBindGroup(0, this.fxBindGroup);
+      fxPass.draw(3);
+      fxPass.end();
+    }
 
     // Submit the command buffer to the GPU queue
     this.device.queue.submit([commandEncoder.finish()]);
