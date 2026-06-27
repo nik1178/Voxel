@@ -1,4 +1,5 @@
 public/map/*
+!public/map/slovenian_cities.json
 python/__pycache__/
 python/util/__pycache__/
 venv/

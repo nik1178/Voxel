@@ -1,0 +1,2510 @@
+[
+    {
+        "id": "1705917455",
+        "name": "Ljubljana",
+        "name_ascii": "Ljubljana",
+        "coordinates": {
+            "lat": 46.0514,
+            "lng": 14.5061
+        },
+        "admin_name": "Ljubljana",
+        "capital_type": "primary",
+        "population": 290903
+    },
+    {
+        "id": "1705454394",
+        "name": "Maribor",
+        "name_ascii": "Maribor",
+        "coordinates": {
+            "lat": 46.55,
+            "lng": 15.6333
+        },
+        "admin_name": "Maribor",
+        "capital_type": "admin",
+        "population": 114301
+    },
+    {
+        "id": "1705842003",
+        "name": "Kranj",
+        "name_ascii": "Kranj",
+        "coordinates": {
+            "lat": 46.2389,
+            "lng": 14.3556
+        },
+        "admin_name": "Kranj",
+        "capital_type": "admin",
+        "population": 37605
+    },
+    {
+        "id": "1705563326",
+        "name": "Celje",
+        "name_ascii": "Celje",
+        "coordinates": {
+            "lat": 46.2291,
+            "lng": 15.2641
+        },
+        "admin_name": "Celje",
+        "capital_type": "admin",
+        "population": 37122
+    },
+    {
+        "id": "1705478862",
+        "name": "Koper",
+        "name_ascii": "Koper",
+        "coordinates": {
+            "lat": 45.5475,
+            "lng": 13.7307
+        },
+        "admin_name": "Koper",
+        "capital_type": "admin",
+        "population": 25753
+    },
+    {
+        "id": "1705929589",
+        "name": "Velenje",
+        "name_ascii": "Velenje",
+        "coordinates": {
+            "lat": 46.3667,
+            "lng": 15.1167
+        },
+        "admin_name": "Velenje",
+        "capital_type": "admin",
+        "population": 25594
+    },
+    {
+        "id": "1705849587",
+        "name": "Novo Mesto",
+        "name_ascii": "Novo Mesto",
+        "coordinates": {
+            "lat": 45.7981,
+            "lng": 15.1628
+        },
+        "admin_name": "Novo Mesto",
+        "capital_type": "admin",
+        "population": 24183
+    },
+    {
+        "id": "1705072535",
+        "name": "Ptuj",
+        "name_ascii": "Ptuj",
+        "coordinates": {
+            "lat": 46.4186,
+            "lng": 15.8714
+        },
+        "admin_name": "Ptuj",
+        "capital_type": "admin",
+        "population": 17880
+    },
+    {
+        "id": "1705864078",
+        "name": "Kamnik",
+        "name_ascii": "Kamnik",
+        "coordinates": {
+            "lat": 46.225,
+            "lng": 14.6097
+        },
+        "admin_name": "Kamnik",
+        "capital_type": "admin",
+        "population": 13880
+    },
+    {
+        "id": "1705370010",
+        "name": "Trbovlje",
+        "name_ascii": "Trbovlje",
+        "coordinates": {
+            "lat": 46.15,
+            "lng": 15.05
+        },
+        "admin_name": "Trbovlje",
+        "capital_type": "admin",
+        "population": 13822
+    },
+    {
+        "id": "1705471403",
+        "name": "Jesenice",
+        "name_ascii": "Jesenice",
+        "coordinates": {
+            "lat": 46.4366,
+            "lng": 14.0602
+        },
+        "admin_name": "Jesenice",
+        "capital_type": "admin",
+        "population": 13702
+    },
+    {
+        "id": "1705822721",
+        "name": "Domžale",
+        "name_ascii": "Domzale",
+        "coordinates": {
+            "lat": 46.1333,
+            "lng": 14.6
+        },
+        "admin_name": "Domžale",
+        "capital_type": "admin",
+        "population": 13222
+    },
+    {
+        "id": "1705939355",
+        "name": "Nova Gorica",
+        "name_ascii": "Nova Gorica",
+        "coordinates": {
+            "lat": 45.9667,
+            "lng": 13.65
+        },
+        "admin_name": "Nova Gorica",
+        "capital_type": "admin",
+        "population": 13031
+    },
+    {
+        "id": "1705743622",
+        "name": "Škofja Loka",
+        "name_ascii": "Skofja Loka",
+        "coordinates": {
+            "lat": 46.1655,
+            "lng": 14.3064
+        },
+        "admin_name": "Škofja Loka",
+        "capital_type": "admin",
+        "population": 11797
+    },
+    {
+        "id": "1705476087",
+        "name": "Izola",
+        "name_ascii": "Izola",
+        "coordinates": {
+            "lat": 45.5395,
+            "lng": 13.6604
+        },
+        "admin_name": "Izola",
+        "capital_type": "admin",
+        "population": 11682
+    },
+    {
+        "id": "1705129726",
+        "name": "Murska Sobota",
+        "name_ascii": "Murska Sobota",
+        "coordinates": {
+            "lat": 46.6586,
+            "lng": 16.1619
+        },
+        "admin_name": "Murska Sobota",
+        "capital_type": "admin",
+        "population": 11190
+    },
+    {
+        "id": "1705275257",
+        "name": "Logatec",
+        "name_ascii": "Logatec",
+        "coordinates": {
+            "lat": 45.9167,
+            "lng": 14.2297
+        },
+        "admin_name": "Logatec",
+        "capital_type": "admin",
+        "population": 9752
+    },
+    {
+        "id": "1705090259",
+        "name": "Postojna",
+        "name_ascii": "Postojna",
+        "coordinates": {
+            "lat": 45.7743,
+            "lng": 14.2153
+        },
+        "admin_name": "Postojna",
+        "capital_type": "admin",
+        "population": 9605
+    },
+    {
+        "id": "1705071756",
+        "name": "Vrhnika",
+        "name_ascii": "Vrhnika",
+        "coordinates": {
+            "lat": 45.9622,
+            "lng": 14.2936
+        },
+        "admin_name": "Vrhnika",
+        "capital_type": "admin",
+        "population": 8969
+    },
+    {
+        "id": "1705359875",
+        "name": "Slovenska Bistrica",
+        "name_ascii": "Slovenska Bistrica",
+        "coordinates": {
+            "lat": 46.3941,
+            "lng": 15.5707
+        },
+        "admin_name": "Slovenska Bistrica",
+        "capital_type": "admin",
+        "population": 8219
+    },
+    {
+        "id": "1705859832",
+        "name": "Kočevje",
+        "name_ascii": "Kocevje",
+        "coordinates": {
+            "lat": 45.643,
+            "lng": 14.8594
+        },
+        "admin_name": "Kočevje",
+        "capital_type": "admin",
+        "population": 8151
+    },
+    {
+        "id": "1705847148",
+        "name": "Grosuplje",
+        "name_ascii": "Grosuplje",
+        "coordinates": {
+            "lat": 45.9551,
+            "lng": 14.6562
+        },
+        "admin_name": "Grosuplje",
+        "capital_type": "admin",
+        "population": 7703
+    },
+    {
+        "id": "1705757622",
+        "name": "Ravne na Koroškem",
+        "name_ascii": "Ravne na Koroskem",
+        "coordinates": {
+            "lat": 46.5437,
+            "lng": 14.9642
+        },
+        "admin_name": "Ravne na Koroškem",
+        "capital_type": "admin",
+        "population": 7363
+    },
+    {
+        "id": "1705845238",
+        "name": "Slovenj Gradec",
+        "name_ascii": "Slovenj Gradec",
+        "coordinates": {
+            "lat": 46.5093,
+            "lng": 15.079
+        },
+        "admin_name": "Slovenj Gradec",
+        "capital_type": "admin",
+        "population": 7249
+    },
+    {
+        "id": "1705274788",
+        "name": "Mengeš",
+        "name_ascii": "Menges",
+        "coordinates": {
+            "lat": 46.1669,
+            "lng": 14.575
+        },
+        "admin_name": "Mengeš",
+        "capital_type": "admin",
+        "population": 6918
+    },
+    {
+        "id": "1705286396",
+        "name": "Krško",
+        "name_ascii": "Krsko",
+        "coordinates": {
+            "lat": 45.959,
+            "lng": 15.4922
+        },
+        "admin_name": "Krško",
+        "capital_type": "admin",
+        "population": 6852
+    },
+    {
+        "id": "1705251132",
+        "name": "Brežice",
+        "name_ascii": "Brezice",
+        "coordinates": {
+            "lat": 45.9044,
+            "lng": 15.5925
+        },
+        "admin_name": "Brežice",
+        "capital_type": "admin",
+        "population": 6843
+    },
+    {
+        "id": "1705580792",
+        "name": "Ajdovščina",
+        "name_ascii": "Ajdovscina",
+        "coordinates": {
+            "lat": 45.8884,
+            "lng": 13.9052
+        },
+        "admin_name": "Ajdovščina",
+        "capital_type": "admin",
+        "population": 6843
+    },
+    {
+        "id": "1705902870",
+        "name": "Litija",
+        "name_ascii": "Litija",
+        "coordinates": {
+            "lat": 46.0565,
+            "lng": 14.8303
+        },
+        "admin_name": "Šmartno pri Litiji",
+        "capital_type": "admin",
+        "population": 6688
+    },
+    {
+        "id": "1705488511",
+        "name": "Radovljica",
+        "name_ascii": "Radovljica",
+        "coordinates": {
+            "lat": 46.3425,
+            "lng": 14.1721
+        },
+        "admin_name": "Radovljica",
+        "capital_type": "admin",
+        "population": 6143
+    },
+    {
+        "id": "1705079549",
+        "name": "Sežana",
+        "name_ascii": "Sezana",
+        "coordinates": {
+            "lat": 45.7,
+            "lng": 13.85
+        },
+        "admin_name": "Sežana",
+        "capital_type": "admin",
+        "population": 6037
+    },
+    {
+        "id": "1705942287",
+        "name": "Zagorje",
+        "name_ascii": "Zagorje",
+        "coordinates": {
+            "lat": 46.1342,
+            "lng": 14.9942
+        },
+        "admin_name": "Zagorje ob Savi",
+        "capital_type": "admin",
+        "population": 6023
+    },
+    {
+        "id": "1705472042",
+        "name": "Idrija",
+        "name_ascii": "Idrija",
+        "coordinates": {
+            "lat": 46.0025,
+            "lng": 14.0275
+        },
+        "admin_name": "Idrija",
+        "capital_type": "admin",
+        "population": 5848
+    },
+    {
+        "id": "1705132468",
+        "name": "Črnomelj",
+        "name_ascii": "Crnomelj",
+        "coordinates": {
+            "lat": 45.5711,
+            "lng": 15.1889
+        },
+        "admin_name": "Črnomelj",
+        "capital_type": "admin",
+        "population": 5496
+    },
+    {
+        "id": "1705158152",
+        "name": "Medvode",
+        "name_ascii": "Medvode",
+        "coordinates": {
+            "lat": 46.1382,
+            "lng": 14.4147
+        },
+        "admin_name": "Medvode",
+        "capital_type": "admin",
+        "population": 5434
+    },
+    {
+        "id": "1705506460",
+        "name": "Slovenske Konjice",
+        "name_ascii": "Slovenske Konjice",
+        "coordinates": {
+            "lat": 46.3362,
+            "lng": 15.421
+        },
+        "admin_name": "Slovenske Konjice",
+        "capital_type": "admin",
+        "population": 5157
+    },
+    {
+        "id": "1705340993",
+        "name": "Žalec",
+        "name_ascii": "Zalec",
+        "coordinates": {
+            "lat": 46.2516,
+            "lng": 15.1674
+        },
+        "admin_name": "Žalec",
+        "capital_type": "admin",
+        "population": 5004
+    },
+    {
+        "id": "1705772825",
+        "name": "Rogaška Slatina",
+        "name_ascii": "Rogaska Slatina",
+        "coordinates": {
+            "lat": 46.2315,
+            "lng": 15.638
+        },
+        "admin_name": "Rogaška Slatina",
+        "capital_type": "admin",
+        "population": 4971
+    },
+    {
+        "id": "1705655016",
+        "name": "Bled",
+        "name_ascii": "Bled",
+        "coordinates": {
+            "lat": 46.3683,
+            "lng": 14.1147
+        },
+        "admin_name": "Bled",
+        "capital_type": "admin",
+        "population": 4969
+    },
+    {
+        "id": "1705818009",
+        "name": "Hrastnik",
+        "name_ascii": "Hrastnik",
+        "coordinates": {
+            "lat": 46.1461,
+            "lng": 15.0814
+        },
+        "admin_name": "Hrastnik",
+        "capital_type": "admin",
+        "population": 4962
+    },
+    {
+        "id": "1705076635",
+        "name": "Šentjur",
+        "name_ascii": "Sentjur",
+        "coordinates": {
+            "lat": 46.2225,
+            "lng": 15.3973
+        },
+        "admin_name": "Šentjur",
+        "capital_type": "admin",
+        "population": 4940
+    },
+    {
+        "id": "1705187949",
+        "name": "Prevalje",
+        "name_ascii": "Prevalje",
+        "coordinates": {
+            "lat": 46.5469,
+            "lng": 14.9208
+        },
+        "admin_name": "Prevalje",
+        "capital_type": "admin",
+        "population": 4620
+    },
+    {
+        "id": "1705218575",
+        "name": "Sevnica",
+        "name_ascii": "Sevnica",
+        "coordinates": {
+            "lat": 46.0092,
+            "lng": 15.3039
+        },
+        "admin_name": "Sevnica",
+        "capital_type": "admin",
+        "population": 4533
+    },
+    {
+        "id": "1705031705",
+        "name": "Ilirska Bistrica",
+        "name_ascii": "Ilirska Bistrica",
+        "coordinates": {
+            "lat": 45.5651,
+            "lng": 14.2493
+        },
+        "admin_name": "Ilirska Bistrica",
+        "capital_type": "admin",
+        "population": 4323
+    },
+    {
+        "id": "1705417281",
+        "name": "Ruše",
+        "name_ascii": "Ruse",
+        "coordinates": {
+            "lat": 46.5383,
+            "lng": 15.5153
+        },
+        "admin_name": "Ruše",
+        "capital_type": "admin",
+        "population": 4206
+    },
+    {
+        "id": "1705932096",
+        "name": "Cerknica",
+        "name_ascii": "Cerknica",
+        "coordinates": {
+            "lat": 45.7964,
+            "lng": 14.3581
+        },
+        "admin_name": "Cerknica",
+        "capital_type": "admin",
+        "population": 4018
+    },
+    {
+        "id": "1705707595",
+        "name": "Trzin",
+        "name_ascii": "Trzin",
+        "coordinates": {
+            "lat": 46.1278,
+            "lng": 14.5583
+        },
+        "admin_name": "Trzin",
+        "capital_type": "admin",
+        "population": 3940
+    },
+    {
+        "id": "1705570941",
+        "name": "Trebnje",
+        "name_ascii": "Trebnje",
+        "coordinates": {
+            "lat": 45.9104,
+            "lng": 15.0086
+        },
+        "admin_name": "Trebnje",
+        "capital_type": "admin",
+        "population": 3927
+    },
+    {
+        "id": "1705244140",
+        "name": "Miklavž na Dravskem Polju",
+        "name_ascii": "Miklavz na Dravskem Polju",
+        "coordinates": {
+            "lat": 46.5058,
+            "lng": 15.6972
+        },
+        "admin_name": "Miklavž na Dravskem Polju",
+        "capital_type": "admin",
+        "population": 3808
+    },
+    {
+        "id": "1705085466",
+        "name": "Piran",
+        "name_ascii": "Piran",
+        "coordinates": {
+            "lat": 45.5271,
+            "lng": 13.5685
+        },
+        "admin_name": "Piran",
+        "capital_type": "admin",
+        "population": 3787
+    },
+    {
+        "id": "1705554055",
+        "name": "Tržič",
+        "name_ascii": "Trzic",
+        "coordinates": {
+            "lat": 46.3651,
+            "lng": 14.3089
+        },
+        "admin_name": "Tržič",
+        "capital_type": "admin",
+        "population": 3726
+    },
+    {
+        "id": "1705397569",
+        "name": "Šempeter pri Gorici",
+        "name_ascii": "Sempeter pri Gorici",
+        "coordinates": {
+            "lat": 45.9283,
+            "lng": 13.6378
+        },
+        "admin_name": "Šempeter-Vrtojba",
+        "capital_type": "admin",
+        "population": 3694
+    },
+    {
+        "id": "1705440220",
+        "name": "Žiri",
+        "name_ascii": "Ziri",
+        "coordinates": {
+            "lat": 46.046,
+            "lng": 14.1083
+        },
+        "admin_name": "Žiri",
+        "capital_type": "admin",
+        "population": 3657
+    },
+    {
+        "id": "1705675272",
+        "name": "Ribnica",
+        "name_ascii": "Ribnica",
+        "coordinates": {
+            "lat": 45.7386,
+            "lng": 14.727
+        },
+        "admin_name": "Ribnica",
+        "capital_type": "admin",
+        "population": 3612
+    },
+    {
+        "id": "1705303708",
+        "name": "Ljutomer",
+        "name_ascii": "Ljutomer",
+        "coordinates": {
+            "lat": 46.5178,
+            "lng": 16.1952
+        },
+        "admin_name": "Ljutomer",
+        "capital_type": "admin",
+        "population": 3344
+    },
+    {
+        "id": "1705602247",
+        "name": "Tolmin",
+        "name_ascii": "Tolmin",
+        "coordinates": {
+            "lat": 46.183,
+            "lng": 13.733
+        },
+        "admin_name": "Tolmin",
+        "capital_type": "admin",
+        "population": 3336
+    },
+    {
+        "id": "1705962698",
+        "name": "Laško",
+        "name_ascii": "Lasko",
+        "coordinates": {
+            "lat": 46.1563,
+            "lng": 15.2386
+        },
+        "admin_name": "Laško",
+        "capital_type": "admin",
+        "population": 3288
+    },
+    {
+        "id": "1705719159",
+        "name": "Lenart v Slovenskih Goricah",
+        "name_ascii": "Lenart v Slovenskih Goricah",
+        "coordinates": {
+            "lat": 46.5755,
+            "lng": 15.8306
+        },
+        "admin_name": "Lenart",
+        "capital_type": "admin",
+        "population": 3285
+    },
+    {
+        "id": "1705968659",
+        "name": "Šenčur",
+        "name_ascii": "Sencur",
+        "coordinates": {
+            "lat": 46.2456,
+            "lng": 14.4197
+        },
+        "admin_name": "Šenčur",
+        "capital_type": "admin",
+        "population": 3282
+    },
+    {
+        "id": "1705008169",
+        "name": "Metlika",
+        "name_ascii": "Metlika",
+        "coordinates": {
+            "lat": 45.6472,
+            "lng": 15.3142
+        },
+        "admin_name": "Metlika",
+        "capital_type": "admin",
+        "population": 3229
+    },
+    {
+        "id": "1705521676",
+        "name": "Ankaran",
+        "name_ascii": "Ankaran",
+        "coordinates": {
+            "lat": 45.5793,
+            "lng": 13.7379
+        },
+        "admin_name": "Ankaran",
+        "capital_type": "admin",
+        "population": 3224
+    },
+    {
+        "id": "1705190624",
+        "name": "Brezovica",
+        "name_ascii": "Brezovica",
+        "coordinates": {
+            "lat": 46.0333,
+            "lng": 14.4
+        },
+        "admin_name": "Brezovica",
+        "capital_type": "admin",
+        "population": 3221
+    },
+    {
+        "id": "1705607524",
+        "name": "Mežica",
+        "name_ascii": "Mezica",
+        "coordinates": {
+            "lat": 46.5206,
+            "lng": 14.8536
+        },
+        "admin_name": "Mežica",
+        "capital_type": "admin",
+        "population": 3176
+    },
+    {
+        "id": "1705130450",
+        "name": "Dravograd",
+        "name_ascii": "Dravograd",
+        "coordinates": {
+            "lat": 46.59,
+            "lng": 15.018
+        },
+        "admin_name": "Dravograd",
+        "capital_type": "admin",
+        "population": 3088
+    },
+    {
+        "id": "1705643923",
+        "name": "Gornja Radgona",
+        "name_ascii": "Gornja Radgona",
+        "coordinates": {
+            "lat": 46.681,
+            "lng": 15.9883
+        },
+        "admin_name": "Gornja Radgona",
+        "capital_type": "admin",
+        "population": 3086
+    },
+    {
+        "id": "1705764665",
+        "name": "Zreče",
+        "name_ascii": "Zrece",
+        "coordinates": {
+            "lat": 46.3822,
+            "lng": 15.3792
+        },
+        "admin_name": "Zreče",
+        "capital_type": "admin",
+        "population": 3014
+    },
+    {
+        "id": "1705379997",
+        "name": "Spodnje Hoče",
+        "name_ascii": "Spodnje Hoce",
+        "coordinates": {
+            "lat": 46.5,
+            "lng": 15.6478
+        },
+        "admin_name": "Hoče-Slivnica",
+        "capital_type": "admin",
+        "population": 2971
+    },
+    {
+        "id": "1705885002",
+        "name": "Železniki",
+        "name_ascii": "Zelezniki",
+        "coordinates": {
+            "lat": 46.2192,
+            "lng": 14.1553
+        },
+        "admin_name": "Železniki",
+        "capital_type": "admin",
+        "population": 2962
+    },
+    {
+        "id": "1705653525",
+        "name": "Lendava",
+        "name_ascii": "Lendava",
+        "coordinates": {
+            "lat": 46.5662,
+            "lng": 16.4499
+        },
+        "admin_name": "Lendava",
+        "capital_type": "admin",
+        "population": 2954
+    },
+    {
+        "id": "1705067758",
+        "name": "Škofljica",
+        "name_ascii": "Skofljica",
+        "coordinates": {
+            "lat": 45.9876,
+            "lng": 14.5725
+        },
+        "admin_name": "Škofljica",
+        "capital_type": "admin",
+        "population": 2947
+    },
+    {
+        "id": "1705376916",
+        "name": "Šoštanj",
+        "name_ascii": "Sostanj",
+        "coordinates": {
+            "lat": 46.38,
+            "lng": 15.0486
+        },
+        "admin_name": "Šoštanj",
+        "capital_type": "admin",
+        "population": 2918
+    },
+    {
+        "id": "1705643433",
+        "name": "Rače",
+        "name_ascii": "Race",
+        "coordinates": {
+            "lat": 46.4528,
+            "lng": 15.6811
+        },
+        "admin_name": "Rače-Fram",
+        "capital_type": "admin",
+        "population": 2913
+    },
+    {
+        "id": "1705478193",
+        "name": "Radlje ob Dravi",
+        "name_ascii": "Radlje ob Dravi",
+        "coordinates": {
+            "lat": 46.6149,
+            "lng": 15.2226
+        },
+        "admin_name": "Radlje ob Dravi",
+        "capital_type": "admin",
+        "population": 2856
+    },
+    {
+        "id": "1705665714",
+        "name": "Borovnica",
+        "name_ascii": "Borovnica",
+        "coordinates": {
+            "lat": 45.918,
+            "lng": 14.3642
+        },
+        "admin_name": "Borovnica",
+        "capital_type": "admin",
+        "population": 2674
+    },
+    {
+        "id": "1705662463",
+        "name": "Vojnik",
+        "name_ascii": "Vojnik",
+        "coordinates": {
+            "lat": 46.2931,
+            "lng": 15.3028
+        },
+        "admin_name": "Vojnik",
+        "capital_type": "admin",
+        "population": 2475
+    },
+    {
+        "id": "1705238814",
+        "name": "Beltinci",
+        "name_ascii": "Beltinci",
+        "coordinates": {
+            "lat": 46.606,
+            "lng": 16.2328
+        },
+        "admin_name": "Beltinci",
+        "capital_type": "admin",
+        "population": 2430
+    },
+    {
+        "id": "1705144123",
+        "name": "Polzela",
+        "name_ascii": "Polzela",
+        "coordinates": {
+            "lat": 46.2833,
+            "lng": 15.0667
+        },
+        "admin_name": "Braslovče",
+        "capital_type": "admin",
+        "population": 2380
+    },
+    {
+        "id": "1705409266",
+        "name": "Ig",
+        "name_ascii": "Ig",
+        "coordinates": {
+            "lat": 45.9692,
+            "lng": 14.5394
+        },
+        "admin_name": "Ig",
+        "capital_type": "admin",
+        "population": 2378
+    },
+    {
+        "id": "1705062986",
+        "name": "Sveta Ana",
+        "name_ascii": "Sveta Ana",
+        "coordinates": {
+            "lat": 46.6492,
+            "lng": 15.8442
+        },
+        "admin_name": "Sveta Ana",
+        "capital_type": "admin",
+        "population": 2298
+    },
+    {
+        "id": "1705930549",
+        "name": "Ivančna Gorica",
+        "name_ascii": "Ivancna Gorica",
+        "coordinates": {
+            "lat": 45.9374,
+            "lng": 14.8029
+        },
+        "admin_name": "Ivančna Gorica",
+        "capital_type": "admin",
+        "population": 2249
+    },
+    {
+        "id": "1705459961",
+        "name": "Muta",
+        "name_ascii": "Muta",
+        "coordinates": {
+            "lat": 46.609,
+            "lng": 15.1661
+        },
+        "admin_name": "Muta",
+        "capital_type": "admin",
+        "population": 2225
+    },
+    {
+        "id": "1705709650",
+        "name": "Pivka",
+        "name_ascii": "Pivka",
+        "coordinates": {
+            "lat": 45.6805,
+            "lng": 14.1964
+        },
+        "admin_name": "Pivka",
+        "capital_type": "admin",
+        "population": 2220
+    },
+    {
+        "id": "1705127725",
+        "name": "Črna na Koroškem",
+        "name_ascii": "Crna na Koroskem",
+        "coordinates": {
+            "lat": 46.4702,
+            "lng": 14.8503
+        },
+        "admin_name": "Črna na Koroškem",
+        "capital_type": "admin",
+        "population": 2201
+    },
+    {
+        "id": "1705609332",
+        "name": "Radenci",
+        "name_ascii": "Radenci",
+        "coordinates": {
+            "lat": 46.642,
+            "lng": 16.0378
+        },
+        "admin_name": "Radenci",
+        "capital_type": "admin",
+        "population": 2171
+    },
+    {
+        "id": "1705775604",
+        "name": "Štore",
+        "name_ascii": "Store",
+        "coordinates": {
+            "lat": 46.2217,
+            "lng": 15.3111
+        },
+        "admin_name": "Štore",
+        "capital_type": "admin",
+        "population": 2149
+    },
+    {
+        "id": "1705239053",
+        "name": "Mozirje",
+        "name_ascii": "Mozirje",
+        "coordinates": {
+            "lat": 46.3398,
+            "lng": 14.9618
+        },
+        "admin_name": "Mozirje",
+        "capital_type": "admin",
+        "population": 2134
+    },
+    {
+        "id": "1705864633",
+        "name": "Vipava",
+        "name_ascii": "Vipava",
+        "coordinates": {
+            "lat": 45.8463,
+            "lng": 13.9622
+        },
+        "admin_name": "Vipava",
+        "capital_type": "admin",
+        "population": 2101
+    },
+    {
+        "id": "1705653513",
+        "name": "Semič",
+        "name_ascii": "Semic",
+        "coordinates": {
+            "lat": 45.6546,
+            "lng": 15.1783
+        },
+        "admin_name": "Semič",
+        "capital_type": "admin",
+        "population": 1994
+    },
+    {
+        "id": "1705420341",
+        "name": "Radeče",
+        "name_ascii": "Radece",
+        "coordinates": {
+            "lat": 46.0659,
+            "lng": 15.1729
+        },
+        "admin_name": "Radeče",
+        "capital_type": "admin",
+        "population": 1993
+    },
+    {
+        "id": "1705491164",
+        "name": "Straža",
+        "name_ascii": "Straza",
+        "coordinates": {
+            "lat": 45.78,
+            "lng": 15.0728
+        },
+        "admin_name": "Straža",
+        "capital_type": "admin",
+        "population": 1983
+    },
+    {
+        "id": "1705413437",
+        "name": "Ormož",
+        "name_ascii": "Ormoz",
+        "coordinates": {
+            "lat": 46.4071,
+            "lng": 16.1505
+        },
+        "admin_name": "Ormož",
+        "capital_type": "admin",
+        "population": 1962
+    },
+    {
+        "id": "1705376318",
+        "name": "Lovrenc na Pohorju",
+        "name_ascii": "Lovrenc na Pohorju",
+        "coordinates": {
+            "lat": 46.5406,
+            "lng": 15.3931
+        },
+        "admin_name": "Lovrenc na Pohorju",
+        "capital_type": "admin",
+        "population": 1920
+    },
+    {
+        "id": "1705898157",
+        "name": "Mislinja",
+        "name_ascii": "Mislinja",
+        "coordinates": {
+            "lat": 46.4414,
+            "lng": 15.2003
+        },
+        "admin_name": "Mislinja",
+        "capital_type": "admin",
+        "population": 1877
+    },
+    {
+        "id": "1705637872",
+        "name": "Naklo",
+        "name_ascii": "Naklo",
+        "coordinates": {
+            "lat": 46.2749,
+            "lng": 14.3176
+        },
+        "admin_name": "Naklo",
+        "capital_type": "admin",
+        "population": 1859
+    },
+    {
+        "id": "1705373506",
+        "name": "Šmarje",
+        "name_ascii": "Smarje",
+        "coordinates": {
+            "lat": 46.2281,
+            "lng": 15.5182
+        },
+        "admin_name": "Šmarje pri Jelšah",
+        "capital_type": "admin",
+        "population": 1768
+    },
+    {
+        "id": "1705094350",
+        "name": "Bohinjska Bistrica",
+        "name_ascii": "Bohinjska Bistrica",
+        "coordinates": {
+            "lat": 46.2742,
+            "lng": 13.9524
+        },
+        "admin_name": "Bohinj",
+        "capital_type": "admin",
+        "population": 1767
+    },
+    {
+        "id": "1705065298",
+        "name": "Divača",
+        "name_ascii": "Divaca",
+        "coordinates": {
+            "lat": 45.6814,
+            "lng": 13.9678
+        },
+        "admin_name": "Divača",
+        "capital_type": "admin",
+        "population": 1734
+    },
+    {
+        "id": "1705820033",
+        "name": "Cerklje na Gorenjskem",
+        "name_ascii": "Cerklje na Gorenjskem",
+        "coordinates": {
+            "lat": 46.2542,
+            "lng": 14.4886
+        },
+        "admin_name": "Cerklje na Gorenjskem",
+        "capital_type": "admin",
+        "population": 1710
+    },
+    {
+        "id": "1705728443",
+        "name": "Vodice",
+        "name_ascii": "Vodice",
+        "coordinates": {
+            "lat": 46.1833,
+            "lng": 14.4833
+        },
+        "admin_name": "Vodice",
+        "capital_type": "admin",
+        "population": 1706
+    },
+    {
+        "id": "1705746627",
+        "name": "Prebold",
+        "name_ascii": "Prebold",
+        "coordinates": {
+            "lat": 46.2369,
+            "lng": 15.0917
+        },
+        "admin_name": "Prebold",
+        "capital_type": "admin",
+        "population": 1705
+    },
+    {
+        "id": "1705953692",
+        "name": "Spodnji Duplek",
+        "name_ascii": "Spodnji Duplek",
+        "coordinates": {
+            "lat": 46.505,
+            "lng": 15.7467
+        },
+        "admin_name": "Duplek",
+        "capital_type": "admin",
+        "population": 1689
+    },
+    {
+        "id": "1705756002",
+        "name": "Tabor",
+        "name_ascii": "Tabor",
+        "coordinates": {
+            "lat": 46.2361,
+            "lng": 15.0183
+        },
+        "admin_name": "Tabor",
+        "capital_type": "admin",
+        "population": 1667
+    },
+    {
+        "id": "1705912877",
+        "name": "Odranci",
+        "name_ascii": "Odranci",
+        "coordinates": {
+            "lat": 46.5833,
+            "lng": 16.2833
+        },
+        "admin_name": "Odranci",
+        "capital_type": "admin",
+        "population": 1632
+    },
+    {
+        "id": "1705609781",
+        "name": "Bovec",
+        "name_ascii": "Bovec",
+        "coordinates": {
+            "lat": 46.3378,
+            "lng": 13.5522
+        },
+        "admin_name": "Bovec",
+        "capital_type": "admin",
+        "population": 1586
+    },
+    {
+        "id": "1705579021",
+        "name": "Rogatec",
+        "name_ascii": "Rogatec",
+        "coordinates": {
+            "lat": 46.2243,
+            "lng": 15.7052
+        },
+        "admin_name": "Rogatec",
+        "capital_type": "admin",
+        "population": 1554
+    },
+    {
+        "id": "1705639122",
+        "name": "Vuzenica",
+        "name_ascii": "Vuzenica",
+        "coordinates": {
+            "lat": 46.5992,
+            "lng": 15.1669
+        },
+        "admin_name": "Vuzenica",
+        "capital_type": "admin",
+        "population": 1522
+    },
+    {
+        "id": "1705443136",
+        "name": "Kranjska Gora",
+        "name_ascii": "Kranjska Gora",
+        "coordinates": {
+            "lat": 46.4854,
+            "lng": 13.7871
+        },
+        "admin_name": "Kranjska Gora",
+        "capital_type": "admin",
+        "population": 1519
+    },
+    {
+        "id": "1705608129",
+        "name": "Miren",
+        "name_ascii": "Miren",
+        "coordinates": {
+            "lat": 45.8961,
+            "lng": 13.6069
+        },
+        "admin_name": "Miren-Kostanjevica",
+        "capital_type": "admin",
+        "population": 1491
+    },
+    {
+        "id": "1705329272",
+        "name": "Šentjernej",
+        "name_ascii": "Sentjernej",
+        "coordinates": {
+            "lat": 45.8389,
+            "lng": 15.3362
+        },
+        "admin_name": "Šentjernej",
+        "capital_type": "admin",
+        "population": 1441
+    },
+    {
+        "id": "1705182651",
+        "name": "Oplotnica",
+        "name_ascii": "Oplotnica",
+        "coordinates": {
+            "lat": 46.3885,
+            "lng": 15.4473
+        },
+        "admin_name": "Oplotnica",
+        "capital_type": "admin",
+        "population": 1439
+    },
+    {
+        "id": "1705759580",
+        "name": "Cerkno",
+        "name_ascii": "Cerkno",
+        "coordinates": {
+            "lat": 46.1278,
+            "lng": 13.9875
+        },
+        "admin_name": "Cerkno",
+        "capital_type": "admin",
+        "population": 1425
+    },
+    {
+        "id": "1705851676",
+        "name": "Turnišče",
+        "name_ascii": "Turnisce",
+        "coordinates": {
+            "lat": 46.6194,
+            "lng": 16.3223
+        },
+        "admin_name": "Turnišče",
+        "capital_type": "admin",
+        "population": 1418
+    },
+    {
+        "id": "1705762040",
+        "name": "Dragomer",
+        "name_ascii": "Dragomer",
+        "coordinates": {
+            "lat": 46.0189,
+            "lng": 14.382
+        },
+        "admin_name": "Log-Dragomer",
+        "capital_type": "admin",
+        "population": 1410
+    },
+    {
+        "id": "1705164835",
+        "name": "Šmartno",
+        "name_ascii": "Smartno",
+        "coordinates": {
+            "lat": 46.0441,
+            "lng": 14.8466
+        },
+        "admin_name": "Šmartno pri Litiji",
+        "capital_type": "admin",
+        "population": 1406
+    },
+    {
+        "id": "1705864774",
+        "name": "Selnica ob Dravi",
+        "name_ascii": "Selnica ob Dravi",
+        "coordinates": {
+            "lat": 46.551,
+            "lng": 15.4935
+        },
+        "admin_name": "Selnica ob Dravi",
+        "capital_type": "admin",
+        "population": 1338
+    },
+    {
+        "id": "1705033855",
+        "name": "Mirna",
+        "name_ascii": "Mirna",
+        "coordinates": {
+            "lat": 45.9503,
+            "lng": 15.0608
+        },
+        "admin_name": "Mirna",
+        "capital_type": "admin",
+        "population": 1332
+    },
+    {
+        "id": "1705023699",
+        "name": "Dornava",
+        "name_ascii": "Dornava",
+        "coordinates": {
+            "lat": 46.4299,
+            "lng": 15.9488
+        },
+        "admin_name": "Dornava",
+        "capital_type": "admin",
+        "population": 1263
+    },
+    {
+        "id": "1705243858",
+        "name": "Horjul",
+        "name_ascii": "Horjul",
+        "coordinates": {
+            "lat": 46.0236,
+            "lng": 14.2992
+        },
+        "admin_name": "Horjul",
+        "capital_type": "admin",
+        "population": 1169
+    },
+    {
+        "id": "1705321982",
+        "name": "Kidričevo",
+        "name_ascii": "Kidricevo",
+        "coordinates": {
+            "lat": 46.4037,
+            "lng": 15.7942
+        },
+        "admin_name": "Kidričevo",
+        "capital_type": "admin",
+        "population": 1168
+    },
+    {
+        "id": "1705698578",
+        "name": "Črenšovci",
+        "name_ascii": "Crensovci",
+        "coordinates": {
+            "lat": 46.5747,
+            "lng": 16.2937
+        },
+        "admin_name": "Črenšovci",
+        "capital_type": "admin",
+        "population": 1151
+    },
+    {
+        "id": "1705961189",
+        "name": "Gorenja Vas",
+        "name_ascii": "Gorenja Vas",
+        "coordinates": {
+            "lat": 46.1069,
+            "lng": 14.1451
+        },
+        "admin_name": "Gorenja Vas-Poljane",
+        "capital_type": "admin",
+        "population": 1132
+    },
+    {
+        "id": "1705955833",
+        "name": "Kanal",
+        "name_ascii": "Kanal",
+        "coordinates": {
+            "lat": 46.0851,
+            "lng": 13.6344
+        },
+        "admin_name": "Kanal ob Soči",
+        "capital_type": "admin",
+        "population": 1127
+    },
+    {
+        "id": "1705286007",
+        "name": "Poljčane",
+        "name_ascii": "Poljcane",
+        "coordinates": {
+            "lat": 46.3119,
+            "lng": 15.5792
+        },
+        "admin_name": "Poljčane",
+        "capital_type": "admin",
+        "population": 1126
+    },
+    {
+        "id": "1705523597",
+        "name": "Benedikt",
+        "name_ascii": "Benedikt",
+        "coordinates": {
+            "lat": 46.6065,
+            "lng": 15.8842
+        },
+        "admin_name": "Benedikt",
+        "capital_type": "admin",
+        "population": 1120
+    },
+    {
+        "id": "1705651680",
+        "name": "Kobarid",
+        "name_ascii": "Kobarid",
+        "coordinates": {
+            "lat": 46.2471,
+            "lng": 13.5796
+        },
+        "admin_name": "Kobarid",
+        "capital_type": "admin",
+        "population": 1085
+    },
+    {
+        "id": "1705879741",
+        "name": "Gornji Grad",
+        "name_ascii": "Gornji Grad",
+        "coordinates": {
+            "lat": 46.296,
+            "lng": 14.8077
+        },
+        "admin_name": "Gornji Grad",
+        "capital_type": "admin",
+        "population": 1016
+    },
+    {
+        "id": "1705083617",
+        "name": "Ljubno",
+        "name_ascii": "Ljubno",
+        "coordinates": {
+            "lat": 46.3494,
+            "lng": 14.8342
+        },
+        "admin_name": "Ljubno",
+        "capital_type": "admin",
+        "population": 1014
+    },
+    {
+        "id": "1705096910",
+        "name": "Mirna Peč",
+        "name_ascii": "Mirna Pec",
+        "coordinates": {
+            "lat": 45.858,
+            "lng": 15.0876
+        },
+        "admin_name": "Mirna Peč",
+        "capital_type": "admin",
+        "population": 994
+    },
+    {
+        "id": "1705613407",
+        "name": "Središče ob Dravi",
+        "name_ascii": "Sredisce ob Dravi",
+        "coordinates": {
+            "lat": 46.3937,
+            "lng": 16.2691
+        },
+        "admin_name": "Središče ob Dravi",
+        "capital_type": "admin",
+        "population": 965
+    },
+    {
+        "id": "1705529436",
+        "name": "Veržej",
+        "name_ascii": "Verzej",
+        "coordinates": {
+            "lat": 46.5825,
+            "lng": 16.1603
+        },
+        "admin_name": "Veržej",
+        "capital_type": "admin",
+        "population": 952
+    },
+    {
+        "id": "1705602796",
+        "name": "Dobrovnik",
+        "name_ascii": "Dobrovnik",
+        "coordinates": {
+            "lat": 46.6515,
+            "lng": 16.3479
+        },
+        "admin_name": "Dobrovnik",
+        "capital_type": "admin",
+        "population": 948
+    },
+    {
+        "id": "1705291500",
+        "name": "Moravče",
+        "name_ascii": "Moravce",
+        "coordinates": {
+            "lat": 46.1367,
+            "lng": 14.7439
+        },
+        "admin_name": "Moravče",
+        "capital_type": "admin",
+        "population": 938
+    },
+    {
+        "id": "1705653264",
+        "name": "Dobrova",
+        "name_ascii": "Dobrova",
+        "coordinates": {
+            "lat": 46.0533,
+            "lng": 14.4144
+        },
+        "admin_name": "Dobrova-Polhov Gradec",
+        "capital_type": "admin",
+        "population": 921
+    },
+    {
+        "id": "1705295612",
+        "name": "Komenda",
+        "name_ascii": "Komenda",
+        "coordinates": {
+            "lat": 46.2073,
+            "lng": 14.539
+        },
+        "admin_name": "Komenda",
+        "capital_type": "admin",
+        "population": 912
+    },
+    {
+        "id": "1705598784",
+        "name": "Nazarje",
+        "name_ascii": "Nazarje",
+        "coordinates": {
+            "lat": 46.3202,
+            "lng": 14.9531
+        },
+        "admin_name": "Nazarje",
+        "capital_type": "admin",
+        "population": 887
+    },
+    {
+        "id": "1705395845",
+        "name": "Dolenjske Toplice",
+        "name_ascii": "Dolenjske Toplice",
+        "coordinates": {
+            "lat": 45.7545,
+            "lng": 15.0583
+        },
+        "admin_name": "Straža",
+        "capital_type": "admin",
+        "population": 882
+    },
+    {
+        "id": "1705403351",
+        "name": "Preddvor",
+        "name_ascii": "Preddvor",
+        "coordinates": {
+            "lat": 46.3052,
+            "lng": 14.4203
+        },
+        "admin_name": "Preddvor",
+        "capital_type": "admin",
+        "population": 862
+    },
+    {
+        "id": "1705925648",
+        "name": "Vitanje",
+        "name_ascii": "Vitanje",
+        "coordinates": {
+            "lat": 46.3816,
+            "lng": 15.2957
+        },
+        "admin_name": "Vitanje",
+        "capital_type": "admin",
+        "population": 859
+    },
+    {
+        "id": "1705849784",
+        "name": "Stari Trg",
+        "name_ascii": "Stari Trg",
+        "coordinates": {
+            "lat": 45.7142,
+            "lng": 14.4695
+        },
+        "admin_name": "Loška Dolina",
+        "capital_type": "admin",
+        "population": 859
+    },
+    {
+        "id": "1705389455",
+        "name": "Pesnica",
+        "name_ascii": "Pesnica",
+        "coordinates": {
+            "lat": 46.6097,
+            "lng": 15.6714
+        },
+        "admin_name": "Pesnica",
+        "capital_type": "admin",
+        "population": 859
+    },
+    {
+        "id": "1705561619",
+        "name": "Gorišnica",
+        "name_ascii": "Gorisnica",
+        "coordinates": {
+            "lat": 46.4184,
+            "lng": 16.0094
+        },
+        "admin_name": "Gorišnica",
+        "capital_type": "admin",
+        "population": 856
+    },
+    {
+        "id": "1705627212",
+        "name": "Velika Polana",
+        "name_ascii": "Velika Polana",
+        "coordinates": {
+            "lat": 46.5719,
+            "lng": 16.3469
+        },
+        "admin_name": "Velika Polana",
+        "capital_type": "admin",
+        "population": 853
+    },
+    {
+        "id": "1705126489",
+        "name": "Moravske-Toplice",
+        "name_ascii": "Moravske-Toplice",
+        "coordinates": {
+            "lat": 46.6927,
+            "lng": 16.2281
+        },
+        "admin_name": "Moravske Toplice",
+        "capital_type": "admin",
+        "population": 842
+    },
+    {
+        "id": "1705893552",
+        "name": "Zgornja Hajdina",
+        "name_ascii": "Zgornja Hajdina",
+        "coordinates": {
+            "lat": 46.4056,
+            "lng": 15.8383
+        },
+        "admin_name": "Hajdina",
+        "capital_type": "admin",
+        "population": 833
+    },
+    {
+        "id": "1705295579",
+        "name": "Sodražica",
+        "name_ascii": "Sodrazica",
+        "coordinates": {
+            "lat": 45.7611,
+            "lng": 14.6356
+        },
+        "admin_name": "Sodražica",
+        "capital_type": "admin",
+        "population": 803
+    },
+    {
+        "id": "1705659496",
+        "name": "Sveta Trojica v Slovenskih Goricah",
+        "name_ascii": "Sveta Trojica v Slovenskih Goricah",
+        "coordinates": {
+            "lat": 46.5767,
+            "lng": 15.8763
+        },
+        "admin_name": "Sveta Trojica v Slovenskih Goricah",
+        "capital_type": "admin",
+        "population": 758
+    },
+    {
+        "id": "1705557844",
+        "name": "Starše",
+        "name_ascii": "Starse",
+        "coordinates": {
+            "lat": 46.4675,
+            "lng": 15.7642
+        },
+        "admin_name": "Starše",
+        "capital_type": "admin",
+        "population": 735
+    },
+    {
+        "id": "1705618557",
+        "name": "Velike Lašče",
+        "name_ascii": "Velike Lasce",
+        "coordinates": {
+            "lat": 45.8363,
+            "lng": 14.6377
+        },
+        "admin_name": "Velike Lašče",
+        "capital_type": "admin",
+        "population": 728
+    },
+    {
+        "id": "1705336506",
+        "name": "Mokronog",
+        "name_ascii": "Mokronog",
+        "coordinates": {
+            "lat": 45.9425,
+            "lng": 15.1489
+        },
+        "admin_name": "Mokronog-Trebelno",
+        "capital_type": "admin",
+        "population": 702
+    },
+    {
+        "id": "1705796422",
+        "name": "Kostanjevica na Krki",
+        "name_ascii": "Kostanjevica na Krki",
+        "coordinates": {
+            "lat": 45.8463,
+            "lng": 15.4249
+        },
+        "admin_name": "Kostanjevica na Krki",
+        "capital_type": "admin",
+        "population": 689
+    },
+    {
+        "id": "1705804130",
+        "name": "Šmartno",
+        "name_ascii": "Smartno",
+        "coordinates": {
+            "lat": 46.3333,
+            "lng": 15.0333
+        },
+        "admin_name": "Šmartno ob Paki",
+        "capital_type": "admin",
+        "population": 643
+    },
+    {
+        "id": "1705361649",
+        "name": "Šmarješke Toplice",
+        "name_ascii": "Smarjeske Toplice",
+        "coordinates": {
+            "lat": 45.8622,
+            "lng": 15.2214
+        },
+        "admin_name": "Šmarješke Toplice",
+        "capital_type": "admin",
+        "population": 643
+    },
+    {
+        "id": "1705548274",
+        "name": "Kozje",
+        "name_ascii": "Kozje",
+        "coordinates": {
+            "lat": 46.0733,
+            "lng": 15.5597
+        },
+        "admin_name": "Kozje",
+        "capital_type": "admin",
+        "population": 625
+    },
+    {
+        "id": "1705677747",
+        "name": "Puconci",
+        "name_ascii": "Puconci",
+        "coordinates": {
+            "lat": 46.7038,
+            "lng": 16.1572
+        },
+        "admin_name": "Puconci",
+        "capital_type": "admin",
+        "population": 622
+    },
+    {
+        "id": "1705033390",
+        "name": "Grad",
+        "name_ascii": "Grad",
+        "coordinates": {
+            "lat": 46.7977,
+            "lng": 16.0984
+        },
+        "admin_name": "Grad",
+        "capital_type": "admin",
+        "population": 620
+    },
+    {
+        "id": "1705031068",
+        "name": "Komen",
+        "name_ascii": "Komen",
+        "coordinates": {
+            "lat": 45.8153,
+            "lng": 13.7483
+        },
+        "admin_name": "Komen",
+        "capital_type": "admin",
+        "population": 616
+    },
+    {
+        "id": "1705147774",
+        "name": "Majšperk",
+        "name_ascii": "Majsperk",
+        "coordinates": {
+            "lat": 46.3479,
+            "lng": 15.7404
+        },
+        "admin_name": "Majšperk",
+        "capital_type": "admin",
+        "population": 606
+    },
+    {
+        "id": "1705074870",
+        "name": "Videm",
+        "name_ascii": "Videm",
+        "coordinates": {
+            "lat": 45.8483,
+            "lng": 14.6944
+        },
+        "admin_name": "Dobrepolje",
+        "capital_type": "admin",
+        "population": 590
+    },
+    {
+        "id": "1705261000",
+        "name": "Podčetrtek",
+        "name_ascii": "Podcetrtek",
+        "coordinates": {
+            "lat": 46.1569,
+            "lng": 15.5986
+        },
+        "admin_name": "Bistrica ob Sotli",
+        "capital_type": "admin",
+        "population": 587
+    },
+    {
+        "id": "1705991236",
+        "name": "Zgornje Jezersko",
+        "name_ascii": "Zgornje Jezersko",
+        "coordinates": {
+            "lat": 46.395,
+            "lng": 14.4964
+        },
+        "admin_name": "Jezersko",
+        "capital_type": "admin",
+        "population": 547
+    },
+    {
+        "id": "1705285338",
+        "name": "Apače",
+        "name_ascii": "Apace",
+        "coordinates": {
+            "lat": 46.6967,
+            "lng": 15.9111
+        },
+        "admin_name": "Apače",
+        "capital_type": "admin",
+        "population": 543
+    },
+    {
+        "id": "1705965317",
+        "name": "Kobilje",
+        "name_ascii": "Kobilje",
+        "coordinates": {
+            "lat": 46.6847,
+            "lng": 16.3978
+        },
+        "admin_name": "Kobilje",
+        "capital_type": "admin",
+        "population": 542
+    },
+    {
+        "id": "1705353787",
+        "name": "Dobrna",
+        "name_ascii": "Dobrna",
+        "coordinates": {
+            "lat": 46.3381,
+            "lng": 15.2292
+        },
+        "admin_name": "Dobrna",
+        "capital_type": "admin",
+        "population": 536
+    },
+    {
+        "id": "1705082644",
+        "name": "Rečica",
+        "name_ascii": "Recica",
+        "coordinates": {
+            "lat": 46.3167,
+            "lng": 14.9167
+        },
+        "admin_name": "Rečica ob Savinji",
+        "capital_type": "admin",
+        "population": 518
+    },
+    {
+        "id": "1705493301",
+        "name": "Markovci",
+        "name_ascii": "Markovci",
+        "coordinates": {
+            "lat": 46.3954,
+            "lng": 15.9313
+        },
+        "admin_name": "Markovci",
+        "capital_type": "admin",
+        "population": 518
+    },
+    {
+        "id": "1705138690",
+        "name": "Križevci",
+        "name_ascii": "Krizevci",
+        "coordinates": {
+            "lat": 46.5631,
+            "lng": 16.1399
+        },
+        "admin_name": "Križevci",
+        "capital_type": "admin",
+        "population": 486
+    },
+    {
+        "id": "1705104301",
+        "name": "Zgornja Kungota",
+        "name_ascii": "Zgornja Kungota",
+        "coordinates": {
+            "lat": 46.6386,
+            "lng": 15.6139
+        },
+        "admin_name": "Kungota",
+        "capital_type": "admin",
+        "population": 480
+    },
+    {
+        "id": "1705681768",
+        "name": "Videm pri Ptuju",
+        "name_ascii": "Videm pri Ptuju",
+        "coordinates": {
+            "lat": 46.3697,
+            "lng": 15.8933
+        },
+        "admin_name": "Videm",
+        "capital_type": "admin",
+        "population": 460
+    },
+    {
+        "id": "1705650900",
+        "name": "Cirkulane",
+        "name_ascii": "Cirkulane",
+        "coordinates": {
+            "lat": 46.3436,
+            "lng": 15.9941
+        },
+        "admin_name": "Cirkulane",
+        "capital_type": "admin",
+        "population": 451
+    },
+    {
+        "id": "1705342044",
+        "name": "Zgornje Gorje",
+        "name_ascii": "Zgornje Gorje",
+        "coordinates": {
+            "lat": 46.38,
+            "lng": 14.0683
+        },
+        "admin_name": "Bled",
+        "capital_type": "admin",
+        "population": 444
+    },
+    {
+        "id": "1705411351",
+        "name": "Kuzma",
+        "name_ascii": "Kuzma",
+        "coordinates": {
+            "lat": 46.8369,
+            "lng": 16.0833
+        },
+        "admin_name": "Kuzma",
+        "capital_type": "admin",
+        "population": 429
+    },
+    {
+        "id": "1705097170",
+        "name": "Cankova",
+        "name_ascii": "Cankova",
+        "coordinates": {
+            "lat": 46.7193,
+            "lng": 16.0179
+        },
+        "admin_name": "Cankova",
+        "capital_type": "admin",
+        "population": 416
+    },
+    {
+        "id": "1705170234",
+        "name": "Gornji Petrovci",
+        "name_ascii": "Gornji Petrovci",
+        "coordinates": {
+            "lat": 46.8053,
+            "lng": 16.2225
+        },
+        "admin_name": "Gornji Petrovci",
+        "capital_type": "admin",
+        "population": 411
+    },
+    {
+        "id": "1705811179",
+        "name": "Tišina",
+        "name_ascii": "Tisina",
+        "coordinates": {
+            "lat": 46.6556,
+            "lng": 16.0933
+        },
+        "admin_name": "Tišina",
+        "capital_type": "admin",
+        "population": 408
+    },
+    {
+        "id": "1705288408",
+        "name": "Jurovski Dol",
+        "name_ascii": "Jurovski Dol",
+        "coordinates": {
+            "lat": 46.6076,
+            "lng": 15.7847
+        },
+        "admin_name": "Sveti Jurij v Slovenskih Goricah",
+        "capital_type": "admin",
+        "population": 404
+    },
+    {
+        "id": "1705829201",
+        "name": "Lukovica",
+        "name_ascii": "Lukovica",
+        "coordinates": {
+            "lat": 46.1683,
+            "lng": 14.6892
+        },
+        "admin_name": "Lukovica",
+        "capital_type": "admin",
+        "population": 403
+    },
+    {
+        "id": "1705830999",
+        "name": "Ribnica",
+        "name_ascii": "Ribnica",
+        "coordinates": {
+            "lat": 46.5349,
+            "lng": 15.2687
+        },
+        "admin_name": "Ribnica na Pohorju",
+        "capital_type": "admin",
+        "population": 398
+    },
+    {
+        "id": "1705296581",
+        "name": "Šalovci",
+        "name_ascii": "Salovci",
+        "coordinates": {
+            "lat": 46.825,
+            "lng": 16.2981
+        },
+        "admin_name": "Šalovci",
+        "capital_type": "admin",
+        "population": 381
+    },
+    {
+        "id": "1705042629",
+        "name": "Luče",
+        "name_ascii": "Luce",
+        "coordinates": {
+            "lat": 46.3564,
+            "lng": 14.7436
+        },
+        "admin_name": "Luče",
+        "capital_type": "admin",
+        "population": 380
+    },
+    {
+        "id": "1705126731",
+        "name": "Braslovče",
+        "name_ascii": "Braslovce",
+        "coordinates": {
+            "lat": 46.2875,
+            "lng": 15.041
+        },
+        "admin_name": "Braslovče",
+        "capital_type": "admin",
+        "population": 378
+    },
+    {
+        "id": "1705118688",
+        "name": "Hrib-Loški Potok",
+        "name_ascii": "Hrib-Loski Potok",
+        "coordinates": {
+            "lat": 45.7015,
+            "lng": 14.5901
+        },
+        "admin_name": "Loški Potok",
+        "capital_type": "admin",
+        "population": 377
+    },
+    {
+        "id": "1705352359",
+        "name": "Podlehnik",
+        "name_ascii": "Podlehnik",
+        "coordinates": {
+            "lat": 46.3353,
+            "lng": 15.88
+        },
+        "admin_name": "Podlehnik",
+        "capital_type": "admin",
+        "population": 375
+    },
+    {
+        "id": "1705262198",
+        "name": "Juršinci",
+        "name_ascii": "Jursinci",
+        "coordinates": {
+            "lat": 46.4847,
+            "lng": 15.9714
+        },
+        "admin_name": "Juršinci",
+        "capital_type": "admin",
+        "population": 375
+    },
+    {
+        "id": "1705654373",
+        "name": "Trnovska Vas",
+        "name_ascii": "Trnovska Vas",
+        "coordinates": {
+            "lat": 46.5231,
+            "lng": 15.8978
+        },
+        "admin_name": "Trnovska Vas",
+        "capital_type": "admin",
+        "population": 361
+    },
+    {
+        "id": "1705226459",
+        "name": "Dobrovo",
+        "name_ascii": "Dobrovo",
+        "coordinates": {
+            "lat": 45.9989,
+            "lng": 13.5296
+        },
+        "admin_name": "Brda",
+        "capital_type": "admin",
+        "population": 334
+    },
+    {
+        "id": "1705653481",
+        "name": "Vitomarci",
+        "name_ascii": "Vitomarci",
+        "coordinates": {
+            "lat": 46.5247,
+            "lng": 15.9344
+        },
+        "admin_name": "Sveti Andraž v Slovenskih Goricah",
+        "capital_type": "admin",
+        "population": 318
+    },
+    {
+        "id": "1705083565",
+        "name": "Šentrupert",
+        "name_ascii": "Sentrupert",
+        "coordinates": {
+            "lat": 45.9771,
+            "lng": 15.0911
+        },
+        "admin_name": "Šentrupert",
+        "capital_type": "admin",
+        "population": 306
+    },
+    {
+        "id": "1705523444",
+        "name": "Podvelka",
+        "name_ascii": "Podvelka",
+        "coordinates": {
+            "lat": 46.5869,
+            "lng": 15.3306
+        },
+        "admin_name": "Podvelka",
+        "capital_type": "admin",
+        "population": 295
+    },
+    {
+        "id": "1705701553",
+        "name": "Nova Vas",
+        "name_ascii": "Nova Vas",
+        "coordinates": {
+            "lat": 45.7725,
+            "lng": 14.5061
+        },
+        "admin_name": "Bloke",
+        "capital_type": "admin",
+        "population": 293
+    },
+    {
+        "id": "1705717325",
+        "name": "Dol",
+        "name_ascii": "Dol",
+        "coordinates": {
+            "lat": 46.0884,
+            "lng": 14.6425
+        },
+        "admin_name": "Dol pri Ljubljani",
+        "capital_type": "admin",
+        "population": 277
+    },
+    {
+        "id": "1705276725",
+        "name": "Razkrižje",
+        "name_ascii": "Razkrizje",
+        "coordinates": {
+            "lat": 46.523,
+            "lng": 16.2878
+        },
+        "admin_name": "Razkrižje",
+        "capital_type": "admin",
+        "population": 275
+    },
+    {
+        "id": "1705217643",
+        "name": "Hodoš",
+        "name_ascii": "Hodos",
+        "coordinates": {
+            "lat": 46.8233,
+            "lng": 16.3342
+        },
+        "admin_name": "Hodoš",
+        "capital_type": "admin",
+        "population": 271
+    },
+    {
+        "id": "1705837424",
+        "name": "Tomaž pri Ormožu",
+        "name_ascii": "Tomaz pri Ormozu",
+        "coordinates": {
+            "lat": 46.4833,
+            "lng": 16.0797
+        },
+        "admin_name": "Sveti Tomaž",
+        "capital_type": "admin",
+        "population": 244
+    },
+    {
+        "id": "1705940381",
+        "name": "Škocjan",
+        "name_ascii": "Skocjan",
+        "coordinates": {
+            "lat": 45.9067,
+            "lng": 15.2914
+        },
+        "admin_name": "Škocjan",
+        "capital_type": "admin",
+        "population": 244
+    },
+    {
+        "id": "1705970248",
+        "name": "Rogašovci",
+        "name_ascii": "Rogasovci",
+        "coordinates": {
+            "lat": 46.8056,
+            "lng": 16.0344
+        },
+        "admin_name": "Rogašovci",
+        "capital_type": "admin",
+        "population": 235
+    },
+    {
+        "id": "1705641346",
+        "name": "Bistrica ob Sotli",
+        "name_ascii": "Bistrica ob Sotli",
+        "coordinates": {
+            "lat": 46.0569,
+            "lng": 15.6625
+        },
+        "admin_name": "Podčetrtek",
+        "capital_type": "admin",
+        "population": 235
+    },
+    {
+        "id": "1705304446",
+        "name": "Makole",
+        "name_ascii": "Makole",
+        "coordinates": {
+            "lat": 46.3167,
+            "lng": 15.6714
+        },
+        "admin_name": "Makole",
+        "capital_type": "admin",
+        "population": 216
+    },
+    {
+        "id": "1705832384",
+        "name": "Sveti Jurij",
+        "name_ascii": "Sveti Jurij",
+        "coordinates": {
+            "lat": 46.5685,
+            "lng": 16.0241
+        },
+        "admin_name": "Sveti Jurij ob Ščavnici",
+        "capital_type": "admin",
+        "population": 205
+    },
+    {
+        "id": "1705581561",
+        "name": "Solčava",
+        "name_ascii": "Solcava",
+        "coordinates": {
+            "lat": 46.42,
+            "lng": 14.6917
+        },
+        "admin_name": "Solčava",
+        "capital_type": "admin",
+        "population": 201
+    },
+    {
+        "id": "1705579309",
+        "name": "Destrnik",
+        "name_ascii": "Destrnik",
+        "coordinates": {
+            "lat": 46.4923,
+            "lng": 15.8801
+        },
+        "admin_name": "Trnovska Vas",
+        "capital_type": "admin",
+        "population": 186
+    },
+    {
+        "id": "1705808302",
+        "name": "Cerkvenjak",
+        "name_ascii": "Cerkvenjak",
+        "coordinates": {
+            "lat": 46.566,
+            "lng": 15.9429
+        },
+        "admin_name": "Cerkvenjak",
+        "capital_type": "admin",
+        "population": 163
+    },
+    {
+        "id": "1705204927",
+        "name": "Dobje",
+        "name_ascii": "Dobje",
+        "coordinates": {
+            "lat": 46.1369,
+            "lng": 15.3945
+        },
+        "admin_name": "Dobje",
+        "capital_type": "admin",
+        "population": 114
+    },
+    {
+        "id": "1705839708",
+        "name": "Osilnica",
+        "name_ascii": "Osilnica",
+        "coordinates": {
+            "lat": 45.55,
+            "lng": 14.7333
+        },
+        "admin_name": "Osilnica",
+        "capital_type": "admin",
+        "population": 76
+    },
+    {
+        "id": "1705616966",
+        "name": "Vransko",
+        "name_ascii": "Vransko",
+        "coordinates": {
+            "lat": 46.1719,
+            "lng": 14.8217
+        },
+        "admin_name": "Vransko",
+        "capital_type": "admin",
+        "population": 13
+    },
+    {
+        "id": "1705541759",
+        "name": "Kostel",
+        "name_ascii": "Kostel",
+        "coordinates": {
+            "lat": 45.5084,
+            "lng": 14.9106
+        },
+        "admin_name": "Kostel",
+        "capital_type": "admin",
+        "population": 9
+    },
+    {
+        "id": "1705941695",
+        "name": "Žetale",
+        "name_ascii": "Zetale",
+        "coordinates": {
+            "lat": 46.275,
+            "lng": 15.7939
+        },
+        "admin_name": "Žetale",
+        "capital_type": "admin",
+        "population": null
+    },
+    {
+        "id": "1705027920",
+        "name": "Žužemberk",
+        "name_ascii": "Zuzemberk",
+        "coordinates": {
+            "lat": 45.8339,
+            "lng": 14.9292
+        },
+        "admin_name": "Žužemberk",
+        "capital_type": "admin",
+        "population": null
+    },
+    {
+        "id": "1705477555",
+        "name": "Zavrč",
+        "name_ascii": "Zavrc",
+        "coordinates": {
+            "lat": 46.3917,
+            "lng": 16.0497
+        },
+        "admin_name": "Gorišnica",
+        "capital_type": "admin",
+        "population": null
+    },
+    {
+        "id": "1705840723",
+        "name": "Šentilj",
+        "name_ascii": "Sentilj",
+        "coordinates": {
+            "lat": 46.6817,
+            "lng": 15.6481
+        },
+        "admin_name": "Šentilj",
+        "capital_type": "admin",
+        "population": null
+    }
+]
