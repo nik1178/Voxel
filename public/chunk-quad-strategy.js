@@ -132,7 +132,7 @@ export default class ChunkQuadStrategy {
       }
       else if (chunkNode.chunk.levelOfDetail > expectedLOD + 1 && chunkNode.chunk.levelOfDetail > 1) {
 
-        console.log("Destroying chunk at (" + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z + ") at size " + this.chunkSize + ", LOD " + chunkNode.chunk.levelOfDetail);
+        vprint("Destroying chunk at (" + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z + ") at size " + this.chunkSize + ", LOD " + chunkNode.chunk.levelOfDetail);
         chunkNode.destroyFamily();
       }
     }

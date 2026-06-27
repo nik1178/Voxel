@@ -5,31 +5,74 @@ export class CommandConverter {
         this.cityData = cityData;
     }
     getPosition(command) {
-        // const parts = command.split(" ");
-        // if (parts[0] === "tp") {
-        //     const x = parseFloat(parts[1]);
-        //     const y = parseFloat(parts[2]);
-        //     const z = parseFloat(parts[3]);
-        //     return vec3.fromValues(x, y, z);
-        // }
-        // return null;
-        // console.log(this.areCoords("46°04'11.5\"N 14°30'17.4\"E"));
+        // 1. Check if it's already decimal coordinates (e.g. 46.048896, 14.508554)
+        const decimalMatch = command.match(/^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/);
+        if (decimalMatch) {
+            const coords = {
+                lat: parseFloat(decimalMatch[1]),
+                lng: parseFloat(decimalMatch[3])
+            };
+            return this.coordinatesToPosition(coords);
+        }
 
+        // 2. Check if it's DMS coordinates
+        if (this.areCoords(command)) {
+            console.log("Those sure DO look like coords!");
+            const coords = this.dmsToDecimal(command);
+            if (coords) {
+                return this.coordinatesToPosition(coords);
+            }
+        }
+
+        // 3. Fallback to city name
         const city = this.getCity(command);
         if(city) {
             return this.coordinatesToPosition(city.coordinates);
         }
+        
+        return null;
+    }
+
+    dmsToDecimal(dmsStr) {
+        // Extract all numbers and direction letters
+        const matches = dmsStr.match(/(-?\d+(\.\d+)?)|([NSEW])/gi);
+        if (!matches || matches.length < 6) return null;
+
+        console.log("Matches: ", matches);
+        
+        let i = 0;
+
+        // Parse Latitude
+        let deg1 = parseFloat(matches[i++]);
+        let min1 = parseFloat(matches[i++]);
+        let sec1 = parseFloat(matches[i++]);
+        let dir1 = (matches[i] && matches[i].match(/[NSEW]/i)) ? matches[i++].toUpperCase() : null;
+
+        let lat = Math.abs(deg1) + min1 / 60 + sec1 / 3600;
+        if (deg1 < 0 || dir1 === 'S') lat = -lat;
+
+        // Parse Longitude
+        let deg2 = parseFloat(matches[i++]);
+        let min2 = parseFloat(matches[i++]);
+        let sec2 = parseFloat(matches[i++]);
+        let dir2 = (matches[i] && matches[i].match(/[NSEW]/i)) ? matches[i++].toUpperCase() : null;
+
+        let lng = Math.abs(deg2) + min2 / 60 + sec2 / 3600;
+        if (deg2 < 0 || dir2 === 'W') lng = -lng;
+
+        return { lat, lng };
     }
 
     areCoords(str) {
-        const regex = /^-?\d+(\.\d+)?°\s*-?\d+(\.\d+)?'\s*-?\d+(\.\d+)?("|\"\"\s*[NSEW])\s+-?\d+(\.\d+)?°\s*-?\d+(\.\d+)?'\s*-?\d+(\.\d+)?("|\"\"\s*[NSEW])$/;
-        
+        // Fixed regex:
+        const regex = /^-?\d+(\.\d+)?°\s*-?\d+(\.\d+)?'\s*-?\d+(\.\d+)?("|'')\s*[NSEW]?\s+-?\d+(\.\d+)?°\s*-?\d+(\.\d+)?'\s*-?\d+(\.\d+)?("|'')\s*[NSEW]?$/;
+
         if(regex.test(str)) {
             str.replace(/"/g, "");
             str.replace(/'/g, "");
             str.replace(/°/g, "");
             str.replace(/\s/g, "");
-            console.log(str);
+            return true;
         }
         return false;
     }
