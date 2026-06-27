@@ -19,6 +19,14 @@ export default class ChunkMesher {
     document.addEventListener("socket-toggled", (e) => {
       this.useWebsockets = !e.detail;
     });
+
+    document.addEventListener("render-type-changed", (e) => {
+      if (e.detail === "mesh") {
+        this.useMesh = true;
+      } else {
+        this.useMesh = false;
+      }
+    });
   }
 
   updateChunkSize(chunkSize) {
@@ -34,8 +42,11 @@ export default class ChunkMesher {
     }
     
     chunk.rawData = heightMapData;
-    chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
-    this.addChunkMesh(chunk);
+    if (!this.useMesh) {
+      chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
+    } else {
+      this.addChunkMesh(chunk);
+    }
     
     return chunk;
   }
@@ -45,6 +56,7 @@ export default class ChunkMesher {
     //   chunk.heightMap = this.hmapLoader.webGPUArraysTo1DArray(chunk.rawData);
     // }
     const { localVertices, localIndices } = this.buildMesh(chunk);
+    if (!localVertices || !localIndices) return chunk;
     // chunk.setVertices(localVertices);
     const { vertexBuffer, indexBuffer } = this.createBuffers(localVertices, localIndices);
     chunk.setMeshData(vertexBuffer, indexBuffer, localIndices.length);
@@ -99,6 +111,7 @@ export default class ChunkMesher {
 
     let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
 
+    let zeroCounter = 0;
     for (let x = 0; x < width; x++) {
       for (let z = 0; z < depth; z++) {
         const index = z * width + x;
@@ -108,6 +121,10 @@ export default class ChunkMesher {
         const g = colorData[colorIndex + 1];
         const b = colorData[colorIndex + 2];
         const height = heightMapData[index];
+
+        if (height < 1) {
+          zeroCounter++;
+        }
 
         const fx = -(x + xOffset * chunkSize) * scale;
         const fy = height;
@@ -169,6 +186,11 @@ export default class ChunkMesher {
 
         cubeIndex++;
       }
+    }
+
+    if (zeroCounter === width * depth) {
+      chunk.instanceArray = [];
+      return chunk;
     }
 
     for (let x = 0; x < width; x++) {

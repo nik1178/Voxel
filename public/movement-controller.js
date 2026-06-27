@@ -1,6 +1,7 @@
 export default class MovementController {
   defaultSpeed = 1000;
   speed = this.defaultSpeed;
+  pause = false;
   moving = {
     forward: false,
     backward: false,
@@ -29,9 +30,17 @@ export default class MovementController {
       }
       this.speed = this.defaultSpeed;
     });
+
+    document.addEventListener("ui-toggled", (event) => {
+      this.paused = event.detail;
+    });
   }
 
   onKeyDown(event) {
+    if (this.paused) {
+      return;
+    }
+    
     const eventKey = event.key.toLowerCase();
     if (eventKey === "w") {
       this.moving.forward = true;
@@ -58,6 +67,10 @@ export default class MovementController {
   }
 
   onKeyUp(event) {
+    if (this.paused) {
+      return;
+    }
+
     const eventKey = event.key.toLowerCase();
     if (eventKey === "w") {
       this.moving.forward = false;
@@ -83,6 +96,10 @@ export default class MovementController {
   }
 
   updateMovement(dt) {
+    if (this.paused) {
+      return;
+    }
+
     const forward = [
       Math.sin(this.camera.transform.rotation[1]),
       0,

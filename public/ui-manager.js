@@ -1,4 +1,6 @@
 export class UIManager {
+    visible = true;
+
     constructor() {
         this.setupListeners();
     }
@@ -10,6 +12,8 @@ export class UIManager {
                 e.preventDefault();
                 ui.classList.toggle("invisible");
                 document.body.focus();
+                this.visible = !ui.classList.contains("invisible");
+                document.dispatchEvent(new CustomEvent("ui-toggled", { detail: this.visible }));
             }
         });
 
@@ -175,13 +179,15 @@ class Slider {
         this.handle1 = document.createElement("div");
         this.handle1.classList.add("handle");
         this.domElement.appendChild(this.handle1);
-        this.positionHandle(this.handle1, this.minVal);
+        this.handle1.value = this.minVal;
+        this.positionHandle(this.handle1, 0);
 
         if (this.double) {
             this.handle2 = document.createElement("div");
             this.handle2.classList.add("handle");
             this.domElement.appendChild(this.handle2);
-            this.positionHandle(this.handle2, this.maxVal);
+            this.handle2.value = this.maxVal;
+            this.positionHandle(this.handle2, 1);
         }
     }
 
@@ -222,6 +228,7 @@ class Slider {
 }
 
 class InputField {
+    visible = true;
     holdingControl = false;
     constructor(containerDomElement) {
         this.domElement = containerDomElement;
@@ -255,20 +262,26 @@ class InputField {
                 this.inputElement.innerText = "";
             } else if (e.key === "Escape") {
                 this.inputElement.innerText = "";
-            } else if (e.key === "Control") {
-                this.holdingControl = true;
-            }
-            else if (e.key.length === 1) {
-                // const charCode = e.which || e.keyCode;
-                // if ((charCode >= 'a'.charCodeAt(0) && charCode <= 'z'.charCodeAt(0)) || (charCode >= 'A'.charCodeAt(0) && charCode <= 'Z'.charCodeAt(0))) {
-                    this.inputElement.innerText += e.key;
-                // }
+            } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                this.inputElement.innerText += e.key;
             }
 
             if (this.inputElement.innerText.length > 0) {
                 this.placeholderElement.classList.add("invisible");
             } else {
                 this.placeholderElement.classList.remove("invisible");
+            }
+        });
+
+        document.addEventListener("paste", (e) => {
+            const text = (e.clipboardData || window.clipboardData).getData("text");
+            if (text) {
+                this.inputElement.innerText += text;
+                if (this.inputElement.innerText.length > 0) {
+                    this.placeholderElement.classList.add("invisible");
+                } else {
+                    this.placeholderElement.classList.remove("invisible");
+                }
             }
         });
     }

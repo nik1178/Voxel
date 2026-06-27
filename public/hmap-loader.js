@@ -129,7 +129,6 @@ export default class HmapLoader {
   loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false, sockets=true) {
 
     if (sockets) {
-      console.log("Using websockets");
       return wsClient.requestChunk(chunkX, chunkZ, chunkSize, levelOfDetail, version)
       .then((buffer) => {
         if (buffer === 404) {

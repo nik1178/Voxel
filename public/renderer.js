@@ -58,10 +58,20 @@ export default class Renderer {
     document.addEventListener("fx-toggled", (e) => {
       this.setFX(e.detail);
     });
+
+    window.addEventListener("resize", () => {
+      //resize
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    })
   }
 
   setRenderType(type) {
+    let previousType = this.renderType;
     this.renderType = type;
+    if (type === "mesh" || previousType === "mesh") {
+      this.chunkManager.destroyChunks();
+    }
   }
 
   setManualCulling(culling) {
@@ -929,7 +939,7 @@ export default class Renderer {
           pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
           pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);
         } else {
-          console.log("Chunk missing instanceBuffer for greedy meshing!");
+          vprint("Chunk missing instanceBuffer for greedy meshing!");
         }
       } else if (useCubes) {
         pass.setPipeline(this.cubePipeline);
@@ -986,7 +996,7 @@ export default class Renderer {
           pass.setIndexBuffer(chunk.indexBuffer, "uint32");
           pass.drawIndexed(chunk.indexCount);
         } else {
-          console.log("Chunk missing vertexBuffer for mesh rendering!");
+          vprint("Chunk missing vertexBuffer for mesh rendering!");
         }
       }
     }
