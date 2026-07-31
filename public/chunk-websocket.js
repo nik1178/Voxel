@@ -1,3 +1,18 @@
+// Benchmark instrumentation: WS transfer counters, reset per benchmark run.
+export const netStats = {
+  wsBytes: 0,
+  wsMessages: 0,
+  requestsSent: 0,
+  firstResponseAt: null,
+  reset() {
+    this.wsBytes = 0;
+    this.wsMessages = 0;
+    this.requestsSent = 0;
+    this.firstResponseAt = null;
+  },
+};
+window.__netStats = netStats;
+
 export default class ChunkWebSocketClient {
   constructor(url) {
     this.url = url;
@@ -14,6 +29,10 @@ export default class ChunkWebSocketClient {
     this.ws.onmessage = (event) => {
       const buffer = event.data;
       if (!(buffer instanceof ArrayBuffer)) return;
+
+      netStats.wsBytes += buffer.byteLength;
+      netStats.wsMessages += 1;
+      if (netStats.firstResponseAt === null) netStats.firstResponseAt = performance.now();
 
       // 1. Extract the 8-byte header (requestId: int32, status: int32)
       const headerView = new DataView(buffer, 0, 8);
@@ -52,6 +71,8 @@ export default class ChunkWebSocketClient {
         reject(new Error("WebSocket is not open"));
         return;
       }
+
+      netStats.requestsSent += 1;
 
       const requestId = this.nextRequestId++;
       this.pendingRequests.set(requestId, { resolve, reject });
