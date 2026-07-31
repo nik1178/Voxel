@@ -159,6 +159,21 @@ export default class Renderer {
     this.createPipelines();
     this.createBindGroups();
 
+    // GPU timing of the main terrain pass via timestamp queries (feature-gated).
+    this.gpuFrameTimes = [];
+    if (this.device.features.has("timestamp-query")) {
+      this.tsQuerySet = this.device.createQuerySet({ type: "timestamp", count: 2 });
+      this.tsResolveBuffer = this.device.createBuffer({
+        size: 16,
+        usage: GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC,
+      });
+      this.tsReadBuffer = this.device.createBuffer({
+        size: 16,
+        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+      });
+      this.tsPending = false;
+    }
+
     // Initialize the chunk lifecycle manager.
     this.chunkManager = new ChunkManager(
       this.device,
@@ -777,6 +792,8 @@ export default class Renderer {
     if (!this.initialized) return;
     this.frameIndex++;
 
+    this.frameStats = { drawCalls: 0, instancesDrawn: 0, chunksRendered: 0, chunksResident: 0 };
+
     const commandEncoder = this.device.createCommandEncoder();
 
     // Begin the main render pass, clearing the color and depth attachments.
@@ -795,6 +812,13 @@ export default class Renderer {
         depthStoreOp: "store",
         depthClearValue: 1.0,
       },
+      ...(this.tsQuerySet && !this.tsPending && {
+        timestampWrites: {
+          querySet: this.tsQuerySet,
+          beginningOfPassWriteIndex: 0,
+          endOfPassWriteIndex: 1,
+        },
+      }),
     });
 
     // Set bind group for all render pipelines
@@ -802,6 +826,7 @@ export default class Renderer {
 
     // Iterate through all chunks managed by the ChunkManager
     const chunkData = this.chunkManager.getChunkData();
+    this.frameStats.chunksResident = chunkData.size;
 
     // Remove all old labels from the previous frame to prevent crashing
     document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
@@ -908,7 +933,9 @@ export default class Renderer {
       ]));
 
       pass.setBindGroup(1, chunk.vtfBindGroup);
-      
+
+      this.frameStats.chunksRendered++;
+
       let useGreedy = this.renderType === "greedy";
       let useRaymarching = this.renderType === "raycast";
       let useCubes = this.renderType === "cubes";
@@ -931,6 +958,8 @@ export default class Renderer {
         pass.setVertexBuffer(0, this.gridVertexBuffer);
         pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
         pass.drawIndexed(this.gridIndexCount, 1);
+        this.frameStats.drawCalls++;
+        this.frameStats.instancesDrawn += 1;
       } else if (useGreedy) {
         pass.setPipeline(this.greedyPipeline);
         if (chunk.instanceBuffer) {
@@ -938,6 +967,8 @@ export default class Renderer {
           pass.setVertexBuffer(1, chunk.instanceBuffer);
           pass.setIndexBuffer(this.faceIndexBuffer, "uint32");
           pass.drawIndexed(this.faceIndexCount, chunk.instanceArray.length / 2);
+          this.frameStats.drawCalls++;
+          this.frameStats.instancesDrawn += chunk.instanceArray.length / 2;
         } else {
           vprint("Chunk missing instanceBuffer for greedy meshing!");
         }
@@ -946,6 +977,8 @@ export default class Renderer {
         pass.setVertexBuffer(0, this.gridVertexBuffer);
         pass.setIndexBuffer(this.gridIndexBuffer, "uint32");
         pass.drawIndexed(this.gridIndexCount, chunk.chunkSize * chunk.chunkSize);
+        this.frameStats.drawCalls++;
+        this.frameStats.instancesDrawn += chunk.chunkSize * chunk.chunkSize;
       } else if (usePlanes) {
         pass.setPipeline(this.planesPipeline);
         pass.setVertexBuffer(0, this.faceVertexBuffer);
@@ -989,12 +1022,16 @@ export default class Renderer {
         }
         
         pass.drawIndexed(this.faceIndexCount, chunk.chunkSize * chunk.chunkSize * facesToRender);
+        this.frameStats.drawCalls++;
+        this.frameStats.instancesDrawn += chunk.chunkSize * chunk.chunkSize * facesToRender;
       } else if (useMesh) {
         pass.setPipeline(this.meshPipeline);
         if (chunk.vertexBuffer && chunk.indexBuffer) {
           pass.setVertexBuffer(0, chunk.vertexBuffer);
           pass.setIndexBuffer(chunk.indexBuffer, "uint32");
           pass.drawIndexed(chunk.indexCount);
+          this.frameStats.drawCalls++;
+          this.frameStats.instancesDrawn += chunk.indexCount / 3;
         } else {
           vprint("Chunk missing vertexBuffer for mesh rendering!");
         }
@@ -1003,6 +1040,14 @@ export default class Renderer {
 
     // Finalize the main pass
     pass.end();
+
+    if (this.tsQuerySet && !this.tsPending) {
+      commandEncoder.resolveQuerySet(this.tsQuerySet, 0, 2, this.tsResolveBuffer, 0);
+      commandEncoder.copyBufferToBuffer(this.tsResolveBuffer, 0, this.tsReadBuffer, 0, 16);
+      this.tsReadPendingThisFrame = true;
+    } else {
+      this.tsReadPendingThisFrame = false;
+    }
 
     // 1. Bloom Extract Pass (reads renderTargetTexture, writes to bloomTextureA)
     if (this.useFX) {
@@ -1061,5 +1106,19 @@ export default class Renderer {
 
     // Submit the command buffer to the GPU queue
     this.device.queue.submit([commandEncoder.finish()]);
+
+    if (this.tsReadPendingThisFrame) {
+      this.tsPending = true;
+      this.tsReadBuffer.mapAsync(GPUMapMode.READ).then(() => {
+        const t = new BigInt64Array(this.tsReadBuffer.getMappedRange().slice(0));
+        this.tsReadBuffer.unmap();
+        const ms = Number(t[1] - t[0]) / 1e6;
+        if (ms >= 0 && ms < 10000) {
+          this.gpuFrameTimes.push(ms);
+          if (this.gpuFrameTimes.length > 20000) this.gpuFrameTimes.shift();
+        }
+        this.tsPending = false;
+      }).catch(() => { this.tsPending = false; });
+    }
   }
 }

@@ -14,8 +14,25 @@ async function initWebGPU() {
   });
   if (!adapter) alertError("Failed to get GPU adapter.");
 
-  const device = await adapter.requestDevice();
+  const requiredFeatures = adapter.features.has("timestamp-query")
+    ? ["timestamp-query"]
+    : [];
+  const device = await adapter.requestDevice({ requiredFeatures });
   if (!device) alertError("Failed to get GPU device.");
+
+  // Benchmark provenance + failure capture (E3 needs device-loss as a result).
+  const info = adapter.info;
+  window.__gpuAdapterInfo = {
+    vendor: info?.vendor ?? null,
+    architecture: info?.architecture ?? null,
+    device: info?.device ?? null,
+    description: info?.description ?? null,
+    timestampQuery: requiredFeatures.length > 0,
+  };
+  window.__deviceLost = null;
+  device.lost.then((e) => {
+    window.__deviceLost = { reason: e.reason, message: e.message };
+  });
 
   const context = canvas.getContext("webgpu");
 
