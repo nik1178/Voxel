@@ -1,5 +1,6 @@
 import { alertError } from "./errors.js";
 import GameManager from "./game-manager.js";
+import bench from "./bench-api.js";
 
 const canvas = document.querySelector("canvas#viewport");
 canvas.width = window.innerWidth;
@@ -52,6 +53,7 @@ const fpsCounter = document.getElementById("fpscounter");
 const gameManager = new GameManager(device, context, format, canvas);
 gameManager.fpsCounter = fpsCounter;
 gameManager.startGame();
+bench.init(gameManager);
 
 // Listen for events
 document.addEventListener("chunk-size-changed", (e) => {
