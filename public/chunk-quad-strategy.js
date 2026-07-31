@@ -108,6 +108,8 @@ export default class ChunkQuadStrategy {
 
     // Get list of all the chunks that need new children
     if (this.howManyChunksLoading >= this.maximumChunksLoading) {
+      this.passStats.queuedLastPass = queuedThisPass;
+      this.passStats.destroyedLastPass = destroyedThisPass;
       return;
     }
 
