@@ -50,6 +50,18 @@ export default class ChunkQuadStrategy {
   previousChunk = { x: 0, z: 0, levelOfDetail: 1 };
   iteration = 0;
 
+  passStats = { passes: 0, queuedLastPass: 0, destroyedLastPass: 0 };
+
+  getStats() {
+    // `initializing` matters: during the serial base-chunk init, `passes` does
+    // not advance and the counters read quiet — quiescence must not fire then.
+    return {
+      ...this.passStats,
+      loading: this.howManyChunksLoading,
+      initializing: !!this.initializing || !this.quadTree,
+    };
+  }
+
   destroy() {
     if (this.quadTree) {
       this.quadTree.baseNode.destroy();
@@ -84,6 +96,10 @@ export default class ChunkQuadStrategy {
       return;
     }
 
+    this.passStats.passes++;
+    let queuedThisPass = 0;
+    let destroyedThisPass = 0;
+
     let currentChunk = this.quadTree.getPlayerChunkNode(playerPosition);
     if (currentChunk.chunk.position.x !== this.previousChunk.x || currentChunk.chunk.position.z !== this.previousChunk.z || currentChunk.chunk.levelOfDetail !== this.previousChunk.levelOfDetail) {
       this.previousChunk = { x: currentChunk.chunk.position.x, z: currentChunk.chunk.position.z, levelOfDetail: currentChunk.chunk.levelOfDetail };
@@ -112,6 +128,9 @@ export default class ChunkQuadStrategy {
       if (chunkNode.isLoading) {
         continue;
       }
+      if (chunkNode.is404) {
+        continue; // permanently empty (outside survey); never subdivide or re-request
+      }
       if (chunkNode.children.length > 0) {
         continue;
       }
@@ -129,14 +148,18 @@ export default class ChunkQuadStrategy {
       if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {
         nodesToLoad.push(chunkNode);
         this.howManyChunksLoading++;
+        queuedThisPass++;
       }
       else if (chunkNode.chunk.levelOfDetail > expectedLOD + 1 && chunkNode.chunk.levelOfDetail > 1) {
 
         vprint("Destroying chunk at (" + chunkNode.chunk.position.x + ", " + chunkNode.chunk.position.z + ") at size " + this.chunkSize + ", LOD " + chunkNode.chunk.levelOfDetail);
         chunkNode.destroyFamily();
+        destroyedThisPass++;
       }
     }
 
+    this.passStats.queuedLastPass = queuedThisPass;
+    this.passStats.destroyedLastPass = destroyedThisPass;
     if (nodesToLoad.length === 0) {
       return;
     }
@@ -161,12 +184,17 @@ export default class ChunkQuadStrategy {
         const chunkX = childChunkNode.chunk.position.x;
         const chunkZ = childChunkNode.chunk.position.z;
         return this.chunkMesher.generateChunkData(childChunkNode.chunk, chunkNode.chunk).then(res => {
-          if (res === 404) {
-            vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
-            return;
-          }
           childChunkNode.isLoading = false;
+          if (res === 404) {
+            // Permanently empty (outside the survey). Previously isLoading stayed
+            // true forever, which pinned the parent at low LOD and made
+            // quiescence unobservable.
+            childChunkNode.is404 = true;
+            vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404). Skipping.`);
+          }
         }).catch(err => {
+          childChunkNode.isLoading = false;
+          childChunkNode.is404 = true;
           console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
         });
       });
@@ -286,6 +314,7 @@ class ChunkNode {
   parent = null;
   chunk = null;
   children = [];
+  is404 = false;
 
   getAllChunks() {
     let chunks = [];
@@ -304,9 +333,9 @@ class ChunkNode {
         return chunks;
       }
     }
-    if (this.chunk) {
+    if (this.chunk && !this.is404) {
       chunks.push(this.chunk);
-    } else {
+    } else if (!this.chunk) {
       vprint("Warning: Leaf node without chunk");
     }
     return chunks;

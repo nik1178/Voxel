@@ -104,4 +104,8 @@ export default class ChunkManager {
   getChunkData() {
     return this.activeStrategy.getChunkData();
   }
+
+  getStrategyStats() {
+    return this.activeStrategy.getStats();
+  }
 }

@@ -22,6 +22,13 @@ export default class ChunkRadiusStrategy {
   }
 
   radius = Infinity;
+
+  passStats = { passes: 0, queuedLastPass: 0, destroyedLastPass: 0 };
+
+  getStats() {
+    return { ...this.passStats, loading: this.chunksLoading, initializing: false };
+  }
+
   updateViewDistance(viewDistance) {
     let newRadius = viewDistance/this.chunkSize;
     console.log("New Radius: ", newRadius, "Old radius", this.radius);
@@ -66,6 +73,9 @@ export default class ChunkRadiusStrategy {
     const currentChunkX = -Math.floor(playerPosition.x / this.chunkSize);
     const currentChunkZ = Math.floor(playerPosition.z / this.chunkSize);
 
+    this.passStats.passes++;
+    let queuedThisPass = 0;
+
     // Remove chunks that are too far away
     // for (const [key, chunk] of this.chunkData.entries()) {
     //   if (Math.abs(chunk.position.x - currentChunkX) > radius || 
@@ -76,65 +86,71 @@ export default class ChunkRadiusStrategy {
     // }
 
     this.breakLoop = false;
-    // Load chunks within radius
-    for (let layer = 0; layer <= this.radius; layer++) {
-      for (let dx = -layer; dx <= layer; dx++) {
-        for (let dz = -layer; dz <= layer; dz++) {
-          if (this.chunksLoading >= this.maxChunksToLoadAtOnce) {
-            return; // Load a few at a time
-          }
-          if (Math.abs(dx) !== layer && Math.abs(dz) !== layer) {
-            continue; // Process outer ring
-          }
-          if (this.breakLoop) {
-            return;
-          }
-
-          const chunkX = currentChunkX + dx;
-          const chunkZ = currentChunkZ + dz;
-          const key = this.getChunkKey(chunkX, chunkZ);
-          
-          let lod = Math.min(7, Math.floor(Math.pow((layer/3), 0.85)));
-          lod = Math.min(this.lodMaxBound, lod);
-          lod = Math.max(this.lodMinBound, lod);
-          lod = Math.min(7, lod);
-          lod = Math.max(0, lod);
-          if (!this.chunkData.has(key) || this.chunkData.get(key).levelOfDetail !== lod) {
-            // if (this.chunkData.has(key) && this.chunkData.get(key).lod > lod) {
-            //   this.chunkData.get(key).destroy();
-            //   this.chunkData.delete(key);
-            // }
-            
-            // Mark as loading by adding a dummy chunk object temporarily, or just block
-            const chunk = new Chunk({ x: chunkX, z: chunkZ }, this.chunkSize/Math.pow(2, lod), null, null, 0, null, lod);
-            chunk.scale = Math.pow(2, lod); // Radius strategy typically doesn't scale up for LOD unless desired
-            chunk.key = key;
-            if (!this.chunkData.has(key)) {
-              this.chunkData.set(chunk.key, chunk);
+    try {
+      // Load chunks within radius
+      for (let layer = 0; layer <= this.radius; layer++) {
+        for (let dx = -layer; dx <= layer; dx++) {
+          for (let dz = -layer; dz <= layer; dz++) {
+            if (this.chunksLoading >= this.maxChunksToLoadAtOnce) {
+              return; // Load a few at a time
             }
-            chunk.iteration = this.iteration;
-            this.chunksLoading++;
-            
-            this.chunkMesher.generateChunkData(chunk, null, "v1").then(res => {
-              if (chunk.iteration !== this.iteration) {
+            if (Math.abs(dx) !== layer && Math.abs(dz) !== layer) {
+              continue; // Process outer ring
+            }
+            if (this.breakLoop) {
+              return;
+            }
+
+            const chunkX = currentChunkX + dx;
+            const chunkZ = currentChunkZ + dz;
+            const key = this.getChunkKey(chunkX, chunkZ);
+
+            let lod = Math.min(7, Math.floor(Math.pow((layer/3), 0.85)));
+            lod = Math.min(this.lodMaxBound, lod);
+            lod = Math.max(this.lodMinBound, lod);
+            lod = Math.min(7, lod);
+            lod = Math.max(0, lod);
+            if (!this.chunkData.has(key) || this.chunkData.get(key).levelOfDetail !== lod) {
+              // if (this.chunkData.has(key) && this.chunkData.get(key).lod > lod) {
+              //   this.chunkData.get(key).destroy();
+              //   this.chunkData.delete(key);
+              // }
+
+              // Mark as loading by adding a dummy chunk object temporarily, or just block
+              const chunk = new Chunk({ x: chunkX, z: chunkZ }, this.chunkSize/Math.pow(2, lod), null, null, 0, null, lod);
+              chunk.scale = Math.pow(2, lod); // Radius strategy typically doesn't scale up for LOD unless desired
+              chunk.key = key;
+              if (!this.chunkData.has(key)) {
+                this.chunkData.set(chunk.key, chunk);
+              }
+              chunk.iteration = this.iteration;
+              this.chunksLoading++;
+              queuedThisPass++;
+
+              this.chunkMesher.generateChunkData(chunk, null, "v1").then(res => {
+                if (chunk.iteration !== this.iteration) {
+                  this.chunksLoading--;
+                  chunk.destroy();
+                  return;
+                }
+                this.chunkData.set(chunk.key, chunk);
                 this.chunksLoading--;
-                chunk.destroy();
-                return;
-              }
-              this.chunkData.set(chunk.key, chunk);
-              this.chunksLoading--;
-              if (res === 404) {
-                vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404).`);
+                if (res === 404) {
+                  vprint(`Chunk at (${chunkX}, ${chunkZ}) not found (404).`);
+                  this.chunkData.delete(key);
+                }
+              }).catch(err => {
+                this.chunksLoading--;
+                console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
                 this.chunkData.delete(key);
-              }
-            }).catch(err => {
-              this.chunksLoading--;
-              console.error(`Error loading chunk at (${chunkX}, ${chunkZ}):`, err);
-              this.chunkData.delete(key);
-            });
+              });
+            }
           }
         }
       }
+    } finally {
+      this.passStats.queuedLastPass = queuedThisPass;
+      this.passStats.destroyedLastPass = 0;
     }
   }
 
