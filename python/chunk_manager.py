@@ -10,13 +10,17 @@ class ChunkManager:
     
     extension = ".hmap"
     
-    def __init__(self, chunk_size=100, voxel_size=100, data_dir="map", laz_dir="laz_files", verbose=False):
+    def __init__(self, chunk_size=100, voxel_size=100, data_dir="map", laz_dir="laz_files",
+                 verbose=False, lod_dir="lod_output"):
         self.chunk_size = chunk_size
         self.voxel_size = voxel_size
         self.data_dir = data_dir
         self.laz_dir = laz_dir
         self.chunk_builder = ChunkBuilder(voxel_size, data_dir, laz_dir, verbose)
-        self.chunk_quad_builder = ChunkQuadBuilder(voxel_size, data_dir, verbose)
+        # lod_dir selects which pyramid to serve, so a rebuild can be pointed at
+        # without renaming folders.
+        self.chunk_quad_builder = ChunkQuadBuilder(voxel_size, data_dir, laz_dir=laz_dir,
+                                                   verbose=verbose, lod_dir=lod_dir)
         self.verbose = verbose
         self.voxel_dir = os.path.join(self.data_dir, str(self.voxel_size))
         

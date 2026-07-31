@@ -9,24 +9,18 @@ import time
 class ChunkQuadBuilder:
     extension = ".hmap"
     
-    def __init__(self, voxel_size, data_dir, verbose=False):
-        self.voxel_size = voxel_size
-        self.data_dir = data_dir
-        self.verbose = verbose
-        
-        self.chunk_binary_manager = ChunkBinaryManager(verbose)
-    
-    def __init__(self, voxel_size, data_dir, laz_dir, verbose=False):
+    def __init__(self, voxel_size, data_dir, laz_dir=None, verbose=False, lod_dir="lod_output"):
         self.voxel_size = voxel_size
         self.data_dir = data_dir
         self.laz_dir = laz_dir
         self.verbose = verbose
-        
+        self.lod_dir = lod_dir
+
         self.chunk_binary_manager = ChunkBinaryManager(verbose)
         self.laz_converter = LazConverter()
-    
+
     def chunk_string(self, lod, x, z):
-        return os.path.join(self.data_dir, "lod_output", str(lod), f"{x}_{z}{self.extension}")
+        return os.path.join(self.data_dir, self.lod_dir, str(lod), f"{x}_{z}{self.extension}")
     
     def read_heightmap(self, lod, x, z):
         # Check if chunk binary exists
@@ -110,6 +104,18 @@ class ChunkQuadBuilder:
         vprint(verbose, "Chunk list:", chunk_list)
         return chunk_list
     
+    # Artifact removal deliberately does not happen here.
+    #
+    # It used to, and it produced a checkerboard. For lod > 1 a chunk is a delta:
+    # binary_to_heightmap populates only TR, BL and BR, leaving the TL quadrant as
+    # zeros for the client to stitch in from the parent. A neighbourhood filter
+    # reads those zeros as terrain at height 0. BR pixels have four TL neighbours
+    # against TR and BL's two, so BR was corrupted far more often, sinking one
+    # quadrant of every 2x2 cell.
+    #
+    # Filtering now happens once at full resolution in build_quad_tree.py, where
+    # the data is complete, so every LOD inherits clean data.
+
     # Returns the chunk binary data for the requested chunk at (x, z) [based on chunk_size] and LOD
     def get_chunk(self, x, z, chunk_size=1000, lod=0, verbose=False):
         # Implementation to build chunk from heightmap data
@@ -117,4 +123,5 @@ class ChunkQuadBuilder:
         heightmap = self.create_heightmap_from_list(chunk_list, x, z, chunk_size=chunk_size, lod=lod, verbose=verbose)
         if isinstance(heightmap, int) and heightmap == 404:
             return 404
+
         return self.chunk_binary_manager.heightmap_to_binary(heightmap, lod=lod, verbose=verbose)
