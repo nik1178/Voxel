@@ -63,14 +63,22 @@ export default class GameManager {
   }
 
   lastTime = 0;
-  lastFrames = [];
+  lastFrames = []; // per-frame dt in seconds
   framesToCapture = 100;
   async frame(time) {
     if (!this.running) return;
 
+    // First frame has no valid previous timestamp; skip its dt entirely.
+    if (this.lastTime === 0) {
+      this.lastTime = time;
+      requestAnimationFrame(this.frame.bind(this));
+      return;
+    }
+
     let dt = (time - this.lastTime) / 1000;
-    this.updateFPS(dt);
     this.lastTime = time;
+    this.updateFPS(dt);
+    window.__bench?.onFrame?.(dt);
 
     this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
@@ -81,18 +89,15 @@ export default class GameManager {
   }
 
   updateFPS(dt) {
-    if (this.fpsCounter) {
-      let value = 1 / dt;
-      if (value == Infinity) {
-        return;
-      }
-      this.lastFrames.push(value);
-      if (this.lastFrames.length > this.framesToCapture) {
-        this.lastFrames.shift();
-      }
-      this.fpsCounter.innerText = (this.lastFrames.reduce((a, b) => a + b, 0) / this.lastFrames.length).toFixed(2);
-      // const sortedFrames = [...this.lastFrames].sort((a, b) => a - b);
-      // this.fpsCounter.innerText = Math.floor(sortedFrames[Math.floor(sortedFrames.length / 2)]);
+    if (!this.fpsCounter) return;
+    if (!isFinite(dt) || dt <= 0) return;
+    this.lastFrames.push(dt);
+    if (this.lastFrames.length > this.framesToCapture) {
+      this.lastFrames.shift();
     }
+    const total = this.lastFrames.reduce((a, b) => a + b, 0);
+    // Correct mean FPS: frames / elapsed time (NOT mean of instantaneous 1/dt,
+    // which overstates FPS and hides stutter).
+    this.fpsCounter.innerText = (this.lastFrames.length / total).toFixed(2);
   }
 }
