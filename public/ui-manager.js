@@ -63,11 +63,11 @@ export class UIManager {
         //     new Slider(slider, -1000, 1000, false);
         // });
         const chunkSizeSlider = document.querySelector("#chunk-size");
-        new Slider(chunkSizeSlider, 2, 1000, false, 0, 2);
+        this.chunkSizeSlider = new Slider(chunkSizeSlider, 2, 1000, false, 0, 2);
         const viewDistanceSlider = document.querySelector("#view-distance");
-        new Slider(viewDistanceSlider, 0, 200000, false, 0, 5);
+        this.viewDistanceSlider = new Slider(viewDistanceSlider, 0, 200000, false, 0, 5);
         const lodLimitsSlider = document.querySelector("#lod-limits");
-        new Slider(lodLimitsSlider, 0, 9, true, 0);
+        this.lodLimitsSlider = new Slider(lodLimitsSlider, 0, 9, true, 0);
 
         // Render type dropdown
         const renderTypeSelect = document.querySelector(".render-type-container select");
@@ -97,6 +97,25 @@ export class UIManager {
         const inputField = document.querySelector("#command-input");
         new InputField(inputField);
 
+    }
+
+    // Make the DOM controls display the given state. Never dispatches events —
+    // this reflects state, it does not cause it.
+    applyState(state) {
+        const renderTypeSelect = document.querySelector(".render-type-container select");
+        if (renderTypeSelect && state.renderType !== undefined) renderTypeSelect.value = state.renderType;
+        const strategySelect = document.querySelector(".chunk-strategy-container select");
+        if (strategySelect && state.strategy !== undefined) strategySelect.value = state.strategy;
+        if (state.fx !== undefined) this.setToggle("fx-toggle", state.fx);
+        // The toggle's label is "RPC not Websockets": active means HTTP.
+        if (state.sockets !== undefined) this.setToggle("socket-toggle", !state.sockets);
+        if (state.culling !== undefined) this.setToggle("culling-toggle", state.culling);
+        if (state.chunkSize !== undefined) this.chunkSizeSlider.setValue(state.chunkSize);
+    }
+
+    setToggle(id, active) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("active", !!active);
     }
 }
 
@@ -224,6 +243,18 @@ class Slider {
 
     dispatch() {
         document.dispatchEvent(new CustomEvent(`${this.domElement.id}-changed`, { detail: this.double ? [this.handle1.value, this.handle2.value] : this.value }));
+    }
+
+    // Position the handle to show `value` without dispatching a change event.
+    // Single-handle sliders only (double sliders are not needed by applyState).
+    setValue(value) {
+        if (this.double) return;
+        value = Math.max(this.minVal, Math.min(this.maxVal, value));
+        const rangeValue = ((value - this.minVal) / (this.maxVal - this.minVal)) ** (1 / this.exponent);
+        this.value = value;
+        this.handle1.value = value;
+        this.positionHandle(this.handle1, rangeValue);
+        this.maxContainer.innerText = value.toFixed(this.decimalPlaces);
     }
 }
 

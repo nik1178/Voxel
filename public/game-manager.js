@@ -38,6 +38,16 @@ export default class GameManager {
     });
     vprint("Game started");
     this.uiManager = new UIManager();
+    // The renderer's defaults and the static HTML disagree on load; make the
+    // UI display what is actually rendering.
+    this.uiManager.applyState({
+      renderType: this.renderer.renderType,
+      strategy: "quad",
+      fx: this.renderer.useFX,
+      sockets: true,
+      culling: this.renderer.manualCulling,
+      chunkSize: this.renderer.chunkSize,
+    });
     requestAnimationFrame(this.frame.bind(this));
   }
 
