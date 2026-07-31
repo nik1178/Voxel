@@ -110,9 +110,13 @@ max diagonal distance for the raycast long-view question).
 - **E1 — Render tactic shootout.** 6 render types × 3 pitches (horizon / straight down /
   straight up) × 3 locations × 3 repeats = 162 runs (pruned per E0). Quad strategy,
   full view distance, LOD auto. Output: the thesis's headline comparison.
-- **E2 — Chunk size sweep.** Best tactic from E1, chunk size over divisors of 1000
-  (1000, 500, 250, 200, 125, 100, 50, 25, 20, 10 — smaller sizes attempted with a hard
-  per-run timeout; expected to fail by design: `(1000/size)²` serial base loads).
+- **E2 — Chunk size sweep.** Best tactic from E1, chunk size over the **even divisors
+  of 1000**: 1000, 500, 250, 200, 100, 50, 40, 20, 10 — a near-log scale. Divisors only,
+  so chunks tile the 1000 px base grid; even only, because delta chunks (`lod > 1`)
+  stitch in 2×2 quadrants and odd sizes crash (the UI silently floors to even at
+  `game-manager.js:45`; the bench API bypasses the UI, so it must enforce evenness
+  itself). Sizes 8, 4, 2 are additionally attempted under a hard per-run timeout,
+  expected to fail by design (`(1000/size)²` serial base loads = 15.6k/62.5k/250k).
   Output: FPS vs size and time-to-quiescence vs size curves.
 - **E3 — LODs are load-bearing.** lodMax swept 9→1, plus the no-LOD extreme (force base
   LOD everywhere within view distance). If a config OOMs / device-losts / times out,

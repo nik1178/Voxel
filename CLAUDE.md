@@ -81,6 +81,10 @@ public/ (WebGPU client)
   chunks. One config per page load for measurements.
 - Small chunk sizes explode: quad strategy creates `(1000/chunkSize)²` base chunks,
   awaited serially.
+- **Odd chunk sizes crash.** Delta chunks (`lod > 1`) stitch in 2×2 quadrants, so sizes
+  must be even (and divide 1000 to tile the base grid). The UI floors to even
+  (`game-manager.js:45`); anything bypassing the UI must enforce this itself.
+  Safe set: 1000, 500, 250, 200, 100, 50, 40, 20, 10 (8/4/2 valid but pathological).
 - A height of exactly 0 is indistinguishable from nodata (format limitation; matters at
   the coast). Coverage gaps still render as pits (client mesher fix out of scope).
 - Display: laptop panel 2560×1600@165Hz driven by Intel Iris Xe; RTX 3070 Ti renders via
