@@ -110,13 +110,20 @@ max diagonal distance for the raycast long-view question).
 - **E1 — Render tactic shootout.** 6 render types × 3 pitches (horizon / straight down /
   straight up) × 3 locations × 3 repeats = 162 runs (pruned per E0). Quad strategy,
   full view distance, LOD auto. Output: the thesis's headline comparison.
-- **E2 — Chunk size sweep.** Best tactic from E1, chunk size over the **even divisors
-  of 1000**: 1000, 500, 250, 200, 100, 50, 40, 20, 10 — a near-log scale. Divisors only,
-  so chunks tile the 1000 px base grid; even only, because delta chunks (`lod > 1`)
-  stitch in 2×2 quadrants and odd sizes crash (the UI silently floors to even at
-  `game-manager.js:45`; the bench API bypasses the UI, so it must enforce evenness
-  itself). Sizes 8, 4, 2 are additionally attempted under a hard per-run timeout,
-  expected to fail by design (`(1000/size)²` serial base loads = 15.6k/62.5k/250k).
+- **E2 — Chunk size sweep.** Best tactic from E1. Sizes are the union of three
+  families, all even (evenness is the hard constraint — delta chunks stitch in 2×2
+  quadrants, odd sizes crash; the UI floors to even at `game-manager.js:45`, the bench
+  API bypasses the UI and must enforce it itself):
+  - hundreds for granularity: 1000, 900, 800, 700, 600, 500, 400, 300, 200, 100
+  - powers of two (the developer-conventional series): 512, 256, 128, 64, 32, 16
+  - small tail tracing the `(1000/size)²` blow-up: 50, 20, 10
+  Merged sweep: 1000, 900, 800, 700, 600, 512, 500, 400, 300, 256, 200, 128, 100, 64,
+  50, 32, 20, 16, 10. Sizes 8, 4, 2 are additionally attempted under a hard per-run
+  timeout, expected to fail by design (15.6k/62.5k/250k serial base loads).
+  Non-divisors of 1000 make edge chunks overhang the base tile grid; the server
+  composes across tiles generically (`chunk_quad_builder.py`), and each size gets a
+  cheap smoke validation before entering the overnight sweep. Near-duplicate pairs
+  (512/500, 256/300, 128/100) double as a measurement-noise check.
   Output: FPS vs size and time-to-quiescence vs size curves.
 - **E3 — LODs are load-bearing.** lodMax swept 9→1, plus the no-LOD extreme (force base
   LOD everywhere within view distance). If a config OOMs / device-losts / times out,
