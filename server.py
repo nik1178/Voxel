@@ -88,5 +88,9 @@ def chunk_socket(ws):
 def home():
     return send_from_directory(app.static_folder, "index.html")
 
+@app.route("/bench_info")
+def bench_info():
+    return {"lod_dir": chunk_manager.chunk_quad_builder.lod_dir}
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=verbose)
