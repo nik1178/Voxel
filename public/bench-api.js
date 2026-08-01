@@ -32,10 +32,10 @@ class BenchAPI {
   }
 
   onFrame(dt) {
-    if (this.frameDts) this.frameDts.push(dt);
+    if (this.frameDts && isFinite(dt) && dt > 0) this.frameDts.push(dt);
   }
 
-  configure(cfg) {
+  async configure(cfg) {
     if (cfg.chunkSize % 2 !== 0) {
       throw new Error(`chunkSize must be even, got ${cfg.chunkSize}`);
     }
@@ -45,6 +45,15 @@ class BenchAPI {
     }
     const cm = this.gameManager.renderer.chunkManager;
     cm.pauseLoop();
+    // Drain in-flight loads before resetting net counters, so stale responses
+    // that land after the reset don't leak into the next config's accounting.
+    const drainStart = performance.now();
+    while (cm.getStrategyStats().loading !== 0 && performance.now() - drainStart < 10000) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    if (cm.getStrategyStats().loading !== 0) {
+      console.warn("configure: in-flight loads did not drain within 10s cap");
+    }
     const ev = (name, detail) => document.dispatchEvent(new CustomEvent(name, { detail }));
     ev("render-type-changed", cfg.renderType);
     ev("chunk-strategy-changed", cfg.strategy);
@@ -100,14 +109,18 @@ class BenchAPI {
     await new Promise((r) => setTimeout(r, warmupMs));
     const renderer = this.gameManager.renderer;
     const countersBefore = this.getCounters();
-    const gpuStart = renderer.gpuFrameTimes.length;
+    // Truncate rather than snapshot-and-slice: the renderer's gpuFrameTimes is a
+    // 20000-cap ring buffer (shift()), so once it's pinned, slice(oldLength) is
+    // always []. Emptying it here means everything pushed during this window is
+    // ours to read back at the end.
+    renderer.gpuFrameTimes.length = 0;
     this.frameDts = [];
     await new Promise((r) => setTimeout(r, durationMs));
     const dts = this.frameDts;
     this.frameDts = null;
     return {
       frameDtsMs: dts.map((d) => d * 1000),
-      gpuFrameTimesMs: renderer.gpuFrameTimes.slice(gpuStart),
+      gpuFrameTimesMs: renderer.gpuFrameTimes.slice(0),
       countersBefore,
       countersAfter: this.getCounters(),
     };
@@ -141,7 +154,9 @@ class BenchAPI {
         http: {
           requests: http.length,
           bytes: http.reduce((a, e) => a + (e.transferSize || 0), 0),
-          firstResponseAt: http.length ? Math.min(...http.map((e) => e.responseEnd)) : null,
+          firstResponseAt: http.length
+            ? http.reduce((min, e) => (e.responseEnd < min ? e.responseEnd : min), Infinity)
+            : null,
         },
       },
       jsHeapBytes: performance.memory ? performance.memory.usedJSHeapSize : null,

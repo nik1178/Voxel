@@ -132,15 +132,32 @@ def run_one(playwright, run, args, lod_dir):
         result["provenance"] = page.evaluate("() => window.__bench.getProvenance()")
 
         timeout_ms = run.config.get("timeoutS", 600) * 1000
-        # page.evaluate awaits the returned Promise; give Playwright's own
-        # timeout headroom beyond the in-page one.
+        # page.evaluate has no timeout of its own: it awaits the returned Promise
+        # indefinitely, so page.set_default_timeout does NOT bound it (it only
+        # bounds other Playwright calls like goto/wait_for_function). The actual
+        # guard is the in-page Promise.race below: a rejection timer races the
+        # real promise, so a hung PROMISE becomes a rejected evaluate that the
+        # except block below records as an error result. This does NOT protect
+        # against a wedged page main thread (a synchronous JS hang would block
+        # the watchdog's own setTimeout too) — that residual risk is accepted.
         page.set_default_timeout(timeout_ms + QUIESCE_SAFETY_MS)
         result["quiesce"] = page.evaluate(
-            "t => window.__bench.waitForQuiescence({timeoutMs: t})", timeout_ms)
+            """t => Promise.race([
+                window.__bench.waitForQuiescence({timeoutMs: t}),
+                new Promise((_, reject) => setTimeout(
+                    () => reject(new Error('waitForQuiescence watchdog: exceeded ' + (t + 30000) + 'ms')),
+                    t + 30000)),
+            ])""", timeout_ms)
 
+        record_watchdog_ms = args.warmup_ms + args.record_ms + 30000
         rec = page.evaluate(
-            "o => window.__bench.record(o)",
-            {"warmupMs": args.warmup_ms, "durationMs": args.record_ms})
+            """o => Promise.race([
+                window.__bench.record(o),
+                new Promise((_, reject) => setTimeout(
+                    () => reject(new Error('record watchdog: exceeded ' + o.watchdogMs + 'ms')),
+                    o.watchdogMs)),
+            ])""",
+            {"warmupMs": args.warmup_ms, "durationMs": args.record_ms, "watchdogMs": record_watchdog_ms})
         result["raw"]["frameDtsMs"] = rec["frameDtsMs"]
         result["raw"]["gpuFrameTimesMs"] = rec["gpuFrameTimesMs"]
         result["counters_before"] = rec["countersBefore"]
