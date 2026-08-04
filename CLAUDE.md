@@ -15,9 +15,13 @@ means a viewer downloads only a tiny fraction of that.
 the written thesis with FPS/scale/bandwidth measurements. **No major new implementations
 or overhauls** — finish, measure, document.
 
-Current phase: building an automated benchmark harness (see
-`docs/superpowers/specs/2026-07-31-benchmark-harness-design.md`), then overnight
-measurement sweeps, then figures + text data for the thesis.
+Current phase: benchmark harness BUILT and E0-verified (branch `benchmark-harness`,
+spec: `docs/superpowers/specs/2026-07-31-benchmark-harness-design.md`). E0 pilot
+2026-08-04 on the RTX: 85.3 FPS mean (greedy, ljubljana/horizon), quiesce ~29 s,
+~66–92 s wall per run → E1 (162 runs) ≈ 4 h overnight. Campaign order: E1 overnight →
+review → set `E2_RENDER_TYPE` in `bench/matrix.py` to the winner → E2+E3 → E4+E5 →
+`venv\Scripts\python -m bench.plot`. Commit `bench/results/` + `bench/figures/` after
+each campaign — they are thesis data.
 
 ## Architecture
 
@@ -28,8 +32,8 @@ E:/gkot/*.laz  (14,731 GKOT LiDAR tiles, ~5 TB raw)
 public/map/100/{x}_{z}.hmap      base chunks, 1000×1000 px, 5 B/px (RGB u8 + height u16 LE), ~68.6 GB
    │  python/build_quad_tree.py  (base-level cleaning: water_fill.py + artifact_filter.py, in-memory only)
    ▼
-public/map/lod_output/{lod}/{x}_{z}.hmap        complete pyramid, LOD 1–9, unfiltered, ~70 GB  ← currently served
-public/map/lod_output_clean/...                 cleaned pyramid, REBUILD IN PROGRESS (2026-07-31)
+public/map/lod_output/{lod}/{x}_{z}.hmap        complete pyramid, LOD 1–9, unfiltered, ~70 GB (kept for rollback)
+public/map/lod_output_clean/...                 cleaned pyramid, COMPLETE 2026-08-04  ← currently served (server.py lod_dir)
    │  server.py (Flask): HTTP /get_chunk/... AND WebSocket /ws/chunks (request-id correlated, thread pool)
    ▼
 public/ (WebGPU client)
@@ -49,7 +53,10 @@ public/ (WebGPU client)
 
 - Server: `venv\Scripts\python server.py` (port 8000, serves `public/` statically).
 - Client: `http://localhost:8000`, Chrome (WebGPU). Escape toggles UI.
-- Python tests: `venv\Scripts\python -m pytest python/tests/`.
+- Python tests: `venv\Scripts\python -m pytest python/tests/ bench/tests/`.
+- Benchmarks: `venv\Scripts\python -m bench.driver --experiments E1` (checkpointed,
+  safely re-runnable; starts its own server; refuses to run during a pyramid rebuild).
+  Figures: `venv\Scripts\python -m bench.plot`.
 
 ## Live settings (all driven by DOM CustomEvents — a benchmark can dispatch these directly)
 
@@ -70,13 +77,12 @@ public/ (WebGPU client)
 - **UI initial state lies.** `renderer.js` defaults: `renderType="hybrid"`,
   `viewDistance=Infinity`, `useFX=true` — but the HTML shows "Mesh" selected, FX off,
   sliders at minimum. Set every parameter explicitly; never trust defaults.
-- **404 chunks stay `isLoading=true` forever** (`chunk-quad-strategy.js` 404 path never
-  clears it). Border regions render at parent LOD though real siblings loaded; "nothing
-  loading" is never true map-wide. Fix planned in benchmark spec.
+- ~~404 chunks stay `isLoading=true` forever~~ FIXED on `benchmark-harness`: 404 nodes
+  clear `isLoading`, set `is404`, and are skipped permanently (`chunk-quad-strategy.js`).
 - **`howManyChunksLoading` is reset to 0 while loads are in flight** on player chunk
   change; unreliable during movement.
-- **FPS counter used mean(1/dt)** — overstates FPS, hides stutter (fix planned; report
-  frame times p50/p95/p99 + 1% lows instead).
+- ~~FPS counter used mean(1/dt)~~ FIXED on `benchmark-harness`: N/Σdt over last 100
+  frames; benchmark results report p50/p95/p99 + 1% lows from raw frame times.
 - Changing render type also force-disables culling (`ui-manager.js`); "mesh" destroys all
   chunks. One config per page load for measurements.
 - Small chunk sizes explode: quad strategy creates `(1000/chunkSize)²` base chunks,
@@ -91,7 +97,11 @@ public/ (WebGPU client)
 - Display: laptop panel 2560×1600@165Hz driven by Intel Iris Xe; RTX 3070 Ti renders via
   Optimus (Win32 queries show a phantom 1080p60 mode on it). Parsec is installed —
   **must not be running during benchmarks**; benchmarks need vsync disabled via Chrome
-  flags or FPS clamps at 165.
+  flags or FPS clamps at 165. **Playwright's bundled Chromium defaults to the Iris Xe** —
+  it needs its own `GpuPreference=2;` entry in
+  `HKCU\Software\Microsoft\DirectX\UserGpuPreferences` for its exact exe path
+  (`...\ms-playwright\chromium-<ver>\chrome-win64\chrome.exe`, re-add after Playwright
+  updates); verify `provenance.adapterInfo.vendor == "nvidia"` in every campaign's results.
 - `python -m` from repo root: modules import as `python.xxx`.
 
 ## Data rules
