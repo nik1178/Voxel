@@ -1,6 +1,9 @@
 import { vprint } from "./vprint.js";
 import Chunk from "./chunk.js";
 
+// Deepest LOD the .hmap pyramid has (LOD 9 = the 1 km base chunks).
+const PYRAMID_DEPTH = 9;
+
 export default class ChunkQuadStrategy {
   constructor(chunkMesher, voxelSize = 100, chunkSize = 1000) {
     this.chunkMesher = chunkMesher;
@@ -139,15 +142,20 @@ export default class ChunkQuadStrategy {
       if (chunkNode.distanceFromPlayer > this.renderDistance) {
         continue;
       }
-      const distanceRatio = Math.max(1, chunkNode.distanceFromPlayer / (this.chunkSize * 2));
-      let expectedLOD = Math.min(this.lodMaxBound, this.lodMaxBound - Math.floor(Math.log2(distanceRatio * 1)));
-
-      if (expectedLOD < this.lodMinBound) {
-        expectedLOD = this.lodMinBound;
-      }
-      // const expectedLOD = 9;
+      const expectedLOD = this.expectedLodFor(chunkNode.distanceFromPlayer);
 
       if (chunkNode.chunk.levelOfDetail < expectedLOD && this.howManyChunksLoading < this.maximumChunksLoading) {
+        // Subdivision and collapse are judged at different distances -- the
+        // parent's for "too coarse", each child's own for "too fine" -- and
+        // nothing makes the two agree. Where they disagree, a newborn child
+        // calls destroyFamily(), which wipes all four siblings and hands the
+        // parent back as a leaf that still wants subdividing: the same four
+        // chunks are then re-requested forever. Ask before paying for the
+        // loads instead of discovering it after (E3 lodMax 2-7 burned 2-3.9 GB
+        // this way and never quiesced).
+        if (this.wouldCollapseImmediately(chunkNode, playerPosition)) {
+          continue;
+        }
         nodesToLoad.push(chunkNode);
         this.howManyChunksLoading++;
         queuedThisPass++;
@@ -209,6 +217,41 @@ export default class ChunkQuadStrategy {
     }
 
 
+  }
+
+  /** Target LOD for a node at this distance: finer near the player, within the limits.
+   *  The distance falloff is anchored at the pyramid's depth, NOT at lodMaxBound --
+   *  anchoring it at the bound meant lowering lodMax dragged the whole curve down
+   *  with it, so at lodMax<=6 even the neighbouring quadrant wanted LOD 0 and the
+   *  tree could never leave its 64 base chunks. lodMax caps detail; it does not
+   *  move the horizon. Identical arithmetic at the default lodMaxBound = 9. */
+  expectedLodFor(distanceFromPlayer) {
+    const distanceRatio = Math.max(1, distanceFromPlayer / (this.chunkSize * 2));
+    const expectedLOD = Math.min(
+      this.lodMaxBound, PYRAMID_DEPTH - Math.floor(Math.log2(distanceRatio)));
+    return Math.max(expectedLOD, this.lodMinBound);
+  }
+
+  /** Would any child this node is about to create immediately destroy the family?
+   *  Mirrors the collapse test below, evaluated on data-free probe chunks (position
+   *  and scale are all distanceFromPlayer needs). */
+  wouldCollapseImmediately(chunkNode, playerPosition) {
+    const childCoordinates = chunkNode.getChildCoordinates();
+    if (!childCoordinates) {
+      return false;
+    }
+    const childScale = chunkNode.chunk.scale / 2;
+    for (const childCoordinate of childCoordinates) {
+      const probe = new Chunk({ x: childCoordinate.x, z: childCoordinate.z },
+                              this.chunkSize, null, null, 0, null,
+                              childCoordinate.levelOfDetail);
+      probe.scale = childScale;
+      const expectedLOD = this.expectedLodFor(probe.distanceFromPlayer(playerPosition));
+      if (probe.levelOfDetail > expectedLOD + 1 && probe.levelOfDetail > 1) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getChunkData() {

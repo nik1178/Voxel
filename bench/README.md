@@ -104,10 +104,24 @@ git commit -m "data: E1 campaign results"
   whether vsync and the Chromium frame-rate limit were enabled under `presentation`,
   and `resolved_view` records the literal pose (run ids hash only the view *name*).
   Figures/CSVs are derived — regenerate freely with `bench.plot`.
-- **E3 caveat (2026-08-22):** every `lodMax` cell between 2 and 7 failed to quiesce.
-  Their scene is frozen at the root nodes (identical chunk/instance counts) while the
-  quad strategy re-requests 2-3.9 GB of chunks it never keeps — 182-897 requests per
-  resident chunk, against 1.3 for a healthy `lodMax=9`. Only lodMax 1, 8 and 9 are
-  usable; the FPS spread across 2-7 is loading churn, not LOD detail. Suspected cause:
-  subdivide/destroy oscillation in `chunk-quad-strategy.js:143-160`.
 - Tests: `venv\Scripts\python -m pytest bench/tests python/tests -q`.
+
+## E3 must be re-run (the committed E3 data is invalid)
+
+The E3 in `bench/results-full-sweep/` was measured before the quad strategy was fixed
+on 2026-08-22: every `lodMax` cell from 2 to 7 failed to quiesce, sitting frozen on its
+64 base chunks while re-requesting 2.0-3.9 GB of chunks it never kept. Only lodMax 1, 8
+and 9 in that data are meaningful.
+
+```powershell
+# --redo overwrites the stale E3 results in place; the checkpoint would otherwise skip them.
+venv\Scripts\python -m bench.driver --redo E3 --results-dir bench/results-full-sweep
+venv\Scripts\python -m bench.plot --results-dir bench/results-full-sweep --figures-dir bench/figures-full-sweep
+```
+
+E1, E2, E4 and E5 all ran at `lodMax=9`, where both fixes are inert, so they do NOT need
+re-running. The falloff change is inert there by substitution (`PYRAMID_DEPTH` *is*
+`lodMaxBound` when the bound is 9). The collapse guard is inert because no family is ever
+destroyed at birth at `lodMax=9` — checked live at chunkSize 1000, 128 and 16, i.e. both
+ends and the middle of the E2 sweep, `destroy = 0` in every case. The 128 replay is exact:
+544 resident chunks / 705 WebSocket messages / 44.7 MB, identical before and after.
