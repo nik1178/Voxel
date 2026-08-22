@@ -28,7 +28,7 @@ The benchmark is divided into 5 "Campaigns" (E1 through E5). Each campaign isola
 
 *   **E1: Render-Tactic Shootout:** Compares the raw performance of all rendering implementations (greedy, planes, cubes, hybrid, raycast) across different camera views. This is used to determine the "winning" implementation that will be tested in subsequent campaigns.
 *   **E2: Chunk-Size Sweep:** Fixes the render implementation to the winner of E1 and tests how it scales across different chunk sizes (e.g., 32, 64, 128, 256). 
-*   **E3: Level of Detail (LOD) Sweep:** Uses the E1 winner and tests how aggressive Level of Detail simplification impacts performance (varying `lodMax`).
+*   **E3: Level of Detail (LOD) Sweep:** Uses the E1 winner. Two sweeps that meet at the default `0-9` cell: `0-X` caps the detail *near the player* (`lodMax`), `X-9` keeps full detail near the player and forbids the *far field* from getting coarser than X (`lodMin`) — i.e. "what if quality didn't fall off with distance". `9-9` is the no-LOD extreme. Read left to right, quality only ever goes up.
 *   **E4: Transport Protocol:** Tests networking overhead by comparing WebSocket (`sockets=True`) vs standard HTTP requests (`sockets=False`).
 *   **E5: Ablation Studies:** Isolates specific features by turning them on and off (e.g., visual effects (`fx`), frustum culling) to measure their individual performance cost.
 
@@ -111,7 +111,12 @@ git commit -m "data: E1 campaign results"
 The E3 in `bench/results-full-sweep/` was measured before the quad strategy was fixed
 on 2026-08-22: every `lodMax` cell from 2 to 7 failed to quiesce, sitting frozen on its
 64 base chunks while re-requesting 2.0-3.9 GB of chunks it never kept. Only lodMax 1, 8
-and 9 in that data are meaningful.
+and 9 in that data are meaningful. The `X-9` lodMin sweep (7 new cells) was added
+afterwards and has never run; `--redo E3` covers both (17 cells, budget ~1.5 h). At
+chunkSize 128 a LOD-n chunk is 128·2^(9−n) m, so `6-9` already means a 1 km far field —
+~20 000 chunks. Smoke-tested: `6-9` crashes the tab (heap) at ~590 s and `8-9` is still
+loading at 900 s with 12 000 chunks resident; `6-9`…`9-9` are kept with the 900 s timeout
+because that wall IS the finding. The informative cells are `2-9`…`5-9`.
 
 ```powershell
 # --redo overwrites the stale E3 results in place; the checkpoint would otherwise skip them.

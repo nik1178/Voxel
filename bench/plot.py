@@ -367,7 +367,7 @@ def _plot_e3(results, figures_dir, report):
                         fontsize=6, color=STATUS_CRITICAL, rotation=90)
     ax.set_xticks(x)
     ax.set_xticklabels(x_labels, rotation=45, ha="right", fontsize=8)
-    ax.set_xlabel("lodMin-lodMax")
+    ax.set_xlabel("lodMin-lodMax  (quality rises left→right; 0-9 is the default)")
     ax.set_ylabel("Mean FPS")
     ax.set_title("E3: LOD sweep — mean FPS (red = failed/device-lost/timeout)")
     _style_axes(ax)

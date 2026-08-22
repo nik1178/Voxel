@@ -101,13 +101,30 @@ def _e2():
     return runs
 
 
+# At chunkSize 128 a LOD-n chunk is 128 * 2^(9-n) m: LOD 5 = 2 km (~5k chunks over
+# Slovenia), LOD 6 = 1 km (~20k). Smoke-tested 2026-08-22: 6-9 crashes the tab
+# (heap) at ~590 s, 8-9 is still loading at 900 s with 12k chunks resident. They
+# are kept as results -- the wall IS the finding, same as 9-9 -- with the long
+# timeout. Delete 7 and 8 here to save ~30 min if the boundary alone is enough.
+E3_LODMIN_SLOW = {6, 7, 8}
+
+
 def _e3():
-    runs = [_mk("E3", dict(BASE_CONFIG, renderType=E2_RENDER_TYPE, lodMax=m),
-                dict(DEFAULT_VIEW)) for m in range(9, 0, -1)]
+    # Two sweeps that meet at the default 0-9 cell. Reading the x axis left to
+    # right, quality only ever goes UP:
+    #   0-X (X = 1..8): cap the detail NEAR the player, far field unchanged.
+    #   X-9 (X = 2..8): full detail near the player, far field never coarser
+    #                   than X -- "what if quality didn't fall off with distance".
+    # lodMin 0 and 1 are the same cell as 0-9 (base chunks are LOD 1), so the
+    # X-9 sweep starts at 2; 9-9 below is its endpoint.
+    base = dict(BASE_CONFIG, renderType=E2_RENDER_TYPE)
+    runs = [_mk("E3", dict(base, lodMax=m), dict(DEFAULT_VIEW)) for m in range(9, 0, -1)]
+    runs += [_mk("E3", dict(base, lodMin=m,
+                            timeoutS=900 if m in E3_LODMIN_SLOW else BASE_CONFIG["timeoutS"]),
+                 dict(DEFAULT_VIEW)) for m in range(2, 9)]
     # The no-LOD extreme: base resolution everywhere. Expected to die; the
     # failure mode (timeout / device lost) IS the result.
-    runs.append(_mk("E3", dict(BASE_CONFIG, renderType=E2_RENDER_TYPE,
-                               lodMin=9, lodMax=9, timeoutS=900), dict(DEFAULT_VIEW)))
+    runs.append(_mk("E3", dict(base, lodMin=9, lodMax=9, timeoutS=900), dict(DEFAULT_VIEW)))
     return runs
 
 
