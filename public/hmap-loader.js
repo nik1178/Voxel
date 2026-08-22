@@ -125,7 +125,6 @@ export default class HmapLoader {
 
     return { colorData, heightData };
   }
-
   loadHeightMap(chunkX, chunkZ, chunkSize = 1000, levelOfDetail = 0, version = "quad", parseToFloats = false, sockets=true) {
 
     if (sockets) {

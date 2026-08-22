@@ -22,22 +22,33 @@ BASE_CONFIG = {
     "timeoutS": 600,
 }
 
-# y in world units (~meters). yaw values are provisional until E0 screenshots
-# confirm each view shows what it should (adjust here only).
+# y in world units (~meters). Views VERIFIED BY EYE 2026-08-19 via bench.inspect
+# (the "provisional until confirmed" note that used to sit here was never acted
+# on before E1 ran -- two of the three views were wrong; see below).
 LOCATIONS = {
     "ljubljana": {"latLng": [46.0489, 14.5086], "y": 4000, "yaw": math.pi},
-    "alps":      {"latLng": [46.3783, 13.8367], "y": 5000, "yaw": math.pi},
-    # NE corner looking back across the whole country (raycast long-view case)
-    "ne_plain":  {"latLng": [46.6457, 16.1686], "y": 3000, "yaw": math.pi / 2},
+    # Was latLng [46.3783, 13.8367] -- the real-world geographic centre of the
+    # Alps, which lies OUTSIDE the Slovenian dataset. Replaced with a hand-framed
+    # world position inside the data, looking at actual alpine terrain.
+    "alps":      {"position": [-49409, 97036], "y": 1358,
+                  "yaw": math.radians(211.4), "horizonPitch": math.radians(-7.4)},
+    # NE corner looking back across the whole country (raycast long-view case).
+    # Was yaw pi/2, which pointed off the edge of the map into empty space.
+    "ne_plain":  {"latLng": [46.6457, 16.1686], "y": 3000, "yaw": math.radians(305)},
 }
 
+# "horizon" is dead level unless a location overrides it with "horizonPitch"
+# (needed where level flight would stare over the terrain rather than at it).
 PITCHES = {"horizon": 0.0, "down": -math.pi / 2, "up": math.pi / 2}
 
 RENDER_TYPES = ["mesh", "cubes", "planes", "greedy", "raycast", "hybrid"]
 
 E2_SIZES = [1000, 900, 800, 700, 600, 512, 500, 400, 300, 256, 200, 128, 100, 64, 50, 32, 20, 16, 10]
 E2_FAIL_SIZES = [8, 4, 2]        # expected to time out: (1000/size)^2 serial base loads
-E2_RENDER_TYPE = "greedy"        # PROVISIONAL: set to the E1 winner after E1 review
+# E1 (2026-08-19) was a dead heat: hybrid 362.4 FPS vs raycast 364.6 FPS averaged
+# over the 9 views (4 cell wins each, mesh takes alps/horizon), inside the +-3.4%
+# run-to-run band. Hybrid is the pick on quality, not speed: greedy near-field.
+E2_RENDER_TYPE = "hybrid"
 E2_FAIL_TIMEOUT_S = 900
 
 E1_REPEATS = 3

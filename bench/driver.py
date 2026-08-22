@@ -4,6 +4,7 @@ Usage:
     venv\\Scripts\\python -m bench.driver --experiments E0 --screenshots
     venv\\Scripts\\python -m bench.driver                  # full pending matrix
     venv\\Scripts\\python -m bench.driver --redo E1        # re-run all of E1
+    venv\\Scripts\\python -m bench.driver --experiments E1 --vsync
 """
 import argparse
 import datetime
@@ -29,6 +30,19 @@ CHROMIUM_ARGS = [
     "--force-device-scale-factor=1",
 ]
 QUIESCE_SAFETY_MS = 30000  # driver-side wait beyond the JS timeout
+
+
+def chromium_args(vsync=False):
+    """Return Chromium arguments for either uncapped or presentation-paced runs."""
+    if vsync:
+        return [a for a in CHROMIUM_ARGS
+                if a not in ("--disable-gpu-vsync", "--disable-frame-rate-limit")]
+    return list(CHROMIUM_ARGS)
+
+
+def presentation_mode(vsync=False):
+    """Persist the presentation policy with the result it produced."""
+    return {"vsync": vsync, "frame_rate_limit": vsync}
 
 
 def fail(msg):
@@ -97,11 +111,19 @@ def fetch_lod_dir():
 
 
 def resolve_view(view):
+    """Location name + pitch name -> the exact pose handed to __bench.teleport."""
     loc = LOCATIONS[view["location"]]
-    return {
-        "latLng": loc["latLng"], "y": loc["y"], "yaw": loc["yaw"],
-        "pitch": PITCHES[view["pitch"]],
-    }
+    pitch = PITCHES[view["pitch"]]
+    if view["pitch"] == "horizon":
+        pitch = loc.get("horizonPitch", pitch)
+    resolved = {"y": loc["y"], "yaw": loc["yaw"], "pitch": pitch}
+    # A location is pinned either by real-world coords or by a hand-framed world
+    # position; teleport accepts both.
+    if "position" in loc:
+        resolved["position"] = loc["position"]
+    else:
+        resolved["latLng"] = loc["latLng"]
+    return resolved
 
 
 def run_one(playwright, run, args, lod_dir):
@@ -109,16 +131,21 @@ def run_one(playwright, run, args, lod_dir):
     result = {
         "run_id": run.run_id, "experiment": run.experiment, "repeat": run.repeat,
         "config": run.config, "view": run.view,
+        # The literal pose, not just its name: run_id hashes only the view NAME,
+        # so without this a later coordinate fix is invisible in the data.
+        "resolved_view": resolve_view(run.view),
         "started_at": datetime.datetime.now().isoformat(timespec="seconds"),
         "git_rev": git_rev(), "lod_dir": lod_dir,
         "quiesce": None, "summary": {"frames": 0}, "gpu_summary": {"frames": 0},
         "raw": {"frameDtsMs": [], "gpuFrameTimesMs": []},
         "counters_before": None, "counters_after": None,
         "provenance": None, "device_lost": None, "error": None,
+        "presentation": presentation_mode(args.vsync),
     }
     browser = None
     try:
-        browser = playwright.chromium.launch(headless=False, args=CHROMIUM_ARGS)
+        browser = playwright.chromium.launch(
+            headless=False, args=chromium_args(args.vsync))
         context = browser.new_context(viewport=VIEWPORT, device_scale_factor=1)
         page = context.new_page()
         page.goto(SERVER_URL + "/", wait_until="load")
@@ -201,6 +228,9 @@ def main(argv=None):
     ap.add_argument("--experiments", help="comma list, e.g. E0,E1 (default: all)")
     ap.add_argument("--redo", help="run id or experiment name to force re-run")
     ap.add_argument("--screenshots", action="store_true")
+    ap.add_argument("--vsync", action="store_true",
+                    help="keep vsync and Chromium's frame-rate limit enabled; "
+                         "use a separate --results-dir for this paced campaign")
     ap.add_argument("--results-dir", default=str(REPO_ROOT / "bench" / "results"))
     ap.add_argument("--record-ms", type=int, default=20000)
     ap.add_argument("--warmup-ms", type=int, default=5000)

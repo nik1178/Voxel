@@ -829,7 +829,7 @@ export default class Renderer {
     this.frameStats.chunksResident = chunkData.size;
 
     // Remove all old labels from the previous frame to prevent crashing
-    document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
+    // document.querySelectorAll('.chunk-debug-label').forEach(el => el.remove());
 
     // Find 9 closest chunks
     for (const chunk of chunkData.values()) {
