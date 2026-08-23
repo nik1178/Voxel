@@ -83,10 +83,23 @@ def _human_bytes(n):
     return f"{n:.1f} PB"
 
 
-def load_results(results_dir):
-    out = []
-    for p in sorted(Path(results_dir).glob("*.json")):
-        out.append(json.loads(p.read_text(encoding="utf-8")))
+def load_results(results_dirs):
+    """Load every *.json under one dir or a list of dirs; first run_id wins.
+
+    Several dirs lets a campaign dir borrow baselines from another (E1 medians
+    in bench/results for the E14 iGPU comparison, the hybrid E2 curve for E6).
+    """
+    if isinstance(results_dirs, (str, Path)):
+        results_dirs = [results_dirs]
+    out, seen = [], set()
+    for d in results_dirs:
+        for p in sorted(Path(d).glob("*.json")):
+            r = json.loads(p.read_text(encoding="utf-8"))
+            rid = r.get("run_id")
+            if rid in seen:
+                continue
+            seen.add(rid)
+            out.append(r)
     return out
 
 
@@ -551,10 +564,12 @@ def _plot_e5(rows, figures_dir, report):
     report.append(f"{len(rows)} configurations. See `E5_ablations.csv`, `E5_ablations_fps.png`.\n")
 
 
-def write_all(results_dir, figures_dir):
+def write_all(results_dirs, figures_dir):
+    if isinstance(results_dirs, (str, Path)):
+        results_dirs = [results_dirs]
     figures_dir = Path(figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
-    results = load_results(results_dir)
+    results = load_results(results_dirs)
     report = ["# Benchmark report", ""]
 
     # --- E1: render tactic shootout ---
@@ -583,13 +598,19 @@ def write_all(results_dir, figures_dir):
     if rows:
         _plot_e5(rows, figures_dir, report)
 
+    # --- E6-E14: gap campaign (2026-08-23), one section per experiment ---
+    from bench.plot_gap import write_gap_experiments  # local: avoids a circular import
+    write_gap_experiments(results, figures_dir, report, results_dirs)
+
     (figures_dir / "report.md").write_text("\n".join(report), encoding="utf-8")
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
     root = Path(__file__).resolve().parent
-    ap.add_argument("--results-dir", default=str(root / "results"))
+    ap.add_argument("--results-dir", nargs="+", default=[str(root / "results")],
+                    help="one or more results dirs; later dirs only add run ids "
+                         "not already seen (use to borrow E1/E2 baselines)")
     ap.add_argument("--figures-dir", default=str(root / "figures"))
     args = ap.parse_args(argv)
     write_all(args.results_dir, args.figures_dir)

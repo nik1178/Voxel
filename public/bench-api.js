@@ -208,7 +208,7 @@ class BenchAPI {
       instancesResident,
       emptyChunks,
       byLod,
-      meshStats: { ...(window.__meshStats ?? {}) },
+      meshStats: (({ reset, ...ms }) => ms)(window.__meshStats ?? {}),
       // frameStats.instancesDrawn means triangles for renderType "mesh".
       frameStats: { ...(r.frameStats ?? {}) },
       net: {
