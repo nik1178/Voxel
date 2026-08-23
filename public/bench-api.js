@@ -63,6 +63,9 @@ class BenchAPI {
     ev("view-distance-changed", viewDistance);
     ev("lod-limits-changed", [cfg.lodMin, cfg.lodMax]);
     this.gameManager.updateChunkSize(cfg.chunkSize); // also destroys + rebuilds chunks
+    // New-cell-only knobs; defaults equal the hard-coded values they replaced.
+    this.gameManager.renderer.hybridNearCount = cfg.hybridNear ?? 9;
+    cm.quadStrategy.maximumChunksLoading = cfg.maxLoading ?? 1;
     this.gameManager.uiManager?.applyState({
       renderType: cfg.renderType, strategy: cfg.strategy, fx: cfg.fx,
       sockets: cfg.sockets, culling: cfg.culling, chunkSize: cfg.chunkSize,

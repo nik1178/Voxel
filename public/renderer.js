@@ -18,6 +18,7 @@ export default class Renderer {
 
   manualCulling = false;
   renderType = "hybrid";
+  hybridNearCount = 9; // hybrid: this many nearest chunks draw greedy; 0 = all
   viewDistance = Infinity;
   useFX = true;
 
@@ -879,7 +880,8 @@ export default class Renderer {
     }
     // sort chunks by distance
     const sortedChunks = Array.from(chunkData.values()).sort((a, b) => a.distance - b.distance);
-    const nineChunks = sortedChunks.slice(0, 9);
+    const nearSet = new Set(this.hybridNearCount === 0
+      ? sortedChunks : sortedChunks.slice(0, this.hybridNearCount));
 
 
     for (const chunk of chunkData.values()) {
@@ -943,7 +945,7 @@ export default class Renderer {
       let useMesh = this.renderType === "mesh";
 
       if (this.renderType === "hybrid") {
-        if (nineChunks.includes(chunk)) {
+        if (nearSet.has(chunk)) {
           useGreedy = true;
           useRaymarching = false;
         } else {

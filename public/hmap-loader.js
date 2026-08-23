@@ -146,7 +146,9 @@ export default class HmapLoader {
       });
     }
 
-    const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}/${version}`;
+    // Trailing slash matches the Flask route exactly; without it every chunk
+    // request was a 308 redirect + second round trip (E4 artefact, 2026-08-22).
+    const url = `/get_chunk/${chunkX}/${chunkZ}/${chunkSize}/${levelOfDetail}/${version}/`;
 
     return fetch(url)
       .then((response) => {
