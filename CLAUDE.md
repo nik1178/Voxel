@@ -15,13 +15,15 @@ means a viewer downloads only a tiny fraction of that.
 the written thesis with FPS/scale/bandwidth measurements. **No major new implementations
 or overhauls** — finish, measure, document.
 
-Current phase: benchmark harness BUILT and E0-verified (branch `benchmark-harness`,
-spec: `docs/superpowers/specs/2026-07-31-benchmark-harness-design.md`). E0 pilot
-2026-08-04 on the RTX: 85.3 FPS mean (greedy, ljubljana/horizon), quiesce ~29 s,
-~66–92 s wall per run → E1 (162 runs) ≈ 4 h overnight. Campaign order: E1 overnight →
-review → set `E2_RENDER_TYPE` in `bench/matrix.py` to the winner → E2+E3 → E4+E5 →
-`venv\Scripts\python -m bench.plot`. Commit `bench/results/` + `bench/figures/` after
-each campaign — they are thesis data.
+Current phase: E1–E5 measured and committed (E3 re-run 2026-08-23 after the
+quad-strategy fix; the pre-fix E4 HTTP cells are quarantined in
+`bench/results-e4-before-slash-fix/`). The **gap campaign** (E6–E14, extra E2/E5
+repeats, E4 HTTP redo, new instrumentation, plots) is IMPLEMENTED and smoke-tested
+2026-08-23 — spec `docs/superpowers/specs/2026-08-23-gap-campaign-design.md`, rationale
+`2026-08-22-measurement-gap-plan.md`. Next: run it (`bench/README.md` steps 7–9: one
+overnight `--experiments overnight,E4`, one ~1 h iGPU session `--experiments igpu
+--expect-gpu intel`), `bench.plot` with both results dirs, then write. Commit
+`bench/results*/` + `bench/figures*/` after each campaign — they are thesis data.
 
 ## Architecture
 
