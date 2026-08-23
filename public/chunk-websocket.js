@@ -4,11 +4,19 @@ export const netStats = {
   wsMessages: 0,
   requestsSent: 0,
   firstResponseAt: null,
+  byLod: {},  // lod -> {bytes, messages, n404}; WS and HTTP both feed it
   reset() {
     this.wsBytes = 0;
     this.wsMessages = 0;
     this.requestsSent = 0;
     this.firstResponseAt = null;
+    this.byLod = {};
+  },
+  countLod(lod, bytes, is404) {
+    const s = this.byLod[lod] || (this.byLod[lod] = { bytes: 0, messages: 0, n404: 0 });
+    s.bytes += bytes;
+    s.messages += 1;
+    if (is404) s.n404 += 1;
   },
 };
 window.__netStats = netStats;
@@ -43,6 +51,7 @@ export default class ChunkWebSocketClient {
       if (!promiseHandlers) return;
 
       this.pendingRequests.delete(requestId);
+      netStats.countLod(promiseHandlers.lod, buffer.byteLength - 8, status === 404);
 
       if (status === 404) {
         promiseHandlers.resolve(404);
@@ -75,7 +84,7 @@ export default class ChunkWebSocketClient {
       netStats.requestsSent += 1;
 
       const requestId = this.nextRequestId++;
-      this.pendingRequests.set(requestId, { resolve, reject });
+      this.pendingRequests.set(requestId, { resolve, reject, lod });
 
       // Send JSON message requesting the chunk
       this.ws.send(JSON.stringify({

@@ -889,7 +889,9 @@ export default class Renderer {
 
       // If a chunk has raw data ready but no GPU textures, initialize them
       if (chunk.rawData && (!chunk.colorTexture || !chunk.heightTexture)) {
+        const tUp = performance.now();
         this.createWebGPUTextures(chunk, chunk.rawData);
+        if (window.__meshStats) window.__meshStats.uploadMs += performance.now() - tUp;
       }
 
       // Skip rendering if textures are still unavailable

@@ -1,6 +1,13 @@
 import { alertError } from "./errors.js";
 import HeightmapGrid from "./heightmap-grid.js";
-import ChunkWebSocketClient from "./chunk-websocket.js";
+import ChunkWebSocketClient, { netStats } from "./chunk-websocket.js";
+
+// Benchmark instrumentation: CPU ms per chunk-load stage (reset per run).
+export const meshStats = {
+  count: 0, parseMs: 0, stitchMs: 0, meshMs: 0, uploadMs: 0,
+  reset() { this.count = 0; this.parseMs = 0; this.stitchMs = 0; this.meshMs = 0; this.uploadMs = 0; },
+};
+window.__meshStats = meshStats;
 
 // Instantiate the persistent socket connection
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -133,11 +140,15 @@ export default class HmapLoader {
         if (buffer === 404) {
           return 404; // Propagate 404 for chunk not found
         }
-        
+
         if (parseToFloats) {
           return this.bufferTo1DArray(buffer);
         } else {
-          return this.bufferToWebGPUArrays(buffer);
+          const t0 = performance.now();
+          const out = this.bufferToWebGPUArrays(buffer);
+          meshStats.parseMs += performance.now() - t0;
+          meshStats.count += 1;
+          return out;
         }
       })
       .catch((err) => {
@@ -154,6 +165,7 @@ export default class HmapLoader {
       .then((response) => {
         // Check for 404
         if (response.status === 404) {
+            netStats.countLod(levelOfDetail, 0, true);
             return 404; // Return 404 to indicate chunk not found
         }
 
@@ -170,11 +182,16 @@ export default class HmapLoader {
         if (buffer == 404) {
           return 404; // Propagate 404
         }
-        
+        netStats.countLod(levelOfDetail, buffer.byteLength, false);
+
         if (parseToFloats) {
           return this.bufferTo1DArray(buffer);
         } else {
-          return this.bufferToWebGPUArrays(buffer);
+          const t0 = performance.now();
+          const out = this.bufferToWebGPUArrays(buffer);
+          meshStats.parseMs += performance.now() - t0;
+          meshStats.count += 1;
+          return out;
         }
       });
   }

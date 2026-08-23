@@ -92,7 +92,9 @@ export default class GameManager {
 
     this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
+    const tRender = performance.now();
     this.renderer.render(dt);
+    window.__bench?.onRenderMs?.(performance.now() - tRender);
 
     // --------------------------------------------
     requestAnimationFrame(this.frame.bind(this));

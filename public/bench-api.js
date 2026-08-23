@@ -7,6 +7,31 @@ import { CommandConverter } from "./command-converter.js";
 const QUIET_POLLS = 20;   // consecutive 200ms polls with a quiet pass
 const POLL_MS = 200;
 
+function pct(sortedVals, p) {
+  if (!sortedVals.length) return null;
+  const k = Math.max(1, Math.ceil((p / 100) * sortedVals.length));
+  return sortedVals[k - 1];
+}
+
+// Resource-timing phases of the HTTP chunk requests. With a redirect in the
+// path (pre-2026-08-23 URL without trailing slash) redirect_p50 > 0.
+function httpPhases(entries) {
+  const ph = { redirect: [], connect: [], ttfb: [], download: [] };
+  for (const e of entries) {
+    ph.redirect.push(e.redirectEnd - e.redirectStart);
+    ph.connect.push(e.connectEnd - e.connectStart);
+    ph.ttfb.push(e.responseStart - e.requestStart);
+    ph.download.push(e.responseEnd - e.responseStart);
+  }
+  const out = { n: entries.length };
+  for (const [k, v] of Object.entries(ph)) {
+    v.sort((a, b) => a - b);
+    out[`${k}_p50`] = pct(v, 50);
+    out[`${k}_p95`] = pct(v, 95);
+  }
+  return out;
+}
+
 function gpuBytesFor(chunk) {
   let b = 0;
   if (chunk.colorTexture) b += chunk.colorTexture.width * chunk.colorTexture.height * 4;
@@ -22,6 +47,7 @@ class BenchAPI {
   gameManager = null;
   ready = false;
   frameDts = null; // recording buffer; null = not recording
+  jsFrameMs = null; // recording buffer for renderer.render() wall ms
   converter = new CommandConverter();
 
   init(gameManager) {
@@ -33,6 +59,10 @@ class BenchAPI {
 
   onFrame(dt) {
     if (this.frameDts && isFinite(dt) && dt > 0) this.frameDts.push(dt);
+  }
+
+  onRenderMs(ms) {
+    if (this.jsFrameMs) this.jsFrameMs.push(ms);
   }
 
   async configure(cfg) {
@@ -72,6 +102,7 @@ class BenchAPI {
     });
     // Clean slate for network accounting: drop bytes loaded under default config.
     window.__netStats?.reset();
+    window.__meshStats?.reset();
     performance.clearResourceTimings();
     this.config = { ...cfg, viewDistance };
     this.configuredAt = performance.now();
@@ -94,18 +125,36 @@ class BenchAPI {
     const t0 = performance.now();
     let quiet = 0;
     let lastPasses = -1;
+    // Load curve: one sample per poll, returned with the result (streaming figure).
+    const loadCurve = [];
+    const cm = this.gameManager.renderer.chunkManager;
+    const sample = () => {
+      const s = cm.getStrategyStats();
+      loadCurve.push({
+        t: Math.round(performance.now() - t0),
+        chunksResident: cm.getChunkData().size,
+        wsBytes: window.__netStats?.wsBytes ?? 0,
+        wsMessages: window.__netStats?.wsMessages ?? 0,
+        httpRequests: performance.getEntriesByType("resource")
+          .filter((e) => e.name.includes("/get_chunk/")).length,
+        loading: s.loading,
+        initializing: !!s.initializing,
+        jsHeapBytes: performance.memory ? performance.memory.usedJSHeapSize : null,
+      });
+    };
     while (performance.now() - t0 < timeoutMs) {
       await new Promise((r) => setTimeout(r, POLL_MS));
-      if (window.__deviceLost) return { quiesced: false, ms: performance.now() - t0, deviceLost: true };
-      const s = this.gameManager.renderer.chunkManager.getStrategyStats();
+      sample();
+      if (window.__deviceLost) return { quiesced: false, ms: performance.now() - t0, deviceLost: true, loadCurve };
+      const s = cm.getStrategyStats();
       if (s.passes === lastPasses) continue; // strategy hasn't run a new pass yet
       lastPasses = s.passes;
       const quietPass = !s.initializing &&
         s.queuedLastPass === 0 && s.destroyedLastPass === 0 && s.loading === 0;
       quiet = quietPass ? quiet + 1 : 0;
-      if (quiet >= QUIET_POLLS) return { quiesced: true, ms: performance.now() - t0 };
+      if (quiet >= QUIET_POLLS) return { quiesced: true, ms: performance.now() - t0, loadCurve };
     }
-    return { quiesced: false, ms: timeoutMs };
+    return { quiesced: false, ms: timeoutMs, loadCurve };
   }
 
   async record({ warmupMs = 5000, durationMs = 20000 } = {}) {
@@ -118,11 +167,15 @@ class BenchAPI {
     // ours to read back at the end.
     renderer.gpuFrameTimes.length = 0;
     this.frameDts = [];
+    this.jsFrameMs = [];
     await new Promise((r) => setTimeout(r, durationMs));
     const dts = this.frameDts;
     this.frameDts = null;
+    const js = this.jsFrameMs;
+    this.jsFrameMs = null;
     return {
       frameDtsMs: dts.map((d) => d * 1000),
+      jsFrameTimesMs: js,
       gpuFrameTimesMs: renderer.gpuFrameTimes.slice(0),
       countersBefore,
       countersAfter: this.getCounters(),
@@ -134,9 +187,17 @@ class BenchAPI {
     const chunkData = r.chunkManager.getChunkData();
     let gpuBytes = 0;
     let instancesResident = 0;
+    let emptyChunks = 0; // all-zero (outside-survey) chunks: no geometry for any type
+    const byLod = {};
+    for (const [lod, s] of Object.entries(window.__netStats?.byLod ?? {})) {
+      byLod[lod] = { ...s, resident: 0 };
+    }
     for (const c of chunkData.values()) {
       gpuBytes += gpuBytesFor(c);
       if (c.instanceArray) instancesResident += c.instanceArray.length / 2;
+      const lod = c.levelOfDetail;
+      (byLod[lod] || (byLod[lod] = { bytes: 0, messages: 0, n404: 0, resident: 0 })).resident += 1;
+      if (c.rawData?.heightData && c.getMaxHeight() === 0) emptyChunks += 1;
     }
     const http = performance
       .getEntriesByType("resource")
@@ -145,6 +206,9 @@ class BenchAPI {
       chunksResident: chunkData.size,
       gpuBytes,
       instancesResident,
+      emptyChunks,
+      byLod,
+      meshStats: { ...(window.__meshStats ?? {}) },
       // frameStats.instancesDrawn means triangles for renderType "mesh".
       frameStats: { ...(r.frameStats ?? {}) },
       net: {
@@ -160,6 +224,7 @@ class BenchAPI {
           firstResponseAt: http.length
             ? http.reduce((min, e) => (e.responseEnd < min ? e.responseEnd : min), Infinity)
             : null,
+          phases: httpPhases(http),
         },
       },
       jsHeapBytes: performance.memory ? performance.memory.usedJSHeapSize : null,
