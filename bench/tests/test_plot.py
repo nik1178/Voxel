@@ -133,3 +133,18 @@ def test_old_results_without_new_fields_still_plot(tmp_path):
     r["counters_after"]["net"]["http"].pop("phases")
     (d / "x.json").write_text(json.dumps(r))
     write_all([d], tmp_path / "figs")
+
+
+def test_zero_run_figures(tmp_path):
+    d = _make_results_dir(tmp_path)  # E1 greedy+mesh with repeats
+    for i, fps in enumerate((380.0, 395.0)):  # the noise figure needs >=2 hybrid default cells
+        r = _fake_result(f"E5-0000000{i}-r{i}", "E5", "hybrid", "ljubljana", "horizon", fps, i)
+        (d / f"{r['run_id']}.json").write_text(json.dumps(r))
+    figs = tmp_path / "figs"
+    write_all([d], figs)
+    for name in ["E1_multimetric.csv", "gpu_vs_wall.png", "pacing.png",
+                 "pitch_invariance.png", "noise.csv", "load_curves.png", "loc_table.csv"]:
+        assert (figs / name).exists(), name
+    report = (figs / "report.md").read_text(encoding="utf-8")
+    assert "## E1 multi-metric table" in report
+    assert "## Simplicity proxy" in report

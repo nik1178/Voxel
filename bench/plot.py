@@ -35,7 +35,7 @@ STATUS_CRITICAL = "#d03b3b"
 
 RENDER_TYPE_ORDER = ["mesh", "cubes", "planes", "greedy", "raycast", "hybrid"]
 PITCH_ORDER = ["horizon", "down", "up"]
-DATASET_BYTES = 70 * 1024 ** 3  # ~70 GB compressed .hmap pyramid
+DATASET_BYTES = 74_825_000_000  # clean pyramid on disk, measured 2026-08-22 (was "~70 GiB")
 
 
 def _color_for(label, order):
@@ -601,6 +601,11 @@ def write_all(results_dirs, figures_dir):
     # --- E6-E14: gap campaign (2026-08-23), one section per experiment ---
     from bench.plot_gap import write_gap_experiments  # local: avoids a circular import
     write_gap_experiments(results, figures_dir, report, results_dirs)
+
+    # --- zero-run figures derived from whatever is loaded (E1 multi-metric,
+    #     GPU-vs-wall, pacing, pitch, E2 bandwidth, load curves, noise, LOC) ---
+    from bench.plot_derived import write_derived
+    write_derived(results, figures_dir, report)
 
     (figures_dir / "report.md").write_text("\n".join(report), encoding="utf-8")
 
