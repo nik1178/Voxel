@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 
 from bench.driver import (CHROMIUM_ARGS, SERVER_URL, VIEWPORT, fetch_lod_dir,
                           resolve_view, start_server)
-from bench.matrix import BASE_CONFIG, LOCATIONS, PITCHES
+from bench.matrix import BASE_CONFIG, E1_LOCATIONS, LOCATIONS, PITCHES
 
 HUD_JS = r"""
 (views) => {
@@ -130,7 +130,7 @@ def build_views():
     return [{"label": f"{loc} / {pitch}",
              "location": loc, "pitch": pitch,
              "pose": resolve_view({"location": loc, "pitch": pitch})}
-            for loc in LOCATIONS for pitch in PITCHES]
+            for loc in E1_LOCATIONS for pitch in PITCHES]
 
 
 def main():
