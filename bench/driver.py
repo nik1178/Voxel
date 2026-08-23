@@ -243,6 +243,10 @@ def run_one(playwright, run, args, lod_dir):
         if args.screenshots or run.screenshot:
             shots = Path(args.results_dir) / "shots"
             shots.mkdir(parents=True, exist_ok=True)
+            # Hide the HUD (same as pressing Escape) so the picture is terrain only.
+            # Measurement is over by now, so this cannot affect the numbers.
+            page.evaluate("() => document.getElementById('ui')?.classList.add('invisible')")
+            page.wait_for_timeout(300)
             page.screenshot(path=str(shots / f"{run.run_id}.png"))
     except Exception as e:  # timeout, crash, device-lost tab death: record it
         result["error"] = f"{type(e).__name__}: {e}"
