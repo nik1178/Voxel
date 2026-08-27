@@ -6,16 +6,21 @@ export class UIManager {
     }
 
     setupListeners() {
-        const ui = document.getElementById("ui");
+        if (window.matchMedia("(pointer: coarse)").matches) {
+            document.body.classList.add("touch");
+        }
+
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 e.preventDefault();
-                ui.classList.toggle("invisible");
-                document.body.focus();
-                this.visible = !ui.classList.contains("invisible");
-                document.dispatchEvent(new CustomEvent("ui-toggled", { detail: this.visible }));
+                this.toggleUI();
             }
         });
+
+        const uiToggleButton = document.getElementById("ui-toggle");
+        if (uiToggleButton) {
+            uiToggleButton.addEventListener("click", () => this.toggleUI());
+        }
 
         const positionFields = document.querySelectorAll(".position-field");
         positionFields.forEach((field) => {
@@ -99,6 +104,17 @@ export class UIManager {
 
     }
 
+    toggleUI() {
+        const ui = document.getElementById("ui");
+        ui.classList.toggle("invisible");
+        document.body.focus();
+        this.visible = !ui.classList.contains("invisible");
+        document.body.classList.toggle("ui-hidden", !this.visible);
+        const button = document.getElementById("ui-toggle");
+        if (button) button.innerText = this.visible ? "✕" : "☰";
+        document.dispatchEvent(new CustomEvent("ui-toggled", { detail: this.visible }));
+    }
+
     // Make the DOM controls display the given state. Never dispatches events —
     // this reflects state, it does not cause it.
     applyState(state) {
@@ -142,26 +158,36 @@ class Slider {
     }
 
     setupListeners() {
-        this.domElement.addEventListener("mousedown", (e) => {
-            // if (e.target !== this.domElement && !this.domElement.contains(e.target)) {
-            //     return;
-            // }
+        this.domElement.addEventListener("pointerdown", (e) => {
             e.preventDefault();
             this.pressed = true;
+            this.domElement.setPointerCapture(e.pointerId);
             this.updateHandles(e);
         });
-        window.addEventListener("mousemove", (e) => {
+        this.domElement.addEventListener("pointermove", (e) => {
             if (this.pressed) {
                 this.updateHandles(e);
             }
         });
-        window.addEventListener("mouseup", (e) => {
+        const release = () => {
             if (this.pressed) {
                 this.dispatch();
             }
             this.pressed = false;
-            
-        });
+        };
+        this.domElement.addEventListener("pointerup", release);
+        this.domElement.addEventListener("pointercancel", release);
+
+        // Handle positions are absolute pixels; recompute them on resize.
+        window.addEventListener("resize", () => this.reposition());
+    }
+
+    reposition() {
+        const toRange = (v) => ((v - this.minVal) / (this.maxVal - this.minVal)) ** (1 / this.exponent);
+        this.positionHandle(this.handle1, toRange(this.handle1.value));
+        if (this.double) {
+            this.positionHandle(this.handle2, toRange(this.handle2.value));
+        }
     }
 
     setupHTML() {

@@ -1,6 +1,9 @@
 export default class MovementController {
   defaultSpeed = 1000;
   speed = this.defaultSpeed;
+  speedRamp = 0;
+  lookPointerId = null;
+  lastLook = [0, 0];
   pause = false;
   moving = {
     forward: false,
@@ -31,9 +34,56 @@ export default class MovementController {
       this.speed = this.defaultSpeed;
     });
 
+    canvas.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "touch" || this.lookPointerId !== null) return;
+      this.lookPointerId = event.pointerId;
+      this.lastLook = [event.clientX, event.clientY];
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== this.lookPointerId) return;
+      this.camera.transform.rotation[1] -= (event.clientX - this.lastLook[0]) * 0.005;
+      this.camera.transform.rotation[0] -= (event.clientY - this.lastLook[1]) * 0.005;
+      this.lastLook = [event.clientX, event.clientY];
+    });
+    const endLook = (event) => {
+      if (event.pointerId === this.lookPointerId) this.lookPointerId = null;
+    };
+    canvas.addEventListener("pointerup", endLook);
+    canvas.addEventListener("pointercancel", endLook);
+
+    this.setupDpads();
+
     document.addEventListener("ui-toggled", (event) => {
       this.paused = event.detail;
+      // Hidden dpad buttons never fire pointerup, so drop any held state.
+      for (const key of Object.keys(this.moving)) this.moving[key] = false;
+      this.speedRamp = 0;
     });
+  }
+
+  setupDpads() {
+    document.querySelectorAll("#mobile-controls .dpad-btn").forEach((button) => {
+      const action = button.dataset.action;
+      const press = (event) => {
+        event.preventDefault();
+        this.setAction(action, true);
+      };
+      const release = () => this.setAction(action, false);
+      button.addEventListener("pointerdown", press);
+      button.addEventListener("pointerup", release);
+      button.addEventListener("pointercancel", release);
+      button.addEventListener("pointerleave", release);
+    });
+  }
+
+  setAction(action, active) {
+    if (action === "faster") {
+      this.speedRamp = active ? 1 : 0;
+    } else if (action === "slower") {
+      this.speedRamp = active ? -1 : 0;
+    } else {
+      this.moving[action] = active;
+    }
   }
 
   onKeyDown(event) {
@@ -98,6 +148,12 @@ export default class MovementController {
   updateMovement(dt) {
     if (this.paused) {
       return;
+    }
+
+    if (this.speedRamp) {
+      // x4 per second held, in the spirit of the wheel's 1.1 per notch.
+      this.defaultSpeed *= Math.pow(4, this.speedRamp * dt);
+      this.speed = this.defaultSpeed;
     }
 
     const forward = [

@@ -34,7 +34,10 @@ export default class GameManager {
     await this.renderer.init(this.player, this.canvas);
     this.running = true;
     this.canvas.addEventListener("click", () => {
-      this.canvas.requestPointerLock();
+      // Pointer lock is mouse-only; a tap on touch devices must not grab it.
+      if (!document.body.classList.contains("touch")) {
+        this.canvas.requestPointerLock();
+      }
     });
     vprint("Game started");
     this.uiManager = new UIManager();
