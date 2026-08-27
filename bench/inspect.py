@@ -125,8 +125,11 @@ HUD_JS = r"""
 """
 
 
-def build_views():
+def build_views(only_view=None):
     """The 9 E1 views, in a stable readable order (location major, pitch minor)."""
+    if only_view:
+        return [{"label": f"{only_view} / horizon", "location": only_view, "pitch": "horizon",
+                 "pose": resolve_view({"location": only_view, "pitch": "horizon"})}]
     return [{"label": f"{loc} / {pitch}",
              "location": loc, "pitch": pitch,
              "pose": resolve_view({"location": loc, "pitch": pitch})}
@@ -137,6 +140,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--render-type", default="hybrid",
                     help="render type to inspect in (default: hybrid)")
+    ap.add_argument("--view", help="inspect a specific location instead of the E1 grid")
     ap.add_argument("--smoke", action="store_true",
                     help="step through all 9 views non-interactively and exit")
     # Presentation-side knobs. The campaign runs with BOTH off (i.e. vsync and
@@ -151,7 +155,7 @@ def main():
                          "1920x1080 viewport the campaign uses")
     args = ap.parse_args()
 
-    views = build_views()
+    views = build_views(args.view)
     config = dict(BASE_CONFIG, renderType=args.render_type)
 
     chromium_args = [a for a in CHROMIUM_ARGS
