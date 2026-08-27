@@ -1,10 +1,10 @@
 import { alertError } from "./errors.js";
 import GameManager from "./game-manager.js";
 import bench from "./bench-api.js";
+import { sizeCanvas } from "./canvas-size.js";
 
 const canvas = document.querySelector("canvas#viewport");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+sizeCanvas(canvas);
 
 if (!navigator.gpu) alertError("WebGPU is not supported in this browser.");
 

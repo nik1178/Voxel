@@ -7,6 +7,7 @@
 import * as Matrix from "./matrix.js";
 import ChunkManager from "./chunk-manager.js";
 import { vprint } from "./vprint.js";
+import { sizeCanvas } from "./canvas-size.js";
 
 /**
  * Manages the WebGPU rendering pipeline, resource allocation, and drawing loops.
@@ -61,9 +62,12 @@ export default class Renderer {
     });
 
     window.addEventListener("resize", () => {
-      //resize
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
+      if (!sizeCanvas(this.canvas)) return;
+      // The offscreen targets are built at the canvas size and the bind
+      // groups hold views of them, so without rebuilding both the scene keeps
+      // rendering at the old resolution and gets stretched to the new canvas.
+      this.createFramebuffers();
+      this.createBindGroups();
     })
   }
 
