@@ -1,0 +1,4307 @@
+{
+ "run_id": "E6-1ef076f5-r0",
+ "experiment": "E6",
+ "repeat": 0,
+ "config": {
+  "renderType": "mesh",
+  "strategy": "quad",
+  "chunkSize": 512,
+  "viewDistance": null,
+  "lodMin": 0,
+  "lodMax": 9,
+  "fx": false,
+  "culling": false,
+  "sockets": true,
+  "timeoutS": 600
+ },
+ "view": {
+  "location": "ljubljana",
+  "pitch": "horizon"
+ },
+ "resolved_view": {
+  "y": 4000,
+  "yaw": 3.141592653589793,
+  "pitch": 0.0,
+  "latLng": [
+   46.0489,
+   14.5086
+  ]
+ },
+ "started_at": "2026-08-25T22:54:16",
+ "git_rev": "c383d1e",
+ "git_dirty": true,
+ "lod_dir": "lod_output_clean",
+ "quiesce": {
+  "quiesced": false,
+  "ms": 600000
+ },
+ "summary": {
+  "frames": 39,
+  "mean_fps": 1.8591968269707444,
+  "p50_ms": 1.3000000000465661,
+  "p95_ms": 6875.599999999977,
+  "p99_ms": 13570,
+  "low1_fps": 0.07369196757553427
+ },
+ "gpu_summary": {
+  "frames": 0
+ },
+ "js_summary": {
+  "frames": 39,
+  "mean_fps": 2.9124908517914845,
+  "p50_ms": 0.6999999999534339,
+  "p95_ms": 43.0999999998603,
+  "p99_ms": 13317,
+  "low1_fps": 0.07509198768491401
+ },
+ "server_stats": {
+  "by_lod": {
+   "3": {
+    "count": 12,
+    "n404": 0,
+    "total_ms": 1241.4540000004308
+   },
+   "4": {
+    "count": 16,
+    "n404": 0,
+    "total_ms": 1486.4412999995693
+   },
+   "5": {
+    "count": 36,
+    "n404": 0,
+    "total_ms": 3409.153299999616
+   },
+   "6": {
+    "count": 53,
+    "n404": 0,
+    "total_ms": 5361.7077999999765
+   },
+   "7": {
+    "count": 76,
+    "n404": 0,
+    "total_ms": 7470.61069999927
+   },
+   "8": {
+    "count": 76,
+    "n404": 0,
+    "total_ms": 6957.837999999356
+   },
+   "9": {
+    "count": 84,
+    "n404": 0,
+    "total_ms": 9139.486900000065
+   }
+  },
+  "count": 353,
+  "max_ms": 236.91420000000107,
+  "mean_ms": 99.33907082152488,
+  "p50_ms": 87.8983000000062,
+  "p95_ms": 187.9898999998204
+ },
+ "raw": {
+  "frameDtsMs": [
+   15.20000000006985,
+   1.5,
+   2.099999999976717,
+   0.6999999999534339,
+   0.7000000000698492,
+   0.6999999999534339,
+   155.19999999995343,
+   12.5,
+   1.400000000023283,
+   1,
+   0.9000000000232831,
+   1.099999999976717,
+   0.7000000000698492,
+   0.7999999999301508,
+   1,
+   0.8000000000465661,
+   1.099999999976717,
+   1.099999999976717,
+   0.5999999999767169,
+   1,
+   0.6000000000931323,
+   259.89999999990687,
+   2.700000000069849,
+   7.299999999930151,
+   1.1000000000931323,
+   4.399999999906868,
+   0.6000000000931323,
+   2.099999999976717,
+   1.5,
+   1.1999999999534339,
+   1.3000000000465661,
+   13570,
+   3.799999999930151,
+   3.6000000000931323,
+   1.5,
+   0.8999999999068677,
+   1.6000000000931323,
+   37,
+   6875.599999999977
+  ],
+  "gpuFrameTimesMs": [],
+  "jsFrameTimesMs": [
+   0.6000000000931323,
+   0.5,
+   0.5,
+   0.4000000001396984,
+   0.39999999990686774,
+   0.8000000000465661,
+   0.7000000001862645,
+   0.6999999999534339,
+   0.6000000000931323,
+   0.7000000001862645,
+   0.5,
+   0.6000000000931323,
+   0.5,
+   0.6999999999534339,
+   0.5999999998603016,
+   0.5999999998603016,
+   0.5,
+   0.7000000001862645,
+   0.5,
+   0.5,
+   0.8000000000465661,
+   6.699999999953434,
+   0.6999999999534339,
+   0.6000000000931323,
+   0.5999999998603016,
+   0.9000000001396984,
+   0.7999999998137355,
+   0.7000000001862645,
+   0.6999999999534339,
+   0.8000000000465661,
+   13317,
+   0.6999999999534339,
+   0.8000000000465661,
+   0.5999999998603016,
+   0.5999999998603016,
+   1.1999999999534339,
+   43.0999999998603,
+   1,
+   0.7000000001862645
+  ],
+  "loadCurve": [
+   {
+    "t": 242,
+    "chunksResident": 4,
+    "wsBytes": 11223128,
+    "wsMessages": 11,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 248521097
+   },
+   {
+    "t": 656,
+    "chunksResident": 10,
+    "wsBytes": 13189224,
+    "wsMessages": 13,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 486308501
+   },
+   {
+    "t": 962,
+    "chunksResident": 10,
+    "wsBytes": 14172272,
+    "wsMessages": 14,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 247627409
+   },
+   {
+    "t": 1200,
+    "chunksResident": 10,
+    "wsBytes": 15155320,
+    "wsMessages": 15,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 250934009
+   },
+   {
+    "t": 1624,
+    "chunksResident": 10,
+    "wsBytes": 17121416,
+    "wsMessages": 17,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 498633041
+   },
+   {
+    "t": 1876,
+    "chunksResident": 10,
+    "wsBytes": 18104464,
+    "wsMessages": 18,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 260439045
+   },
+   {
+    "t": 2104,
+    "chunksResident": 10,
+    "wsBytes": 19087512,
+    "wsMessages": 19,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 262561237
+   },
+   {
+    "t": 2372,
+    "chunksResident": 13,
+    "wsBytes": 20070560,
+    "wsMessages": 20,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 261176973
+   },
+   {
+    "t": 2670,
+    "chunksResident": 16,
+    "wsBytes": 21053608,
+    "wsMessages": 21,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 257261181
+   },
+   {
+    "t": 2911,
+    "chunksResident": 16,
+    "wsBytes": 22036656,
+    "wsMessages": 22,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 89916269
+   },
+   {
+    "t": 3159,
+    "chunksResident": 16,
+    "wsBytes": 23019704,
+    "wsMessages": 23,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 261140909
+   },
+   {
+    "t": 3399,
+    "chunksResident": 16,
+    "wsBytes": 24002752,
+    "wsMessages": 24,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 262816049
+   },
+   {
+    "t": 3675,
+    "chunksResident": 19,
+    "wsBytes": 24985800,
+    "wsMessages": 25,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 270069417
+   },
+   {
+    "t": 3936,
+    "chunksResident": 19,
+    "wsBytes": 25968848,
+    "wsMessages": 26,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 269808937
+   },
+   {
+    "t": 4170,
+    "chunksResident": 19,
+    "wsBytes": 26951896,
+    "wsMessages": 27,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 267207213
+   },
+   {
+    "t": 4386,
+    "chunksResident": 19,
+    "wsBytes": 27934944,
+    "wsMessages": 28,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 598102581
+   },
+   {
+    "t": 4655,
+    "chunksResident": 19,
+    "wsBytes": 28917992,
+    "wsMessages": 29,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 322597421
+   },
+   {
+    "t": 4929,
+    "chunksResident": 22,
+    "wsBytes": 29901040,
+    "wsMessages": 30,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 154937365
+   },
+   {
+    "t": 5184,
+    "chunksResident": 22,
+    "wsBytes": 30884088,
+    "wsMessages": 31,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 274731613
+   },
+   {
+    "t": 5450,
+    "chunksResident": 22,
+    "wsBytes": 31867136,
+    "wsMessages": 32,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 281961637
+   },
+   {
+    "t": 5697,
+    "chunksResident": 25,
+    "wsBytes": 32850184,
+    "wsMessages": 33,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 284420077
+   },
+   {
+    "t": 5899,
+    "chunksResident": 25,
+    "wsBytes": 33833232,
+    "wsMessages": 34,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 54300577
+   },
+   {
+    "t": 6147,
+    "chunksResident": 25,
+    "wsBytes": 34816280,
+    "wsMessages": 35,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 280038813
+   },
+   {
+    "t": 6387,
+    "chunksResident": 25,
+    "wsBytes": 35799328,
+    "wsMessages": 36,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 281844133
+   },
+   {
+    "t": 6671,
+    "chunksResident": 28,
+    "wsBytes": 36782376,
+    "wsMessages": 37,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 288993117
+   },
+   {
+    "t": 6877,
+    "chunksResident": 28,
+    "wsBytes": 37765424,
+    "wsMessages": 38,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 60599621
+   },
+   {
+    "t": 7250,
+    "chunksResident": 28,
+    "wsBytes": 39731520,
+    "wsMessages": 40,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 538420381
+   },
+   {
+    "t": 7538,
+    "chunksResident": 31,
+    "wsBytes": 40714568,
+    "wsMessages": 41,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 290103405
+   },
+   {
+    "t": 7817,
+    "chunksResident": 31,
+    "wsBytes": 41697616,
+    "wsMessages": 42,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 296838373
+   },
+   {
+    "t": 8057,
+    "chunksResident": 31,
+    "wsBytes": 42680664,
+    "wsMessages": 43,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 289246501
+   },
+   {
+    "t": 8281,
+    "chunksResident": 31,
+    "wsBytes": 43663712,
+    "wsMessages": 44,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 623494737
+   },
+   {
+    "t": 8574,
+    "chunksResident": 34,
+    "wsBytes": 44646760,
+    "wsMessages": 45,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 295832977
+   },
+   {
+    "t": 8823,
+    "chunksResident": 34,
+    "wsBytes": 45629808,
+    "wsMessages": 46,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 295503053
+   },
+   {
+    "t": 9063,
+    "chunksResident": 34,
+    "wsBytes": 46612856,
+    "wsMessages": 47,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 629341553
+   },
+   {
+    "t": 9327,
+    "chunksResident": 34,
+    "wsBytes": 47595904,
+    "wsMessages": 48,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 357835585
+   },
+   {
+    "t": 9585,
+    "chunksResident": 37,
+    "wsBytes": 48578952,
+    "wsMessages": 49,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 184838189
+   },
+   {
+    "t": 9804,
+    "chunksResident": 37,
+    "wsBytes": 49562000,
+    "wsMessages": 50,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 309918997
+   },
+   {
+    "t": 10042,
+    "chunksResident": 37,
+    "wsBytes": 50545048,
+    "wsMessages": 51,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 299139885
+   },
+   {
+    "t": 10289,
+    "chunksResident": 37,
+    "wsBytes": 51528096,
+    "wsMessages": 52,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 137180641
+   },
+   {
+    "t": 10521,
+    "chunksResident": 40,
+    "wsBytes": 52511144,
+    "wsMessages": 53,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 365785885
+   },
+   {
+    "t": 10811,
+    "chunksResident": 40,
+    "wsBytes": 53494192,
+    "wsMessages": 54,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 192716625
+   },
+   {
+    "t": 11034,
+    "chunksResident": 40,
+    "wsBytes": 54477240,
+    "wsMessages": 55,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 317668749
+   },
+   {
+    "t": 11294,
+    "chunksResident": 40,
+    "wsBytes": 55460288,
+    "wsMessages": 56,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 310002681
+   },
+   {
+    "t": 11534,
+    "chunksResident": 43,
+    "wsBytes": 56443336,
+    "wsMessages": 57,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 644188593
+   },
+   {
+    "t": 11829,
+    "chunksResident": 43,
+    "wsBytes": 57426384,
+    "wsMessages": 58,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 321766537
+   },
+   {
+    "t": 12082,
+    "chunksResident": 43,
+    "wsBytes": 58409432,
+    "wsMessages": 59,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 314473729
+   },
+   {
+    "t": 12324,
+    "chunksResident": 43,
+    "wsBytes": 59392480,
+    "wsMessages": 60,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 648575353
+   },
+   {
+    "t": 12607,
+    "chunksResident": 46,
+    "wsBytes": 60375528,
+    "wsMessages": 61,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 378384193
+   },
+   {
+    "t": 12899,
+    "chunksResident": 46,
+    "wsBytes": 61358576,
+    "wsMessages": 62,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 205314377
+   },
+   {
+    "t": 13150,
+    "chunksResident": 46,
+    "wsBytes": 62341624,
+    "wsMessages": 63,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 330382205
+   },
+   {
+    "t": 13422,
+    "chunksResident": 46,
+    "wsBytes": 63324672,
+    "wsMessages": 64,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 322801757
+   },
+   {
+    "t": 13665,
+    "chunksResident": 49,
+    "wsBytes": 64307720,
+    "wsMessages": 65,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 657025361
+   },
+   {
+    "t": 13946,
+    "chunksResident": 49,
+    "wsBytes": 65290768,
+    "wsMessages": 66,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 334375873
+   },
+   {
+    "t": 14206,
+    "chunksResident": 49,
+    "wsBytes": 66273816,
+    "wsMessages": 67,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 330745229
+   },
+   {
+    "t": 14485,
+    "chunksResident": 49,
+    "wsBytes": 67256864,
+    "wsMessages": 68,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 334791001
+   },
+   {
+    "t": 14729,
+    "chunksResident": 52,
+    "wsBytes": 68239912,
+    "wsMessages": 69,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 322857849
+   },
+   {
+    "t": 14946,
+    "chunksResident": 52,
+    "wsBytes": 69222960,
+    "wsMessages": 70,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 667010721
+   },
+   {
+    "t": 15203,
+    "chunksResident": 52,
+    "wsBytes": 70206008,
+    "wsMessages": 71,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 342320297
+   },
+   {
+    "t": 15441,
+    "chunksResident": 52,
+    "wsBytes": 71189056,
+    "wsMessages": 72,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 338571513
+   },
+   {
+    "t": 15695,
+    "chunksResident": 55,
+    "wsBytes": 72172104,
+    "wsMessages": 73,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 338621601
+   },
+   {
+    "t": 15928,
+    "chunksResident": 55,
+    "wsBytes": 73155152,
+    "wsMessages": 74,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 672256681
+   },
+   {
+    "t": 16195,
+    "chunksResident": 55,
+    "wsBytes": 74138200,
+    "wsMessages": 75,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 348584221
+   },
+   {
+    "t": 16438,
+    "chunksResident": 55,
+    "wsBytes": 75121248,
+    "wsMessages": 76,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 345037137
+   },
+   {
+    "t": 16670,
+    "chunksResident": 58,
+    "wsBytes": 76104296,
+    "wsMessages": 77,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 344852769
+   },
+   {
+    "t": 16904,
+    "chunksResident": 58,
+    "wsBytes": 77087344,
+    "wsMessages": 78,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 678607485
+   },
+   {
+    "t": 17196,
+    "chunksResident": 58,
+    "wsBytes": 78070392,
+    "wsMessages": 79,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 342297045
+   },
+   {
+    "t": 17424,
+    "chunksResident": 58,
+    "wsBytes": 79053440,
+    "wsMessages": 80,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 691268389
+   },
+   {
+    "t": 17726,
+    "chunksResident": 61,
+    "wsBytes": 80036488,
+    "wsMessages": 81,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 344124721
+   },
+   {
+    "t": 17944,
+    "chunksResident": 61,
+    "wsBytes": 81019536,
+    "wsMessages": 82,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 692996205
+   },
+   {
+    "t": 18221,
+    "chunksResident": 61,
+    "wsBytes": 82002584,
+    "wsMessages": 83,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 361047217
+   },
+   {
+    "t": 18469,
+    "chunksResident": 61,
+    "wsBytes": 82985632,
+    "wsMessages": 84,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 353575373
+   },
+   {
+    "t": 18691,
+    "chunksResident": 64,
+    "wsBytes": 83968680,
+    "wsMessages": 85,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 688083933
+   },
+   {
+    "t": 18967,
+    "chunksResident": 64,
+    "wsBytes": 84951728,
+    "wsMessages": 86,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 365956109
+   },
+   {
+    "t": 19226,
+    "chunksResident": 64,
+    "wsBytes": 85934776,
+    "wsMessages": 87,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 362418929
+   },
+   {
+    "t": 19489,
+    "chunksResident": 64,
+    "wsBytes": 86917824,
+    "wsMessages": 88,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 348585597
+   },
+   {
+    "t": 19716,
+    "chunksResident": 67,
+    "wsBytes": 87900872,
+    "wsMessages": 89,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 691265037
+   },
+   {
+    "t": 19995,
+    "chunksResident": 67,
+    "wsBytes": 88883920,
+    "wsMessages": 90,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 422572473
+   },
+   {
+    "t": 20265,
+    "chunksResident": 67,
+    "wsBytes": 89866968,
+    "wsMessages": 91,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 250944289
+   },
+   {
+    "t": 20507,
+    "chunksResident": 67,
+    "wsBytes": 90850016,
+    "wsMessages": 92,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 376251257
+   },
+   {
+    "t": 20759,
+    "chunksResident": 70,
+    "wsBytes": 91833064,
+    "wsMessages": 93,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 368372457
+   },
+   {
+    "t": 20987,
+    "chunksResident": 70,
+    "wsBytes": 92816112,
+    "wsMessages": 94,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 702386281
+   },
+   {
+    "t": 21263,
+    "chunksResident": 70,
+    "wsBytes": 93799160,
+    "wsMessages": 95,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 380221769
+   },
+   {
+    "t": 21518,
+    "chunksResident": 70,
+    "wsBytes": 94782208,
+    "wsMessages": 96,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 372346817
+   },
+   {
+    "t": 21739,
+    "chunksResident": 73,
+    "wsBytes": 95765256,
+    "wsMessages": 97,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 706838189
+   },
+   {
+    "t": 22028,
+    "chunksResident": 73,
+    "wsBytes": 96748304,
+    "wsMessages": 98,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 371018045
+   },
+   {
+    "t": 22262,
+    "chunksResident": 73,
+    "wsBytes": 97731352,
+    "wsMessages": 99,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 720177233
+   },
+   {
+    "t": 22549,
+    "chunksResident": 73,
+    "wsBytes": 98714400,
+    "wsMessages": 100,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 387821725
+   },
+   {
+    "t": 22805,
+    "chunksResident": 76,
+    "wsBytes": 99697448,
+    "wsMessages": 101,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 380717585
+   },
+   {
+    "t": 23039,
+    "chunksResident": 76,
+    "wsBytes": 100680496,
+    "wsMessages": 102,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 714842989
+   },
+   {
+    "t": 23311,
+    "chunksResident": 76,
+    "wsBytes": 101663544,
+    "wsMessages": 103,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 392628133
+   },
+   {
+    "t": 23561,
+    "chunksResident": 76,
+    "wsBytes": 102646592,
+    "wsMessages": 104,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 385315177
+   },
+   {
+    "t": 23798,
+    "chunksResident": 79,
+    "wsBytes": 103629640,
+    "wsMessages": 105,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 719638261
+   },
+   {
+    "t": 24087,
+    "chunksResident": 79,
+    "wsBytes": 104612688,
+    "wsMessages": 106,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 274636697
+   },
+   {
+    "t": 24317,
+    "chunksResident": 79,
+    "wsBytes": 105595736,
+    "wsMessages": 107,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 399967137
+   },
+   {
+    "t": 24564,
+    "chunksResident": 79,
+    "wsBytes": 106578784,
+    "wsMessages": 108,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 392121317
+   },
+   {
+    "t": 24800,
+    "chunksResident": 82,
+    "wsBytes": 107561832,
+    "wsMessages": 109,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 726295289
+   },
+   {
+    "t": 25069,
+    "chunksResident": 82,
+    "wsBytes": 108544880,
+    "wsMessages": 110,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 403850457
+   },
+   {
+    "t": 25331,
+    "chunksResident": 82,
+    "wsBytes": 109527928,
+    "wsMessages": 111,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 396265093
+   },
+   {
+    "t": 25558,
+    "chunksResident": 82,
+    "wsBytes": 110510976,
+    "wsMessages": 112,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 730640421
+   },
+   {
+    "t": 25855,
+    "chunksResident": 85,
+    "wsBytes": 111494024,
+    "wsMessages": 113,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 394785669
+   },
+   {
+    "t": 26082,
+    "chunksResident": 85,
+    "wsBytes": 112477072,
+    "wsMessages": 114,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 743819009
+   },
+   {
+    "t": 26374,
+    "chunksResident": 85,
+    "wsBytes": 113460120,
+    "wsMessages": 115,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 288846493
+   },
+   {
+    "t": 26625,
+    "chunksResident": 85,
+    "wsBytes": 114443168,
+    "wsMessages": 116,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 414099625
+   },
+   {
+    "t": 26891,
+    "chunksResident": 88,
+    "wsBytes": 115426216,
+    "wsMessages": 117,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 405711289
+   },
+   {
+    "t": 27122,
+    "chunksResident": 88,
+    "wsBytes": 116409264,
+    "wsMessages": 118,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 739846733
+   },
+   {
+    "t": 27411,
+    "chunksResident": 88,
+    "wsBytes": 117392312,
+    "wsMessages": 119,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 403091265
+   },
+   {
+    "t": 27638,
+    "chunksResident": 88,
+    "wsBytes": 118375360,
+    "wsMessages": 120,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 754285457
+   },
+   {
+    "t": 27925,
+    "chunksResident": 91,
+    "wsBytes": 119358408,
+    "wsMessages": 121,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 420831665
+   },
+   {
+    "t": 28172,
+    "chunksResident": 91,
+    "wsBytes": 120341456,
+    "wsMessages": 122,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 413423757
+   },
+   {
+    "t": 28412,
+    "chunksResident": 91,
+    "wsBytes": 121324504,
+    "wsMessages": 123,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 747914769
+   },
+   {
+    "t": 28684,
+    "chunksResident": 91,
+    "wsBytes": 122307552,
+    "wsMessages": 124,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 425798829
+   },
+   {
+    "t": 28947,
+    "chunksResident": 94,
+    "wsBytes": 123290600,
+    "wsMessages": 125,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 418344941
+   },
+   {
+    "t": 29194,
+    "chunksResident": 94,
+    "wsBytes": 124273648,
+    "wsMessages": 126,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 752619445
+   },
+   {
+    "t": 29473,
+    "chunksResident": 94,
+    "wsBytes": 125256696,
+    "wsMessages": 127,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 430394137
+   },
+   {
+    "t": 29738,
+    "chunksResident": 94,
+    "wsBytes": 126239744,
+    "wsMessages": 128,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 423109209
+   },
+   {
+    "t": 29980,
+    "chunksResident": 97,
+    "wsBytes": 127222792,
+    "wsMessages": 129,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 757546493
+   },
+   {
+    "t": 30284,
+    "chunksResident": 97,
+    "wsBytes": 128205840,
+    "wsMessages": 130,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 312356365
+   },
+   {
+    "t": 30523,
+    "chunksResident": 97,
+    "wsBytes": 129188888,
+    "wsMessages": 131,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 437604637
+   },
+   {
+    "t": 30788,
+    "chunksResident": 97,
+    "wsBytes": 130171936,
+    "wsMessages": 132,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 433162389
+   },
+   {
+    "t": 31050,
+    "chunksResident": 100,
+    "wsBytes": 131154984,
+    "wsMessages": 133,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 317123893
+   },
+   {
+    "t": 31303,
+    "chunksResident": 100,
+    "wsBytes": 132138032,
+    "wsMessages": 134,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 442446961
+   },
+   {
+    "t": 31562,
+    "chunksResident": 100,
+    "wsBytes": 133121080,
+    "wsMessages": 135,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 434014985
+   },
+   {
+    "t": 31812,
+    "chunksResident": 100,
+    "wsBytes": 134104128,
+    "wsMessages": 136,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 772063333
+   },
+   {
+    "t": 32107,
+    "chunksResident": 103,
+    "wsBytes": 135087176,
+    "wsMessages": 137,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 495671457
+   },
+   {
+    "t": 32386,
+    "chunksResident": 103,
+    "wsBytes": 136070224,
+    "wsMessages": 138,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 272574165
+   },
+   {
+    "t": 32644,
+    "chunksResident": 103,
+    "wsBytes": 137053272,
+    "wsMessages": 139,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 449794729
+   },
+   {
+    "t": 32896,
+    "chunksResident": 103,
+    "wsBytes": 138036320,
+    "wsMessages": 140,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 440431589
+   },
+   {
+    "t": 33149,
+    "chunksResident": 106,
+    "wsBytes": 139019368,
+    "wsMessages": 141,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 778834993
+   },
+   {
+    "t": 33446,
+    "chunksResident": 106,
+    "wsBytes": 140002416,
+    "wsMessages": 142,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 454199653
+   },
+   {
+    "t": 33707,
+    "chunksResident": 106,
+    "wsBytes": 140985464,
+    "wsMessages": 143,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 446328105
+   },
+   {
+    "t": 33927,
+    "chunksResident": 106,
+    "wsBytes": 141968512,
+    "wsMessages": 144,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 780663721
+   },
+   {
+    "t": 34210,
+    "chunksResident": 109,
+    "wsBytes": 142951560,
+    "wsMessages": 145,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 509615101
+   },
+   {
+    "t": 34487,
+    "chunksResident": 109,
+    "wsBytes": 143934608,
+    "wsMessages": 146,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 337544397
+   },
+   {
+    "t": 34743,
+    "chunksResident": 109,
+    "wsBytes": 144917656,
+    "wsMessages": 147,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 462868205
+   },
+   {
+    "t": 35005,
+    "chunksResident": 109,
+    "wsBytes": 145900704,
+    "wsMessages": 148,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 439735097
+   },
+   {
+    "t": 35245,
+    "chunksResident": 112,
+    "wsBytes": 146883752,
+    "wsMessages": 149,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 785678637
+   },
+   {
+    "t": 35520,
+    "chunksResident": 112,
+    "wsBytes": 147866800,
+    "wsMessages": 150,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 462942937
+   },
+   {
+    "t": 35772,
+    "chunksResident": 112,
+    "wsBytes": 148849848,
+    "wsMessages": 151,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 462483269
+   },
+   {
+    "t": 36007,
+    "chunksResident": 112,
+    "wsBytes": 149832896,
+    "wsMessages": 152,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 796016633
+   },
+   {
+    "t": 36307,
+    "chunksResident": 115,
+    "wsBytes": 150815944,
+    "wsMessages": 153,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 296371885
+   },
+   {
+    "t": 36552,
+    "chunksResident": 115,
+    "wsBytes": 151798992,
+    "wsMessages": 154,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 473257813
+   },
+   {
+    "t": 36801,
+    "chunksResident": 115,
+    "wsBytes": 152782040,
+    "wsMessages": 155,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 465540737
+   },
+   {
+    "t": 37035,
+    "chunksResident": 115,
+    "wsBytes": 153765088,
+    "wsMessages": 156,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 803791893
+   },
+   {
+    "t": 37346,
+    "chunksResident": 118,
+    "wsBytes": 154748136,
+    "wsMessages": 157,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 354951533
+   },
+   {
+    "t": 37588,
+    "chunksResident": 118,
+    "wsBytes": 155731184,
+    "wsMessages": 158,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 480554865
+   },
+   {
+    "t": 37843,
+    "chunksResident": 118,
+    "wsBytes": 156714232,
+    "wsMessages": 159,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 471934265
+   },
+   {
+    "t": 38082,
+    "chunksResident": 118,
+    "wsBytes": 157697280,
+    "wsMessages": 160,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 806479341
+   },
+   {
+    "t": 38371,
+    "chunksResident": 121,
+    "wsBytes": 158680328,
+    "wsMessages": 161,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 535106233
+   },
+   {
+    "t": 38665,
+    "chunksResident": 121,
+    "wsBytes": 159663376,
+    "wsMessages": 162,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 362734705
+   },
+   {
+    "t": 38905,
+    "chunksResident": 121,
+    "wsBytes": 160646424,
+    "wsMessages": 163,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 488151325
+   },
+   {
+    "t": 39165,
+    "chunksResident": 121,
+    "wsBytes": 161629472,
+    "wsMessages": 164,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 479618561
+   },
+   {
+    "t": 39419,
+    "chunksResident": 124,
+    "wsBytes": 162612520,
+    "wsMessages": 165,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 814347273
+   },
+   {
+    "t": 39716,
+    "chunksResident": 124,
+    "wsBytes": 163595568,
+    "wsMessages": 166,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 543193801
+   },
+   {
+    "t": 40023,
+    "chunksResident": 124,
+    "wsBytes": 164578616,
+    "wsMessages": 167,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 318228137
+   },
+   {
+    "t": 40289,
+    "chunksResident": 124,
+    "wsBytes": 165561664,
+    "wsMessages": 168,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 495277157
+   },
+   {
+    "t": 40577,
+    "chunksResident": 127,
+    "wsBytes": 166544712,
+    "wsMessages": 169,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 488013893
+   },
+   {
+    "t": 40832,
+    "chunksResident": 127,
+    "wsBytes": 167527760,
+    "wsMessages": 170,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 822338073
+   },
+   {
+    "t": 41124,
+    "chunksResident": 127,
+    "wsBytes": 168510808,
+    "wsMessages": 171,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 551070681
+   },
+   {
+    "t": 41415,
+    "chunksResident": 127,
+    "wsBytes": 169493856,
+    "wsMessages": 172,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 326206173
+   },
+   {
+    "t": 41686,
+    "chunksResident": 130,
+    "wsBytes": 170476904,
+    "wsMessages": 173,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 503204801
+   },
+   {
+    "t": 41959,
+    "chunksResident": 130,
+    "wsBytes": 171459952,
+    "wsMessages": 174,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 495707005
+   },
+   {
+    "t": 42208,
+    "chunksResident": 130,
+    "wsBytes": 172443000,
+    "wsMessages": 175,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 829909517
+   },
+   {
+    "t": 42499,
+    "chunksResident": 130,
+    "wsBytes": 173426048,
+    "wsMessages": 176,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 558458557
+   },
+   {
+    "t": 42803,
+    "chunksResident": 133,
+    "wsBytes": 174409096,
+    "wsMessages": 177,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 334079889
+   },
+   {
+    "t": 43069,
+    "chunksResident": 133,
+    "wsBytes": 175392144,
+    "wsMessages": 178,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 511486209
+   },
+   {
+    "t": 43318,
+    "chunksResident": 133,
+    "wsBytes": 176375192,
+    "wsMessages": 179,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 445083937
+   },
+   {
+    "t": 43609,
+    "chunksResident": 133,
+    "wsBytes": 177358240,
+    "wsMessages": 180,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 514882157
+   },
+   {
+    "t": 43893,
+    "chunksResident": 136,
+    "wsBytes": 178341288,
+    "wsMessages": 181,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 491904429
+   },
+   {
+    "t": 44150,
+    "chunksResident": 136,
+    "wsBytes": 179324336,
+    "wsMessages": 182,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 837919949
+   },
+   {
+    "t": 44452,
+    "chunksResident": 136,
+    "wsBytes": 180307384,
+    "wsMessages": 183,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 515382769
+   },
+   {
+    "t": 44729,
+    "chunksResident": 136,
+    "wsBytes": 181290432,
+    "wsMessages": 184,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 503043817
+   },
+   {
+    "t": 44988,
+    "chunksResident": 139,
+    "wsBytes": 182273480,
+    "wsMessages": 185,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 855198709
+   },
+   {
+    "t": 45287,
+    "chunksResident": 139,
+    "wsBytes": 183256528,
+    "wsMessages": 186,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 569499093
+   },
+   {
+    "t": 45578,
+    "chunksResident": 139,
+    "wsBytes": 184239576,
+    "wsMessages": 187,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 349727709
+   },
+   {
+    "t": 45852,
+    "chunksResident": 139,
+    "wsBytes": 185222624,
+    "wsMessages": 188,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 526967393
+   },
+   {
+    "t": 46138,
+    "chunksResident": 142,
+    "wsBytes": 186205672,
+    "wsMessages": 189,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 503738521
+   },
+   {
+    "t": 46407,
+    "chunksResident": 142,
+    "wsBytes": 187188720,
+    "wsMessages": 190,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 849905465
+   },
+   {
+    "t": 46740,
+    "chunksResident": 142,
+    "wsBytes": 188171768,
+    "wsMessages": 191,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 356025633
+   },
+   {
+    "t": 47010,
+    "chunksResident": 142,
+    "wsBytes": 189154816,
+    "wsMessages": 192,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 533225261
+   },
+   {
+    "t": 47301,
+    "chunksResident": 145,
+    "wsBytes": 190137864,
+    "wsMessages": 193,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 510494521
+   },
+   {
+    "t": 47576,
+    "chunksResident": 145,
+    "wsBytes": 191120912,
+    "wsMessages": 194,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 856622377
+   },
+   {
+    "t": 47869,
+    "chunksResident": 145,
+    "wsBytes": 192103960,
+    "wsMessages": 195,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 362324505
+   },
+   {
+    "t": 48159,
+    "chunksResident": 145,
+    "wsBytes": 193087008,
+    "wsMessages": 196,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 539784937
+   },
+   {
+    "t": 48476,
+    "chunksResident": 148,
+    "wsBytes": 194070056,
+    "wsMessages": 197,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 516726249
+   },
+   {
+    "t": 48747,
+    "chunksResident": 148,
+    "wsBytes": 195053104,
+    "wsMessages": 198,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 862865381
+   },
+   {
+    "t": 49062,
+    "chunksResident": 148,
+    "wsBytes": 196036152,
+    "wsMessages": 199,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 368649249
+   },
+   {
+    "t": 49338,
+    "chunksResident": 148,
+    "wsBytes": 197019200,
+    "wsMessages": 200,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 545679485
+   },
+   {
+    "t": 49655,
+    "chunksResident": 151,
+    "wsBytes": 198002248,
+    "wsMessages": 201,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 521723149
+   },
+   {
+    "t": 49914,
+    "chunksResident": 151,
+    "wsBytes": 198985296,
+    "wsMessages": 202,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 849201141
+   },
+   {
+    "t": 50247,
+    "chunksResident": 151,
+    "wsBytes": 199968344,
+    "wsMessages": 203,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 374918969
+   },
+   {
+    "t": 50540,
+    "chunksResident": 151,
+    "wsBytes": 200951392,
+    "wsMessages": 204,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 552253529
+   },
+   {
+    "t": 50867,
+    "chunksResident": 154,
+    "wsBytes": 201934440,
+    "wsMessages": 205,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 543537361
+   },
+   {
+    "t": 51146,
+    "chunksResident": 154,
+    "wsBytes": 202917488,
+    "wsMessages": 206,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 881831629
+   },
+   {
+    "t": 51561,
+    "chunksResident": 154,
+    "wsBytes": 203900536,
+    "wsMessages": 207,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 605618173
+   },
+   {
+    "t": 51881,
+    "chunksResident": 154,
+    "wsBytes": 204883584,
+    "wsMessages": 208,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 382919841
+   },
+   {
+    "t": 52261,
+    "chunksResident": 157,
+    "wsBytes": 205866632,
+    "wsMessages": 209,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 560216421
+   },
+   {
+    "t": 52965,
+    "chunksResident": 157,
+    "wsBytes": 205866632,
+    "wsMessages": 209,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 560932497
+   },
+   {
+    "t": 53253,
+    "chunksResident": 157,
+    "wsBytes": 206849680,
+    "wsMessages": 210,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 536271593
+   },
+   {
+    "t": 53659,
+    "chunksResident": 157,
+    "wsBytes": 206849680,
+    "wsMessages": 210,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 536792033
+   },
+   {
+    "t": 54575,
+    "chunksResident": 157,
+    "wsBytes": 207832728,
+    "wsMessages": 211,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 882666457
+   },
+   {
+    "t": 54897,
+    "chunksResident": 157,
+    "wsBytes": 208815776,
+    "wsMessages": 212,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 389088193
+   },
+   {
+    "t": 55447,
+    "chunksResident": 157,
+    "wsBytes": 208815776,
+    "wsMessages": 212,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 389670105
+   },
+   {
+    "t": 55724,
+    "chunksResident": 160,
+    "wsBytes": 209798824,
+    "wsMessages": 213,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 566307685
+   },
+   {
+    "t": 56462,
+    "chunksResident": 160,
+    "wsBytes": 209798824,
+    "wsMessages": 213,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 567177529
+   },
+   {
+    "t": 56737,
+    "chunksResident": 160,
+    "wsBytes": 210781872,
+    "wsMessages": 214,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 543002133
+   },
+   {
+    "t": 57380,
+    "chunksResident": 160,
+    "wsBytes": 210781872,
+    "wsMessages": 214,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 544007877
+   },
+   {
+    "t": 57621,
+    "chunksResident": 160,
+    "wsBytes": 211764920,
+    "wsMessages": 215,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 889226153
+   },
+   {
+    "t": 58283,
+    "chunksResident": 160,
+    "wsBytes": 211764920,
+    "wsMessages": 215,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 889850021
+   },
+   {
+    "t": 59586,
+    "chunksResident": 160,
+    "wsBytes": 212747968,
+    "wsMessages": 216,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 395386773
+   },
+   {
+    "t": 60337,
+    "chunksResident": 163,
+    "wsBytes": 213731016,
+    "wsMessages": 217,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 572848241
+   },
+   {
+    "t": 60697,
+    "chunksResident": 163,
+    "wsBytes": 214714064,
+    "wsMessages": 218,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 548103757
+   },
+   {
+    "t": 61978,
+    "chunksResident": 163,
+    "wsBytes": 214714064,
+    "wsMessages": 218,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 548708469
+   },
+   {
+    "t": 63104,
+    "chunksResident": 163,
+    "wsBytes": 215697112,
+    "wsMessages": 219,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 902563657
+   },
+   {
+    "t": 63838,
+    "chunksResident": 163,
+    "wsBytes": 215697112,
+    "wsMessages": 219,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 876427749
+   },
+   {
+    "t": 64124,
+    "chunksResident": 163,
+    "wsBytes": 216680160,
+    "wsMessages": 220,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 401685041
+   },
+   {
+    "t": 65180,
+    "chunksResident": 166,
+    "wsBytes": 217663208,
+    "wsMessages": 221,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 579192413
+   },
+   {
+    "t": 66599,
+    "chunksResident": 166,
+    "wsBytes": 217663208,
+    "wsMessages": 221,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 580382689
+   },
+   {
+    "t": 66867,
+    "chunksResident": 166,
+    "wsBytes": 218646256,
+    "wsMessages": 222,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 555831889
+   },
+   {
+    "t": 68537,
+    "chunksResident": 166,
+    "wsBytes": 219629304,
+    "wsMessages": 223,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 901922589
+   },
+   {
+    "t": 69543,
+    "chunksResident": 166,
+    "wsBytes": 219629304,
+    "wsMessages": 223,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 903524385
+   },
+   {
+    "t": 69846,
+    "chunksResident": 166,
+    "wsBytes": 220612352,
+    "wsMessages": 224,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 407982557
+   },
+   {
+    "t": 71249,
+    "chunksResident": 169,
+    "wsBytes": 221595400,
+    "wsMessages": 225,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 585417361
+   },
+   {
+    "t": 72780,
+    "chunksResident": 169,
+    "wsBytes": 221595400,
+    "wsMessages": 225,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 585709229
+   },
+   {
+    "t": 73061,
+    "chunksResident": 169,
+    "wsBytes": 222578448,
+    "wsMessages": 226,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 562438693
+   },
+   {
+    "t": 74420,
+    "chunksResident": 169,
+    "wsBytes": 222578448,
+    "wsMessages": 226,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 563646561
+   },
+   {
+    "t": 74656,
+    "chunksResident": 169,
+    "wsBytes": 223561496,
+    "wsMessages": 227,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 908397393
+   },
+   {
+    "t": 75920,
+    "chunksResident": 169,
+    "wsBytes": 223561496,
+    "wsMessages": 227,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 909782089
+   },
+   {
+    "t": 76201,
+    "chunksResident": 169,
+    "wsBytes": 224544544,
+    "wsMessages": 228,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 414291141
+   },
+   {
+    "t": 77786,
+    "chunksResident": 172,
+    "wsBytes": 225527592,
+    "wsMessages": 229,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 591664613
+   },
+   {
+    "t": 79232,
+    "chunksResident": 172,
+    "wsBytes": 225527592,
+    "wsMessages": 229,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 592970929
+   },
+   {
+    "t": 79507,
+    "chunksResident": 172,
+    "wsBytes": 226510640,
+    "wsMessages": 230,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 567412449
+   },
+   {
+    "t": 81264,
+    "chunksResident": 172,
+    "wsBytes": 227493688,
+    "wsMessages": 231,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 894834661
+   },
+   {
+    "t": 81626,
+    "chunksResident": 172,
+    "wsBytes": 228476736,
+    "wsMessages": 232,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 420589425
+   },
+   {
+    "t": 83384,
+    "chunksResident": 172,
+    "wsBytes": 228476736,
+    "wsMessages": 232,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 421057573
+   },
+   {
+    "t": 86149,
+    "chunksResident": 175,
+    "wsBytes": 229459784,
+    "wsMessages": 233,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 597842861
+   },
+   {
+    "t": 87927,
+    "chunksResident": 175,
+    "wsBytes": 229459784,
+    "wsMessages": 233,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 572941669
+   },
+   {
+    "t": 88195,
+    "chunksResident": 175,
+    "wsBytes": 230442832,
+    "wsMessages": 234,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 531668721
+   },
+   {
+    "t": 89870,
+    "chunksResident": 175,
+    "wsBytes": 230442832,
+    "wsMessages": 234,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 477600829
+   },
+   {
+    "t": 90109,
+    "chunksResident": 175,
+    "wsBytes": 231425880,
+    "wsMessages": 235,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 601662073
+   },
+   {
+    "t": 90418,
+    "chunksResident": 175,
+    "wsBytes": 232408928,
+    "wsMessages": 236,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 479356853
+   },
+   {
+    "t": 93469,
+    "chunksResident": 178,
+    "wsBytes": 233391976,
+    "wsMessages": 237,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 604868689
+   },
+   {
+    "t": 95663,
+    "chunksResident": 178,
+    "wsBytes": 233391976,
+    "wsMessages": 237,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 579704741
+   },
+   {
+    "t": 95889,
+    "chunksResident": 178,
+    "wsBytes": 234375024,
+    "wsMessages": 238,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 944795069
+   },
+   {
+    "t": 97707,
+    "chunksResident": 178,
+    "wsBytes": 235358072,
+    "wsMessages": 239,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 607937189
+   },
+   {
+    "t": 97978,
+    "chunksResident": 178,
+    "wsBytes": 236341120,
+    "wsMessages": 240,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 541139289
+   },
+   {
+    "t": 99620,
+    "chunksResident": 181,
+    "wsBytes": 237324168,
+    "wsMessages": 241,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 611026717
+   },
+   {
+    "t": 101744,
+    "chunksResident": 181,
+    "wsBytes": 237324168,
+    "wsMessages": 241,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 612524845
+   },
+   {
+    "t": 101997,
+    "chunksResident": 181,
+    "wsBytes": 238307216,
+    "wsMessages": 242,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 544262453
+   },
+   {
+    "t": 104100,
+    "chunksResident": 181,
+    "wsBytes": 239290264,
+    "wsMessages": 243,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 614094109
+   },
+   {
+    "t": 104398,
+    "chunksResident": 181,
+    "wsBytes": 240273312,
+    "wsMessages": 244,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 547406981
+   },
+   {
+    "t": 106470,
+    "chunksResident": 181,
+    "wsBytes": 240273312,
+    "wsMessages": 244,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 492593405
+   },
+   {
+    "t": 107972,
+    "chunksResident": 184,
+    "wsBytes": 241256360,
+    "wsMessages": 245,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 617459845
+   },
+   {
+    "t": 109847,
+    "chunksResident": 184,
+    "wsBytes": 241256360,
+    "wsMessages": 245,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 618561657
+   },
+   {
+    "t": 110118,
+    "chunksResident": 184,
+    "wsBytes": 242239408,
+    "wsMessages": 246,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 550565413
+   },
+   {
+    "t": 112609,
+    "chunksResident": 184,
+    "wsBytes": 242239408,
+    "wsMessages": 246,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 496543357
+   },
+   {
+    "t": 112850,
+    "chunksResident": 184,
+    "wsBytes": 243222456,
+    "wsMessages": 247,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 620349389
+   },
+   {
+    "t": 114895,
+    "chunksResident": 184,
+    "wsBytes": 243222456,
+    "wsMessages": 247,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 622131893
+   },
+   {
+    "t": 115166,
+    "chunksResident": 184,
+    "wsBytes": 244205504,
+    "wsMessages": 248,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 553724985
+   },
+   {
+    "t": 119274,
+    "chunksResident": 187,
+    "wsBytes": 245188552,
+    "wsMessages": 249,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 623847265
+   },
+   {
+    "t": 121338,
+    "chunksResident": 187,
+    "wsBytes": 245188552,
+    "wsMessages": 249,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 598889965
+   },
+   {
+    "t": 121559,
+    "chunksResident": 187,
+    "wsBytes": 246171600,
+    "wsMessages": 250,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 964041957
+   },
+   {
+    "t": 124339,
+    "chunksResident": 187,
+    "wsBytes": 247154648,
+    "wsMessages": 251,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 626768885
+   },
+   {
+    "t": 124587,
+    "chunksResident": 187,
+    "wsBytes": 248137696,
+    "wsMessages": 252,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 967270693
+   },
+   {
+    "t": 129109,
+    "chunksResident": 190,
+    "wsBytes": 249120744,
+    "wsMessages": 253,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 630069657
+   },
+   {
+    "t": 131902,
+    "chunksResident": 190,
+    "wsBytes": 250103792,
+    "wsMessages": 254,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 563155929
+   },
+   {
+    "t": 132159,
+    "chunksResident": 190,
+    "wsBytes": 251086840,
+    "wsMessages": 255,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 633181681
+   },
+   {
+    "t": 135049,
+    "chunksResident": 190,
+    "wsBytes": 251086840,
+    "wsMessages": 255,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 633668105
+   },
+   {
+    "t": 135307,
+    "chunksResident": 190,
+    "wsBytes": 252069888,
+    "wsMessages": 256,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 510771521
+   },
+   {
+    "t": 137880,
+    "chunksResident": 193,
+    "wsBytes": 253052936,
+    "wsMessages": 257,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 636256529
+   },
+   {
+    "t": 140216,
+    "chunksResident": 193,
+    "wsBytes": 253052936,
+    "wsMessages": 257,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 611078993
+   },
+   {
+    "t": 140439,
+    "chunksResident": 193,
+    "wsBytes": 254035984,
+    "wsMessages": 258,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 976330121
+   },
+   {
+    "t": 143204,
+    "chunksResident": 193,
+    "wsBytes": 254035984,
+    "wsMessages": 258,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 515478805
+   },
+   {
+    "t": 143413,
+    "chunksResident": 193,
+    "wsBytes": 255019032,
+    "wsMessages": 259,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 639557001
+   },
+   {
+    "t": 146193,
+    "chunksResident": 193,
+    "wsBytes": 256002080,
+    "wsMessages": 260,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 517068453
+   },
+   {
+    "t": 148548,
+    "chunksResident": 196,
+    "wsBytes": 256985128,
+    "wsMessages": 261,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 643071477
+   },
+   {
+    "t": 151527,
+    "chunksResident": 196,
+    "wsBytes": 256985128,
+    "wsMessages": 261,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 644129957
+   },
+   {
+    "t": 151798,
+    "chunksResident": 196,
+    "wsBytes": 257968176,
+    "wsMessages": 262,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 520130125
+   },
+   {
+    "t": 154533,
+    "chunksResident": 196,
+    "wsBytes": 257968176,
+    "wsMessages": 262,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 521187553
+   },
+   {
+    "t": 154773,
+    "chunksResident": 196,
+    "wsBytes": 258951224,
+    "wsMessages": 263,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 645633065
+   },
+   {
+    "t": 157026,
+    "chunksResident": 196,
+    "wsBytes": 258951224,
+    "wsMessages": 263,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 646411909
+   },
+   {
+    "t": 157255,
+    "chunksResident": 196,
+    "wsBytes": 259934272,
+    "wsMessages": 264,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 985492477
+   },
+   {
+    "t": 160065,
+    "chunksResident": 199,
+    "wsBytes": 260917320,
+    "wsMessages": 265,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 648888633
+   },
+   {
+    "t": 163226,
+    "chunksResident": 199,
+    "wsBytes": 260917320,
+    "wsMessages": 265,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 649452309
+   },
+   {
+    "t": 163503,
+    "chunksResident": 199,
+    "wsBytes": 261900368,
+    "wsMessages": 266,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 526442021
+   },
+   {
+    "t": 166668,
+    "chunksResident": 199,
+    "wsBytes": 261900368,
+    "wsMessages": 266,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 527400981
+   },
+   {
+    "t": 166905,
+    "chunksResident": 199,
+    "wsBytes": 262883416,
+    "wsMessages": 267,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 652213589
+   },
+   {
+    "t": 170573,
+    "chunksResident": 199,
+    "wsBytes": 262883416,
+    "wsMessages": 267,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 653681941
+   },
+   {
+    "t": 170837,
+    "chunksResident": 199,
+    "wsBytes": 263866464,
+    "wsMessages": 268,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 529571365
+   },
+   {
+    "t": 174066,
+    "chunksResident": 202,
+    "wsBytes": 264849512,
+    "wsMessages": 269,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 655676789
+   },
+   {
+    "t": 176943,
+    "chunksResident": 202,
+    "wsBytes": 264849512,
+    "wsMessages": 269,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 656763949
+   },
+   {
+    "t": 177161,
+    "chunksResident": 202,
+    "wsBytes": 265832560,
+    "wsMessages": 270,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 995203025
+   },
+   {
+    "t": 180108,
+    "chunksResident": 202,
+    "wsBytes": 265832560,
+    "wsMessages": 270,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 533783589
+   },
+   {
+    "t": 180338,
+    "chunksResident": 202,
+    "wsBytes": 266815608,
+    "wsMessages": 271,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 658263493
+   },
+   {
+    "t": 183740,
+    "chunksResident": 202,
+    "wsBytes": 266815608,
+    "wsMessages": 271,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 659347837
+   },
+   {
+    "t": 184014,
+    "chunksResident": 202,
+    "wsBytes": 267798656,
+    "wsMessages": 272,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 535867997
+   },
+   {
+    "t": 190157,
+    "chunksResident": 205,
+    "wsBytes": 268781704,
+    "wsMessages": 273,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 661394989
+   },
+   {
+    "t": 193166,
+    "chunksResident": 205,
+    "wsBytes": 268781704,
+    "wsMessages": 273,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 661799505
+   },
+   {
+    "t": 193433,
+    "chunksResident": 205,
+    "wsBytes": 269764752,
+    "wsMessages": 274,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 708374405
+   },
+   {
+    "t": 197231,
+    "chunksResident": 205,
+    "wsBytes": 269764752,
+    "wsMessages": 274,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 708779609
+   },
+   {
+    "t": 197488,
+    "chunksResident": 205,
+    "wsBytes": 270747800,
+    "wsMessages": 275,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 747606693
+   },
+   {
+    "t": 197787,
+    "chunksResident": 205,
+    "wsBytes": 271730848,
+    "wsMessages": 276,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 662945089
+   },
+   {
+    "t": 208751,
+    "chunksResident": 208,
+    "wsBytes": 272713896,
+    "wsMessages": 277,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 543978309
+   },
+   {
+    "t": 212399,
+    "chunksResident": 208,
+    "wsBytes": 272713896,
+    "wsMessages": 277,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 545596225
+   },
+   {
+    "t": 212651,
+    "chunksResident": 208,
+    "wsBytes": 273696944,
+    "wsMessages": 278,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 668596449
+   },
+   {
+    "t": 212940,
+    "chunksResident": 208,
+    "wsBytes": 274679992,
+    "wsMessages": 279,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 546876661
+   },
+   {
+    "t": 213208,
+    "chunksResident": 208,
+    "wsBytes": 275663040,
+    "wsMessages": 280,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 672519693
+   },
+   {
+    "t": 221123,
+    "chunksResident": 211,
+    "wsBytes": 276646088,
+    "wsMessages": 281,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 550097025
+   },
+   {
+    "t": 225555,
+    "chunksResident": 211,
+    "wsBytes": 276646088,
+    "wsMessages": 281,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 551054925
+   },
+   {
+    "t": 225823,
+    "chunksResident": 211,
+    "wsBytes": 277629136,
+    "wsMessages": 282,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 675022929
+   },
+   {
+    "t": 229986,
+    "chunksResident": 211,
+    "wsBytes": 277629136,
+    "wsMessages": 282,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 675800613
+   },
+   {
+    "t": 230224,
+    "chunksResident": 211,
+    "wsBytes": 278612184,
+    "wsMessages": 283,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 608716933
+   },
+   {
+    "t": 230504,
+    "chunksResident": 211,
+    "wsBytes": 279595232,
+    "wsMessages": 284,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 678809577
+   },
+   {
+    "t": 243372,
+    "chunksResident": 214,
+    "wsBytes": 280578280,
+    "wsMessages": 285,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 556489961
+   },
+   {
+    "t": 248291,
+    "chunksResident": 214,
+    "wsBytes": 280578280,
+    "wsMessages": 285,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 449483025
+   },
+   {
+    "t": 248585,
+    "chunksResident": 214,
+    "wsBytes": 281561328,
+    "wsMessages": 286,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 675445277
+   },
+   {
+    "t": 248863,
+    "chunksResident": 214,
+    "wsBytes": 282544376,
+    "wsMessages": 287,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 559675357
+   },
+   {
+    "t": 249119,
+    "chunksResident": 214,
+    "wsBytes": 283527424,
+    "wsMessages": 288,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 685281681
+   },
+   {
+    "t": 261564,
+    "chunksResident": 217,
+    "wsBytes": 284510472,
+    "wsMessages": 289,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 562692845
+   },
+   {
+    "t": 265985,
+    "chunksResident": 217,
+    "wsBytes": 284510472,
+    "wsMessages": 289,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 564137425
+   },
+   {
+    "t": 266314,
+    "chunksResident": 217,
+    "wsBytes": 285493520,
+    "wsMessages": 290,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 687735109
+   },
+   {
+    "t": 266657,
+    "chunksResident": 217,
+    "wsBytes": 286476568,
+    "wsMessages": 291,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 565871337
+   },
+   {
+    "t": 266961,
+    "chunksResident": 217,
+    "wsBytes": 287459616,
+    "wsMessages": 292,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 691230977
+   },
+   {
+    "t": 273786,
+    "chunksResident": 220,
+    "wsBytes": 288442664,
+    "wsMessages": 293,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 569087785
+   },
+   {
+    "t": 279161,
+    "chunksResident": 220,
+    "wsBytes": 288442664,
+    "wsMessages": 293,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 570704973
+   },
+   {
+    "t": 279423,
+    "chunksResident": 220,
+    "wsBytes": 289425712,
+    "wsMessages": 294,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 694061005
+   },
+   {
+    "t": 283465,
+    "chunksResident": 220,
+    "wsBytes": 289425712,
+    "wsMessages": 294,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 695335001
+   },
+   {
+    "t": 283740,
+    "chunksResident": 220,
+    "wsBytes": 290408760,
+    "wsMessages": 295,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 571990729
+   },
+   {
+    "t": 284022,
+    "chunksResident": 220,
+    "wsBytes": 291391808,
+    "wsMessages": 296,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 697824841
+   },
+   {
+    "t": 296522,
+    "chunksResident": 223,
+    "wsBytes": 292374856,
+    "wsMessages": 297,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 575291597
+   },
+   {
+    "t": 301758,
+    "chunksResident": 223,
+    "wsBytes": 293357904,
+    "wsMessages": 298,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 700408301
+   },
+   {
+    "t": 302034,
+    "chunksResident": 223,
+    "wsBytes": 294340952,
+    "wsMessages": 299,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 1040456457
+   },
+   {
+    "t": 302333,
+    "chunksResident": 223,
+    "wsBytes": 295324000,
+    "wsMessages": 300,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 703965325
+   },
+   {
+    "t": 322435,
+    "chunksResident": 226,
+    "wsBytes": 296307048,
+    "wsMessages": 301,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 581673341
+   },
+   {
+    "t": 322735,
+    "chunksResident": 226,
+    "wsBytes": 297290096,
+    "wsMessages": 302,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 706694681
+   },
+   {
+    "t": 323025,
+    "chunksResident": 226,
+    "wsBytes": 298273144,
+    "wsMessages": 303,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 584668205
+   },
+   {
+    "t": 323304,
+    "chunksResident": 226,
+    "wsBytes": 299256192,
+    "wsMessages": 304,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 710267365
+   },
+   {
+    "t": 344670,
+    "chunksResident": 229,
+    "wsBytes": 300239240,
+    "wsMessages": 305,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 587874721
+   },
+   {
+    "t": 344945,
+    "chunksResident": 229,
+    "wsBytes": 301222288,
+    "wsMessages": 306,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 712252857
+   },
+   {
+    "t": 345241,
+    "chunksResident": 229,
+    "wsBytes": 302205336,
+    "wsMessages": 307,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 591171313
+   },
+   {
+    "t": 345527,
+    "chunksResident": 229,
+    "wsBytes": 303188384,
+    "wsMessages": 308,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 716879473
+   },
+   {
+    "t": 360751,
+    "chunksResident": 232,
+    "wsBytes": 304171432,
+    "wsMessages": 309,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 594171353
+   },
+   {
+    "t": 361485,
+    "chunksResident": 232,
+    "wsBytes": 304171432,
+    "wsMessages": 309,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 596158353
+   },
+   {
+    "t": 367886,
+    "chunksResident": 232,
+    "wsBytes": 305154480,
+    "wsMessages": 310,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 719213441
+   },
+   {
+    "t": 368169,
+    "chunksResident": 232,
+    "wsBytes": 306137528,
+    "wsMessages": 311,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 597314241
+   },
+   {
+    "t": 368437,
+    "chunksResident": 232,
+    "wsBytes": 307120576,
+    "wsMessages": 312,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 723125737
+   },
+   {
+    "t": 385441,
+    "chunksResident": 235,
+    "wsBytes": 308103624,
+    "wsMessages": 313,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 600569305
+   },
+   {
+    "t": 391419,
+    "chunksResident": 235,
+    "wsBytes": 308103624,
+    "wsMessages": 313,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 602223861
+   },
+   {
+    "t": 391696,
+    "chunksResident": 235,
+    "wsBytes": 309086672,
+    "wsMessages": 314,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 725383581
+   },
+   {
+    "t": 392017,
+    "chunksResident": 235,
+    "wsBytes": 310069720,
+    "wsMessages": 315,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 603770809
+   },
+   {
+    "t": 392315,
+    "chunksResident": 235,
+    "wsBytes": 311052768,
+    "wsMessages": 316,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 729312053
+   },
+   {
+    "t": 410609,
+    "chunksResident": 238,
+    "wsBytes": 312035816,
+    "wsMessages": 317,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 606767385
+   },
+   {
+    "t": 416740,
+    "chunksResident": 238,
+    "wsBytes": 312035816,
+    "wsMessages": 317,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 609059137
+   },
+   {
+    "t": 417030,
+    "chunksResident": 238,
+    "wsBytes": 313018864,
+    "wsMessages": 318,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 731822853
+   },
+   {
+    "t": 417373,
+    "chunksResident": 238,
+    "wsBytes": 314001912,
+    "wsMessages": 319,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 609955481
+   },
+   {
+    "t": 417678,
+    "chunksResident": 238,
+    "wsBytes": 314984960,
+    "wsMessages": 320,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 735738841
+   },
+   {
+    "t": 434039,
+    "chunksResident": 241,
+    "wsBytes": 315968008,
+    "wsMessages": 321,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 613068553
+   },
+   {
+    "t": 440438,
+    "chunksResident": 241,
+    "wsBytes": 315968008,
+    "wsMessages": 321,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 614812645
+   },
+   {
+    "t": 440724,
+    "chunksResident": 241,
+    "wsBytes": 316951056,
+    "wsMessages": 322,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 738146689
+   },
+   {
+    "t": 441068,
+    "chunksResident": 241,
+    "wsBytes": 317934104,
+    "wsMessages": 323,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 616270729
+   },
+   {
+    "t": 441384,
+    "chunksResident": 241,
+    "wsBytes": 318917152,
+    "wsMessages": 324,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 741793741
+   },
+   {
+    "t": 459082,
+    "chunksResident": 244,
+    "wsBytes": 319900200,
+    "wsMessages": 325,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 619364281
+   },
+   {
+    "t": 464694,
+    "chunksResident": 244,
+    "wsBytes": 319900200,
+    "wsMessages": 325,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 620559805
+   },
+   {
+    "t": 464951,
+    "chunksResident": 244,
+    "wsBytes": 320883248,
+    "wsMessages": 326,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 744018041
+   },
+   {
+    "t": 465267,
+    "chunksResident": 244,
+    "wsBytes": 321866296,
+    "wsMessages": 327,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 622569657
+   },
+   {
+    "t": 465536,
+    "chunksResident": 244,
+    "wsBytes": 322849344,
+    "wsMessages": 328,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 748130657
+   },
+   {
+    "t": 484230,
+    "chunksResident": 247,
+    "wsBytes": 323832392,
+    "wsMessages": 329,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 625763461
+   },
+   {
+    "t": 489185,
+    "chunksResident": 247,
+    "wsBytes": 323832392,
+    "wsMessages": 329,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 627909141
+   },
+   {
+    "t": 489453,
+    "chunksResident": 247,
+    "wsBytes": 324815440,
+    "wsMessages": 330,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 750767009
+   },
+   {
+    "t": 489779,
+    "chunksResident": 247,
+    "wsBytes": 325798488,
+    "wsMessages": 331,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 628969009
+   },
+   {
+    "t": 490051,
+    "chunksResident": 247,
+    "wsBytes": 326781536,
+    "wsMessages": 332,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 754784717
+   },
+   {
+    "t": 510019,
+    "chunksResident": 250,
+    "wsBytes": 327764584,
+    "wsMessages": 333,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 631959865
+   },
+   {
+    "t": 515980,
+    "chunksResident": 250,
+    "wsBytes": 327764584,
+    "wsMessages": 333,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 632614885
+   },
+   {
+    "t": 516232,
+    "chunksResident": 250,
+    "wsBytes": 328747632,
+    "wsMessages": 334,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 758404865
+   },
+   {
+    "t": 516530,
+    "chunksResident": 250,
+    "wsBytes": 329730680,
+    "wsMessages": 335,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 635166277
+   },
+   {
+    "t": 516786,
+    "chunksResident": 250,
+    "wsBytes": 330713728,
+    "wsMessages": 336,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 760801205
+   },
+   {
+    "t": 537018,
+    "chunksResident": 253,
+    "wsBytes": 331696776,
+    "wsMessages": 337,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 638261617
+   },
+   {
+    "t": 544165,
+    "chunksResident": 253,
+    "wsBytes": 332679824,
+    "wsMessages": 338,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 762688149
+   },
+   {
+    "t": 544448,
+    "chunksResident": 253,
+    "wsBytes": 333662872,
+    "wsMessages": 339,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 810179377
+   },
+   {
+    "t": 544728,
+    "chunksResident": 253,
+    "wsBytes": 334645920,
+    "wsMessages": 340,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 814536797
+   },
+   {
+    "t": 564224,
+    "chunksResident": 256,
+    "wsBytes": 335628968,
+    "wsMessages": 341,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 818953149
+   },
+   {
+    "t": 569655,
+    "chunksResident": 256,
+    "wsBytes": 335628968,
+    "wsMessages": 341,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 820730845
+   },
+   {
+    "t": 569943,
+    "chunksResident": 256,
+    "wsBytes": 336612016,
+    "wsMessages": 342,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 768138833
+   },
+   {
+    "t": 570247,
+    "chunksResident": 256,
+    "wsBytes": 337595064,
+    "wsMessages": 343,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 647659261
+   },
+   {
+    "t": 570498,
+    "chunksResident": 256,
+    "wsBytes": 338578112,
+    "wsMessages": 344,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 773421681
+   },
+   {
+    "t": 595846,
+    "chunksResident": 259,
+    "wsBytes": 339561160,
+    "wsMessages": 345,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 650875657
+   },
+   {
+    "t": 596071,
+    "chunksResident": 259,
+    "wsBytes": 340544208,
+    "wsMessages": 346,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 669702393
+   },
+   {
+    "t": 596273,
+    "chunksResident": 259,
+    "wsBytes": 341527256,
+    "wsMessages": 347,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 905720569
+   },
+   {
+    "t": 596582,
+    "chunksResident": 259,
+    "wsBytes": 342510304,
+    "wsMessages": 348,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 826560505
+   },
+   {
+    "t": 619041,
+    "chunksResident": 262,
+    "wsBytes": 343493352,
+    "wsMessages": 349,
+    "httpRequests": 0,
+    "loading": 1,
+    "initializing": false,
+    "jsHeapBytes": 831423953
+   }
+  ]
+ },
+ "counters_before": {
+  "chunksResident": 262,
+  "gpuBytes": 13670367424,
+  "instancesResident": 0,
+  "emptyChunks": 9,
+  "byLod": {
+   "1": {
+    "bytes": 5324800,
+    "messages": 5,
+    "n404": 0,
+    "resident": 2
+   },
+   "2": {
+    "bytes": 7864320,
+    "messages": 8,
+    "n404": 0,
+    "resident": 5
+   },
+   "3": {
+    "bytes": 11796480,
+    "messages": 12,
+    "n404": 0,
+    "resident": 8
+   },
+   "4": {
+    "bytes": 15728640,
+    "messages": 16,
+    "n404": 0,
+    "resident": 9
+   },
+   "5": {
+    "bytes": 27525120,
+    "messages": 28,
+    "n404": 0,
+    "resident": 16
+   },
+   "6": {
+    "bytes": 48168960,
+    "messages": 49,
+    "n404": 0,
+    "resident": 30
+   },
+   "7": {
+    "bytes": 70778880,
+    "messages": 72,
+    "n404": 0,
+    "resident": 53
+   },
+   "8": {
+    "bytes": 74711040,
+    "messages": 76,
+    "n404": 0,
+    "resident": 55
+   },
+   "9": {
+    "bytes": 82575360,
+    "messages": 84,
+    "n404": 0,
+    "resident": 84
+   }
+  },
+  "meshStats": {
+   "count": 350,
+   "parseMs": 380.39999999990687,
+   "stitchMs": 648.9999999990687,
+   "meshMs": 81554.19999999832,
+   "uploadMs": 327157.0999999987
+  },
+  "frameStats": {
+   "drawCalls": 253,
+   "instancesDrawn": 397416448,
+   "chunksRendered": 262,
+   "chunksResident": 262
+  },
+  "net": {
+   "ws": {
+    "bytes": 344476400,
+    "messages": 350,
+    "requestsSent": 384,
+    "firstResponseAt": 4295.799999999814
+   },
+   "http": {
+    "requests": 0,
+    "bytes": 0,
+    "firstResponseAt": null,
+    "phases": {
+     "n": 0,
+     "redirect_p50": null,
+     "redirect_p95": null,
+     "connect_p50": null,
+     "connect_p95": null,
+     "ttfb_p50": null,
+     "ttfb_p95": null,
+     "download_p50": null,
+     "download_p95": null
+    }
+   }
+  },
+  "jsHeapBytes": 670040049,
+  "configuredAt": 4287.199999999953,
+  "deviceLost": null
+ },
+ "counters_after": {
+  "chunksResident": 265,
+  "gpuBytes": 13727490336,
+  "instancesResident": 0,
+  "emptyChunks": 11,
+  "byLod": {
+   "1": {
+    "bytes": 5324800,
+    "messages": 5,
+    "n404": 0,
+    "resident": 2
+   },
+   "2": {
+    "bytes": 7864320,
+    "messages": 8,
+    "n404": 0,
+    "resident": 5
+   },
+   "3": {
+    "bytes": 11796480,
+    "messages": 12,
+    "n404": 0,
+    "resident": 8
+   },
+   "4": {
+    "bytes": 15728640,
+    "messages": 16,
+    "n404": 0,
+    "resident": 9
+   },
+   "5": {
+    "bytes": 27525120,
+    "messages": 28,
+    "n404": 0,
+    "resident": 15
+   },
+   "6": {
+    "bytes": 51118080,
+    "messages": 52,
+    "n404": 0,
+    "resident": 34
+   },
+   "7": {
+    "bytes": 70778880,
+    "messages": 72,
+    "n404": 0,
+    "resident": 53
+   },
+   "8": {
+    "bytes": 74711040,
+    "messages": 76,
+    "n404": 0,
+    "resident": 55
+   },
+   "9": {
+    "bytes": 82575360,
+    "messages": 84,
+    "n404": 0,
+    "resident": 84
+   }
+  },
+  "meshStats": {
+   "count": 353,
+   "parseMs": 383.39999999967404,
+   "stitchMs": 653.5999999993946,
+   "meshMs": 82206.29999999818,
+   "uploadMs": 340468.5999999989
+  },
+  "frameStats": {
+   "drawCalls": 254,
+   "instancesDrawn": 398987264,
+   "chunksRendered": 265,
+   "chunksResident": 265
+  },
+  "net": {
+   "ws": {
+    "bytes": 347425544,
+    "messages": 353,
+    "requestsSent": 388,
+    "firstResponseAt": 4295.799999999814
+   },
+   "http": {
+    "requests": 0,
+    "bytes": 0,
+    "firstResponseAt": null,
+    "phases": {
+     "n": 0,
+     "redirect_p50": null,
+     "redirect_p95": null,
+     "connect_p50": null,
+     "connect_p95": null,
+     "ttfb_p50": null,
+     "ttfb_p95": null,
+     "download_p50": null,
+     "download_p95": null
+    }
+   }
+  },
+  "jsHeapBytes": 556996465,
+  "configuredAt": 4287.199999999953,
+  "deviceLost": null
+ },
+ "provenance": {
+  "canvas": {
+   "width": 1920,
+   "height": 1080
+  },
+  "devicePixelRatio": 1,
+  "screen": {
+   "width": 1920,
+   "height": 1080
+  },
+  "adapterInfo": {
+   "vendor": "nvidia",
+   "architecture": "ampere",
+   "device": "",
+   "description": "",
+   "timestampQuery": true
+  },
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+ },
+ "device_lost": null,
+ "error": null,
+ "presentation": {
+  "vsync": false,
+  "frame_rate_limit": false
+ }
+}

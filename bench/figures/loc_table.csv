@@ -1,0 +1,9 @@
+tactic,files,loc
+mesh,mesh-shader.wgsl,20
+cubes,instanced-cubes-shader.wgsl,48
+planes,instanced-shader.wgsl,136
+greedy,instanced-greedy-shader.wgsl + greedy-mesher.js,286
+raycast,ray-shader.wgsl,132
+hybrid,instanced-greedy-shader.wgsl + greedy-mesher.js + ray-shader.wgsl,418
+fx,fx-shader.wgsl,116
+shared core,renderer.js + chunk-mesher.js + hmap-loader.js + chunk-quad-strategy.js + chunk-websocket.js + chunk-manager.js + chunk.js,1981

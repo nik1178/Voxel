@@ -1,6 +1,6 @@
 import { vprint } from "./vprint.js";
 import Chunk from "./chunk.js";
-import HmapLoader from "./hmap-loader.js";
+import HmapLoader, { meshStats } from "./hmap-loader.js";
 import { GreedyMesher } from "./greedy-mesher.js";
 
 export default class ChunkMesher {
@@ -38,16 +38,20 @@ export default class ChunkMesher {
     if (heightMapData === 404) return 404;
 
     if (parentChunk) {
+      const t0 = performance.now();
       heightMapData = this.handleNewHeightmapVTF(heightMapData, chunk.levelOfDetail, parentChunk, chunk.position.x, chunk.position.z);
+      meshStats.stitchMs += performance.now() - t0;
     }
-    
+
     chunk.rawData = heightMapData;
+    const t1 = performance.now();
     if (!this.useMesh) {
       chunk.instanceArray = this.greedyMesher.toInstanceArray(this.greedyMesher.remesh(chunk.rawData));
     } else {
       this.addChunkMesh(chunk);
     }
-    
+    meshStats.meshMs += performance.now() - t1;
+
     return chunk;
   }
 

@@ -155,3 +155,156 @@ select {
     width: max(300px, max-content);
     top: 80%;
 }
+
+/* ---- Mobile support ---- */
+
+body {
+    overflow: hidden;
+}
+
+canvas#viewport {
+    touch-action: none;
+}
+
+#ui-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 200;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 16px;
+    backdrop-filter: blur(30px);
+    background-color: rgba(255, 255, 255, 0);
+    box-shadow:
+        inset 0 0 6px 6px rgba(255, 255, 255, 0.2),
+        inset 0 0 1px 1px rgba(118, 196, 180, 0.2),
+        1px 1px 2px 2px rgba(90, 100, 120, 0.2),
+        0px 0px 10px 10px rgba(90, 100, 120, 0.1),
+        0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+    color: rgba(180, 221, 255, 0.5);
+    font-size: 22px;
+    font-family: inherit;
+    cursor: pointer;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider {
+    touch-action: none;
+}
+
+#mobile-controls {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    padding: 0 24px;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 150;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+body.touch.ui-hidden #mobile-controls {
+    display: flex;
+}
+
+.dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 58px);
+    grid-template-rows: repeat(3, 58px);
+    gap: 6px;
+    pointer-events: all;
+    touch-action: none;
+}
+
+.dpad-btn {
+    border: none;
+    border-radius: 14px;
+    backdrop-filter: blur(30px);
+    background-color: rgba(118, 120, 130, 0.2);
+    box-shadow:
+        inset 0 0 6px 6px rgba(255, 255, 255, 0.15),
+        0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+    color: rgba(180, 221, 255, 0.6);
+    font-size: 20px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.dpad-btn:active {
+    background-color: rgba(180, 221, 255, 0.35);
+}
+
+/* Two 3x3 pads must fit side by side on narrow phones. */
+@media (max-width: 480px) {
+    .dpad {
+        grid-template-columns: repeat(3, 46px);
+        grid-template-rows: repeat(3, 46px);
+        gap: 4px;
+    }
+
+    #mobile-controls {
+        padding: 0 12px;
+        bottom: 16px;
+    }
+}
+
+.dpad .dpad-up { grid-area: 1 / 2; }
+.dpad .dpad-left { grid-area: 2 / 1; }
+.dpad .dpad-right { grid-area: 2 / 3; }
+.dpad .dpad-down { grid-area: 3 / 2; }
+
+@media (max-width: 900px), (pointer: coarse) {
+    #ui {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+        padding-top: 72px;
+        overflow-y: auto;
+    }
+
+    #ui .container {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    #ui .container .container-content {
+        font-size: 15px;
+        padding: 14px;
+    }
+
+    .general-info-container {
+        width: auto;
+    }
+
+    .row {
+        flex-wrap: wrap;
+    }
+
+    .slider {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    #command-input-container {
+        width: auto;
+    }
+
+    select {
+        font-size: 15px;
+    }
+
+    .toggle::before {
+        width: 24px;
+        height: 24px;
+    }
+}

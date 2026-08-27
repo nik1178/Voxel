@@ -34,10 +34,23 @@ export default class GameManager {
     await this.renderer.init(this.player, this.canvas);
     this.running = true;
     this.canvas.addEventListener("click", () => {
-      this.canvas.requestPointerLock();
+      // Pointer lock is mouse-only; a tap on touch devices must not grab it.
+      if (!document.body.classList.contains("touch")) {
+        this.canvas.requestPointerLock();
+      }
     });
     vprint("Game started");
     this.uiManager = new UIManager();
+    // The renderer's defaults and the static HTML disagree on load; make the
+    // UI display what is actually rendering.
+    this.uiManager.applyState({
+      renderType: this.renderer.renderType,
+      strategy: "quad",
+      fx: this.renderer.useFX,
+      sockets: true,
+      culling: this.renderer.manualCulling,
+      chunkSize: this.renderer.chunkSize,
+    });
     requestAnimationFrame(this.frame.bind(this));
   }
 
@@ -63,36 +76,43 @@ export default class GameManager {
   }
 
   lastTime = 0;
-  lastFrames = [];
+  lastFrames = []; // per-frame dt in seconds
   framesToCapture = 100;
   async frame(time) {
     if (!this.running) return;
 
+    // First frame has no valid previous timestamp; skip its dt entirely.
+    if (this.lastTime === 0) {
+      this.lastTime = time;
+      requestAnimationFrame(this.frame.bind(this));
+      return;
+    }
+
     let dt = (time - this.lastTime) / 1000;
-    this.updateFPS(dt);
     this.lastTime = time;
+    this.updateFPS(dt);
+    window.__bench?.onFrame?.(dt);
 
     this.player.update(dt);
     this.renderer.updateVPMatrix(this.player.camera, this.canvas);
+    const tRender = performance.now();
     this.renderer.render(dt);
+    window.__bench?.onRenderMs?.(performance.now() - tRender);
 
     // --------------------------------------------
     requestAnimationFrame(this.frame.bind(this));
   }
 
   updateFPS(dt) {
-    if (this.fpsCounter) {
-      let value = 1 / dt;
-      if (value == Infinity) {
-        return;
-      }
-      this.lastFrames.push(value);
-      if (this.lastFrames.length > this.framesToCapture) {
-        this.lastFrames.shift();
-      }
-      this.fpsCounter.innerText = (this.lastFrames.reduce((a, b) => a + b, 0) / this.lastFrames.length).toFixed(2);
-      // const sortedFrames = [...this.lastFrames].sort((a, b) => a - b);
-      // this.fpsCounter.innerText = Math.floor(sortedFrames[Math.floor(sortedFrames.length / 2)]);
+    if (!this.fpsCounter) return;
+    if (!isFinite(dt) || dt <= 0) return;
+    this.lastFrames.push(dt);
+    if (this.lastFrames.length > this.framesToCapture) {
+      this.lastFrames.shift();
     }
+    const total = this.lastFrames.reduce((a, b) => a + b, 0);
+    // Correct mean FPS: frames / elapsed time (NOT mean of instantaneous 1/dt,
+    // which overstates FPS and hides stutter).
+    this.fpsCounter.innerText = (this.lastFrames.length / total).toFixed(2);
   }
 }

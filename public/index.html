@@ -11,6 +11,21 @@
 
 <body>
     <canvas id="viewport"></canvas>
+    <button id="ui-toggle" aria-label="Toggle UI">✕</button>
+    <div id="mobile-controls">
+        <div class="dpad" id="dpad-move">
+            <button class="dpad-btn dpad-up" data-action="forward">▲</button>
+            <button class="dpad-btn dpad-left" data-action="left">◀</button>
+            <button class="dpad-btn dpad-right" data-action="right">▶</button>
+            <button class="dpad-btn dpad-down" data-action="backward">▼</button>
+        </div>
+        <div class="dpad" id="dpad-fly">
+            <button class="dpad-btn dpad-up" data-action="up">▲</button>
+            <button class="dpad-btn dpad-left" data-action="slower">−</button>
+            <button class="dpad-btn dpad-right" data-action="faster">+</button>
+            <button class="dpad-btn dpad-down" data-action="down">▼</button>
+        </div>
+    </div>
     <div id="ui" class="">
         <div class="container general-info-container">
             <div class="container-content">

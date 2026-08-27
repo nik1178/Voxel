@@ -1,3 +1,26 @@
+// Benchmark instrumentation: WS transfer counters, reset per benchmark run.
+export const netStats = {
+  wsBytes: 0,
+  wsMessages: 0,
+  requestsSent: 0,
+  firstResponseAt: null,
+  byLod: {},  // lod -> {bytes, messages, n404}; WS and HTTP both feed it
+  reset() {
+    this.wsBytes = 0;
+    this.wsMessages = 0;
+    this.requestsSent = 0;
+    this.firstResponseAt = null;
+    this.byLod = {};
+  },
+  countLod(lod, bytes, is404) {
+    const s = this.byLod[lod] || (this.byLod[lod] = { bytes: 0, messages: 0, n404: 0 });
+    s.bytes += bytes;
+    s.messages += 1;
+    if (is404) s.n404 += 1;
+  },
+};
+window.__netStats = netStats;
+
 export default class ChunkWebSocketClient {
   constructor(url) {
     this.url = url;
@@ -15,6 +38,10 @@ export default class ChunkWebSocketClient {
       const buffer = event.data;
       if (!(buffer instanceof ArrayBuffer)) return;
 
+      netStats.wsBytes += buffer.byteLength;
+      netStats.wsMessages += 1;
+      if (netStats.firstResponseAt === null) netStats.firstResponseAt = performance.now();
+
       // 1. Extract the 8-byte header (requestId: int32, status: int32)
       const headerView = new DataView(buffer, 0, 8);
       const requestId = headerView.getInt32(0, true); // little-endian
@@ -24,6 +51,7 @@ export default class ChunkWebSocketClient {
       if (!promiseHandlers) return;
 
       this.pendingRequests.delete(requestId);
+      netStats.countLod(promiseHandlers.lod, buffer.byteLength - 8, status === 404);
 
       if (status === 404) {
         promiseHandlers.resolve(404);
@@ -53,8 +81,10 @@ export default class ChunkWebSocketClient {
         return;
       }
 
+      netStats.requestsSent += 1;
+
       const requestId = this.nextRequestId++;
-      this.pendingRequests.set(requestId, { resolve, reject });
+      this.pendingRequests.set(requestId, { resolve, reject, lod });
 
       // Send JSON message requesting the chunk
       this.ws.send(JSON.stringify({
