@@ -112,7 +112,21 @@ export class UIManager {
         document.body.classList.toggle("ui-hidden", !this.visible);
         const button = document.getElementById("ui-toggle");
         if (button) button.innerText = this.visible ? "✕" : "☰";
+        // Phones only retract the URL bar on scroll, and nothing here scrolls,
+        // so hiding the UI is the moment to ask for real fullscreen.
+        if (!this.visible && document.body.classList.contains("touch")) {
+            this.enterFullscreen();
+        }
         document.dispatchEvent(new CustomEvent("ui-toggled", { detail: this.visible }));
+    }
+
+    // Must stay synchronous inside the click handler or the gesture doesn't count.
+    enterFullscreen() {
+        const el = document.documentElement;
+        if (document.fullscreenElement || !el.requestFullscreen) return;
+        // Rejects when the browser refuses the gesture, and is absent on iOS
+        // Safari. Neither is worth reporting.
+        el.requestFullscreen().catch(() => {});
     }
 
     // Make the DOM controls display the given state. Never dispatches events —
