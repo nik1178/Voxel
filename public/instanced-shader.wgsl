@@ -158,15 +158,5 @@ fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
   let tint = chunkInfo.age;
   var finalColor = vec4<f32>(r + tint, g - tint, b - tint, a);
 
-  // Draw white outline at chunk boundaries
-  // We check if we are near the [0, 1] edges of the chunkUV
-  let edgeWidth = 0.02; // Adjust for thickness
-  let isEdge = input.chunkUV.x < edgeWidth || input.chunkUV.x > (1.0 - edgeWidth) ||
-               input.chunkUV.y < edgeWidth || input.chunkUV.y > (1.0 - edgeWidth);
-
-  if (isEdge) {
-    return vec4<f32>(1.0, 1.0, 1.0, 1.0);
-  }
-
   return finalColor;
 }
