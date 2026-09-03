@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Lines-of-code proxy for the thesis "simplest" axis.
 
 No field standard exists for "implementation simplicity"; this counts the

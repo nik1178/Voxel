@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Frame-time aggregation. Pure functions, no I/O."""
 import math
 

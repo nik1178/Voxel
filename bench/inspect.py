@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 r"""Interactive inspector: sit in each of the 9 E1 views and look around.
 
 Opens the SAME browser, flags, viewport and config the benchmark uses, so what

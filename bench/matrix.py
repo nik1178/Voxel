@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Experiment matrix: every benchmark run, deterministically enumerated.
 
 A Run's identity is the sha1 of its canonical config+view JSON, so re-running

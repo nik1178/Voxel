@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Benchmark driver: one config per fresh browser, checkpointed JSON results.
 
 Usage:
