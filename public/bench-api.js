@@ -1,3 +1,4 @@
+// Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 /**
  * Benchmark API. Drives the app through its existing CustomEvent plumbing.
  * Inert unless a driver (Playwright) calls it. No UI, no rendering impact.

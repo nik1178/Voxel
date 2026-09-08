@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Figures + CSV + report sections for the gap-campaign experiments E6-E14.
 
 Called from bench.plot.write_all; never imported standalone (it takes the

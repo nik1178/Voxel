@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Derive figures + CSV tables + report.md from bench/results/*.json.
 
 Reading results NEVER triggers benchmarking. Every figure has a CSV twin.

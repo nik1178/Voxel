@@ -181,3 +181,4 @@
 {"run_id": "E4-e4c438c5-r2", "experiment": "E4", "quiesced": true, "mean_fps": 379.127252364858, "error": null, "finished_at": "2026-08-26T00:41:39"}
 {"run_id": "E9-653ebd89-r0", "experiment": "E9", "quiesced": true, "mean_fps": 164.16224268418264, "error": null, "finished_at": "2026-08-26T00:42:27"}
 {"run_id": "E13-7b1023ee-r0", "experiment": "E13", "quiesced": true, "mean_fps": 132.53873420759234, "error": null, "finished_at": "2026-08-26T00:43:23"}
+{"run_id": "E8-87a7cb5c-r0", "experiment": "E8", "quiesced": true, "mean_fps": 26.049594035541233, "error": null, "finished_at": "2026-09-03T04:59:51"}

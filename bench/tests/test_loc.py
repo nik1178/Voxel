@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 from pathlib import Path
 
 from bench.loc import count_loc, TACTIC_FILES, SHARED, table

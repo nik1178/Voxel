@@ -1,3 +1,4 @@
+# Written by AI (Claude, Anthropic) under the direction of Nik Jenič, who reviewed and tested it.
 """Zero-run figures: derived from result JSONs already on disk (mostly E1/E2).
 
 Called from bench.plot.write_all after the per-experiment sections. Everything
